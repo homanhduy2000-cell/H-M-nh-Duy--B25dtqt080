@@ -1,0 +1,11 @@
+﻿activity_id,opp_id,activity_date,activity_type,outcome_signal,notes
+ACT-M01,OPP-M01,2026-11-05,Call,NEUTRAL,Chưa xác định được người phê duyệt ngân sách cuối cùng.
+ACT-M02,OPP-M04,2026-11-03,Contract,WON,Khách đã ký hợp đồng ORD-M01 nhưng NVKD bấm nhầm sang Closed Lost trên file cá nhân.
+ACT-001,OPP-001,2026-11-06,Meeting,POSITIVE,"Họp với CIO Trần Quốc Tuấn, khách đồng ý toàn bộ phạm vi kỹ thuật, hẹn ký HĐ tuần tới."
+ACT-002,OPP-002,2026-11-05,Call,POSITIVE,"CFO xác nhận ngân sách Q4 đã duyệt, đang rà soát điều khoản bảo hành."
+ACT-003,OPP-003,2026-11-07,Email,POSITIVE,Pháp chế khách hàng đã duyệt dự thảo hợp đồng SCM.
+ACT-004,OPP-004,2026-11-04,Demo,POSITIVE,"Demo PoC AI OCR đạt độ chính xác 98.5%, khách hàng rất hài lòng."
+ACT-005,OPP-005,2026-11-06,Meeting,POSITIVE,TGĐ Lê Văn Kiên yêu cầu gửi phương án tích hợp chi tiết để chốt trong tuần tới.
+ACT-006,OPP-006,2026-11-05,Call,NEUTRAL,Đang thương lượng phí bảo trì năm đầu.
+ACT-007,OPP-007,2026-11-02,Contract,WON,Khách hàng đã ký hợp đồng chính thức và chuyển khoản tạm ứng đợt 1.
+ACT-008,OPP-008,2026-11-04,Contract,WON,Đã ký biên bản nghiệm thu đơn hàng ORD-1002.

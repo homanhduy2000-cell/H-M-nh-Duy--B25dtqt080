@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>15 Slide Thuyết Trình: Cách Tạo Ra Duydudi AI Agent</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0e0b16;
+      background-image:
+        radial-gradient(at 10% 15%, rgba(30, 215, 181, 0.22) 0px, transparent 50%),
+        radial-gradient(at 88% 12%, rgba(137, 75, 119, 0.38) 0px, transparent 52%),
+        radial-gradient(at 85% 85%, rgba(171, 189, 255, 0.22) 0px, transparent 50%),
+        radial-gradient(at 15% 82%, rgba(240, 249, 167, 0.14) 0px, transparent 48%);
+      background-attachment: fixed;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    @keyframes slideSmoothIn {
+      0% { opacity: 0; transform: translateY(14px) scale(0.985); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .slide-card {
+      transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: 0 24px 60px -15px rgba(137, 75, 119, 0.35), 0 0 0 1px rgba(171, 189, 255, 0.2);
+    }
+    .slide-animate {
+      animation: slideSmoothIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-[#1ed7b5] selection:text-slate-950">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="w-full bg-slate-900/80 backdrop-blur-xl border-b border-[#abbdff]/20 px-4 sm:px-8 py-3 flex items-center justify-between sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-white text-sm shadow-md"
+           style="background: linear-gradient(135deg, #1ed7b5 0%, #894b77 100%);">
+        DD
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-xs sm:text-sm font-black tracking-tight text-white">CÔNG TY CỦA DUYDUDI • BỘ 15 SLIDE THUYẾT TRÌNH</h1>
+          <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-800/80 border border-slate-700">
+            <span class="w-2 h-2 rounded-full" style="background:#1ed7b5"></span>
+            <span class="w-2 h-2 rounded-full" style="background:#f0f9a7"></span>
+            <span class="w-2 h-2 rounded-full" style="background:#894b77"></span>
+            <span class="w-2 h-2 rounded-full" style="background:#abbdff"></span>
+          </span>
+        </div>
+        <p class="text-[11px] text-[#abbdff] font-medium">Cách thiết kế & xây dựng Duydudi AI Agent từ A-Z</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 sm:gap-3">
+      <span id="slideCounterBadge" class="px-3 py-1 rounded-full bg-[#894b77]/30 border border-[#894b77] text-[#f0f9a7] font-mono text-xs font-bold">
+        Slide 1 / 15
+      </span>
+      <a href="/api/export/slides.pptx" download="Duydudi_AI_Agent_15_Slides.pptx"
+         class="px-4 py-1.5 rounded-xl text-slate-950 text-xs font-extrabold shadow-md transition hover:-translate-y-0.5 flex items-center gap-1.5"
+         style="background: linear-gradient(135deg, #1ed7b5 0%, #f0f9a7 100%);">
+        <span>📥</span> <span>Xuất File .PPTX</span>
+      </a>
+      <a href="/" class="px-3.5 py-1.5 rounded-xl bg-slate-800/90 hover:bg-[#894b77] text-slate-100 text-xs font-bold border border-[#abbdff]/30 transition">
+        🏠 Về Trang Chủ Web
+      </a>
+    </div>
+  </header>
+
+  <!-- MAIN SLIDE VIEWPORT -->
+  <main class="flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-12">
+    <div id="slideCardViewport" class="w-full max-w-5xl bg-slate-900/85 backdrop-blur-2xl rounded-3xl p-6 sm:p-12 min-h-[540px] flex flex-col justify-between relative overflow-hidden slide-card">
+      
+      <!-- Ambient 4-Color Glow -->
+      <div class="absolute -top-24 -right-24 w-80 h-80 bg-[#1ed7b5]/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute top-1/3 -left-24 w-80 h-80 bg-[#894b77]/25 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 right-1/4 w-80 h-80 bg-[#abbdff]/15 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Slide Header -->
+      <div class="space-y-3 z-10 border-b border-[#abbdff]/20 pb-5">
+        <div class="flex items-center justify-between gap-2">
+          <span id="slideTag" class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#1ed7b5]/15 border border-[#1ed7b5]/40 text-[#1ed7b5] text-xs font-extrabold uppercase tracking-wider">
+            SLIDE 01 • TỔNG QUAN DỰ ÁN
+          </span>
+          <span id="slideModule" class="text-xs font-mono text-[#abbdff] font-semibold">
+            http://localhost:8000
+          </span>
+        </div>
+        <h2 id="slideTitle" class="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight">
+          Xây Dựng Duydudi AI Agent: Phân Tích Tiến Độ Cơ Hội & Dự Báo Doanh Số B2B
+        </h2>
+        <p id="slideSubtitle" class="text-sm sm:text-base text-[#f0f9a7] font-semibold">
+          Từ dữ liệu B2B phân mảnh đến quyết định điều hành chính xác với kiến trúc Deterministic Python + Google Gemini AI
+        </p>
+      </div>
+
+      <!-- Slide Body Content -->
+      <div id="slideBody" class="py-6 z-10 flex-1 flex flex-col justify-center space-y-4 text-sm sm:text-base text-slate-200 leading-relaxed">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Speaker Notes Box -->
+      <div class="z-10 bg-slate-950/80 border border-[#abbdff]/25 rounded-2xl p-4 flex items-start gap-3">
+        <span class="text-lg shrink-0">🎙️</span>
+        <div class="text-xs text-slate-300 leading-relaxed">
+          <strong class="text-[#f0f9a7] uppercase tracking-wider block mb-0.5">Gợi ý lời thuyết trình (Speaker Notes):</strong>
+          <span id="slideNotes"></span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- BOTTOM CONTROLS & SLIDE DOTS -->
+  <footer class="w-full bg-slate-900/90 backdrop-blur-xl border-t border-[#abbdff]/20 px-4 sm:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-2">
+      <button onclick="prevSlide()" id="btnPrev" class="px-5 py-2.5 rounded-full bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-white font-bold text-xs flex items-center gap-2 border border-[#abbdff]/30 transition cursor-pointer">
+        <span>&larr;</span> <span>Trang Trước</span>
+      </button>
+      <button onclick="nextSlide()" id="btnNext" class="px-6 py-2.5 rounded-full text-white font-black text-xs flex items-center gap-2 shadow-lg transition hover:-translate-y-0.5 cursor-pointer"
+              style="background: linear-gradient(135deg, #894b77 0%, #1ed7b5 100%);">
+        <span>Trang Tiếp Theo</span> <span>&rarr;</span>
+      </button>
+    </div>
+
+    <!-- Dots Navigation -->
+    <div id="slideDots" class="flex flex-wrap items-center justify-center gap-1.5">
+      <!-- Rendered by JS -->
+    </div>
+
+    <div class="text-[11px] text-slate-400 font-mono">
+      Phím tắt: Mũi tên ⬅️ ➡️ để chuyển trang
+    </div>
+  </footer>
+
+  <script>
+    const SLIDES_DATA = [
+      {
+        num: 1,
+        tag: "SLIDE 01 • TRANG BÌA",
+        module: "Duydudi • AI Sales Ops",
+        title: "Xây Dựng Duydudi AI Agent: Phân Tích Tiến Độ Cơ Hội & Dự Báo Doanh Số B2B",
+        subtitle: "Từ Dữ liệu B2B Phân mảnh đến Quyết định Điều hành Chính xác với Kiến trúc Deterministic Python + Google Gemini AI",
+        body: `
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+            <div class="p-4 rounded-2xl bg-slate-800/70 border border-slate-700">
+              <div class="text-2xl mb-2">🏢</div>
+              <h4 class="font-black text-white text-sm mb-1">Đơn vị sở hữu</h4>
+              <p class="text-xs text-slate-300"><strong>Công ty của Duydudi</strong> — Nền tảng Quản trị & Phân tích Doanh số B2B thông minh.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-800/70 border border-slate-700">
+              <div class="text-2xl mb-2">⚙️</div>
+              <h4 class="font-black text-white text-sm mb-1">Công nghệ cốt lõi</h4>
+              <p class="text-xs text-slate-300">FastAPI Backend • Pandas Rule Engine • Google Gemini 3.5 Flash • Smallpdf/Studio UI.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-800/70 border border-slate-700">
+              <div class="text-2xl mb-2">🎯</div>
+              <h4 class="font-black text-white text-sm mb-1">Mục tiêu cốt lõi</h4>
+              <p class="text-xs text-slate-300">Tự động hóa đối chiếu 4 nguồn dữ liệu, phát hiện rủi ro và đề xuất Top 5 cơ hội tuần tới.</p>
+            </div>
+          </div>
+        `,
+        notes: "Xin chào mọi người. Hôm nay tôi xin trình bày quy trình thiết kế và xây dựng hệ thống Duydudi AI Agent — một trợ lý AI chuyên biệt giúp Trưởng phòng Kinh doanh B2B tự động thu thập, làm sạch, phát hiện mâu thuẫn dữ liệu và dự báo doanh số có trọng số."
+      },
+      {
+        num: 2,
+        tag: "SLIDE 02 • BÀI TOÁN NGHIỆP VỤ",
+        module: "Problem Statement",
+        title: "Tại Sao Báo Cáo Doanh Số B2B Truyền Thống Thường Sai Lệch?",
+        subtitle: "4 nỗi đau lớn khiến Trưởng phòng Kinh doanh mất hàng giờ tổng hợp mỗi tuần nhưng số liệu vẫn ảo",
+        body: `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-4 rounded-2xl bg-rose-950/30 border border-rose-800/50">
+              <strong class="text-rose-400 text-sm block mb-1">1. Dữ liệu phân mảnh ở 4 bảng rời rạc</strong>
+              <p class="text-xs text-slate-300">Cơ hội (Opportunities), Lịch sử liên hệ (Activities), Đơn hàng (Orders) và Chỉ tiêu (KPI Targets) nằm ở nhiều file Excel, CSV, Google Sheets khác nhau.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-amber-950/30 border border-amber-800/50">
+              <strong class="text-amber-400 text-sm block mb-1">2. Tính trùng doanh số & Trùng dự án</strong>
+              <p class="text-xs text-slate-300">Đơn hàng đã ký (Orders) nhưng cơ hội vẫn để mở khiến hệ thống cộng cả vào doanh số thực tế lẫn dự báo; hoặc 2 Sales cùng báo cáo 1 dự án.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-purple-950/30 border border-purple-800/50">
+              <strong class="text-purple-400 text-sm block mb-1">3. "Cơ hội xác sống" (Zombie Deals)</strong>
+              <p class="text-xs text-slate-300">Nhật ký cuộc gọi ghi khách đã từ chối/chọn đối thủ, hoặc quá hạn ngày chốt hàng tuần không liên hệ nhưng vẫn nằm trong danh sách chờ chốt.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-blue-950/30 border border-blue-800/50">
+              <strong class="text-blue-400 text-sm block mb-1">4. Tỷ lệ thành công điền theo cảm tính</strong>
+              <p class="text-xs text-slate-300">Nhân viên tự nhập xác suất thắng 80%–90% dù mới ở giai đoạn chào giá sơ bộ, làm phồng ảo dự báo doanh số toàn công ty.</p>
+            </div>
+          </div>
+        `,
+        notes: "Trước khi viết code, chúng tôi phân tích lý do vì sao không thể đưa thẳng file Excel cho ChatGPT cộng sổ. Nếu không lọc trùng và không đối chiếu chéo với bảng Đơn hàng & Lịch sử cuộc gọi, AI sẽ cộng luôn cả các dự án ảo."
+      },
+      {
+        num: 3,
+        tag: "SLIDE 03 • TRIẾT LÝ THIẾT KẾ",
+        module: "Deterministic + LLM",
+        title: "Kiến Trúc Chống Ảo Giác Số Liệu (Zero-Hallucination Design)",
+        subtitle: "Kết hợp sức mạnh tính toán chính xác tuyệt đối của Python và tư duy ngôn ngữ chiến lược của Gemini AI",
+        body: `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="p-5 rounded-2xl bg-emerald-950/30 border border-emerald-700/50 space-y-2">
+              <span class="px-2.5 py-0.5 rounded bg-emerald-600 text-white text-[10px] font-black uppercase">Tầng Định Lượng (Python Gatekeeper)</span>
+              <h4 class="text-base font-black text-white">Chính xác 100% về số học & quy tắc</h4>
+              <ul class="text-xs text-slate-300 space-y-1.5 list-disc pl-4">
+                <li>Không dùng LLM để đọc toàn bộ file thô (tránh tràn token và ảo giác số liệu).</li>
+                <li>Dùng <code>Pandas</code> xử lý lọc ngày chốt sổ, gộp bản ghi trùng và đối chiếu chéo 4 bảng.</li>
+                <li>Áp dụng công thức trọng số và chấm điểm ưu tiên hoàn toàn tất định (deterministic).</li>
+              </ul>
+            </div>
+            <div class="p-5 rounded-2xl bg-indigo-950/40 border border-indigo-700/50 space-y-2">
+              <span class="px-2.5 py-0.5 rounded bg-indigo-600 text-white text-[10px] font-black uppercase">Tầng Nhận Định (Google Gemini 3.5)</span>
+              <h4 class="text-base font-black text-white">Tư duy điều hành & Khuyến nghị hành động</h4>
+              <ul class="text-xs text-slate-300 space-y-1.5 list-disc pl-4">
+                <li>Chỉ nhận <strong>Metadata JSON đã làm sạch</strong> (tổng doanh số, tỷ lệ đạt KPI, số ca rủi ro).</li>
+                <li>Viết bản <strong>Nhận xét Điều hành (Executive Brief)</strong> gồm 3 phần rõ ràng cho lãnh đạo.</li>
+                <li>Luôn gắn tuyên bố miễn trừ: <em>"Giá trị dự kiến chỉ là ước tính theo quy tắc trọng số"</em>.</li>
+              </ul>
+            </div>
+          </div>
+        `,
+        notes: "Nguyên tắc quan trọng nhất khi xây dựng Agent này là: Việc gì thuộc về quy tắc số học thì dùng Python xử lý 100%, việc gì thuộc về tổng hợp nhận định và diễn giải ngôn ngữ thì giao cho Google Gemini."
+      },
+      {
+        num: 4,
+        tag: "SLIDE 04 • KIẾN TRÚC HỆ THỐNG",
+        module: "4-Tier Architecture",
+        title: "Kiến Trúc Tổng Thể 4 Tầng End-to-End Của Hệ Thống",
+        subtitle: "Thiết kế phân lớp độc lập giúp dễ dàng mở rộng và bảo trì (app.py + agent_engine.py + static/index.html)",
+        body: `
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+            <div class="p-4 rounded-2xl bg-blue-950/40 border border-blue-700/50 space-y-2">
+              <div class="font-mono font-black text-blue-400">TẦNG 1: INGESTION</div>
+              <p class="font-bold text-white">Tiếp nhận đa nguồn</p>
+              <p class="text-slate-300">Nhận file <code>.xlsx</code>, <code>.csv</code>, <code>.zip</code> từ UI Smallpdf, đọc link Google Sheets hoặc nhận qua Webhook API.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-amber-950/40 border border-amber-700/50 space-y-2">
+              <div class="font-mono font-black text-amber-400">TẦNG 2: VALIDATION</div>
+              <p class="font-bold text-white">Thẩm định & Cách ly</p>
+              <p class="text-slate-300">Tự động nhận diện 4 bảng, lọc mốc ngày báo cáo, gộp trùng và tách lỗi sang <code>data_quarantine.csv</code>.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-purple-950/40 border border-purple-700/50 space-y-2">
+              <div class="font-mono font-black text-purple-400">TẦNG 3: AGENT CORE</div>
+              <p class="font-bold text-white">3 Kỹ năng + HITL + LLM</p>
+              <p class="text-slate-300">Chạy 3 Skills nghiệp vụ, kết hợp phê duyệt của Quản lý (Bước 4) và gọi Gemini tổng hợp Insight.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-700/50 space-y-2">
+              <div class="font-mono font-black text-emerald-400">TẦNG 4: DELIVERY</div>
+              <p class="font-bold text-white">Trình bày & Xuất tệp</p>
+              <p class="text-slate-300">Hiển thị lên Studio Dashboard, xuất file CSV sạch, file cách ly và ghi <code>agent_audit_log.jsonl</code>.</p>
+            </div>
+          </div>
+        `,
+        notes: "Hệ thống được chia làm 4 tầng rõ rệt. Từ lúc người dùng thả file vào khung tải lên cho đến khi biểu đồ hiện ra trên Dashboard, dữ liệu đi qua đầy đủ 4 tầng kiểm soát nghiêm ngặt này."
+      },
+      {
+        num: 5,
+        tag: "SLIDE 05 • LUỒNG PHỐI HỢP 5 BƯỚC",
+        module: "Human-AI Workflow",
+        title: "Quy Trình Phối Hợp 5 Bước Giữa Con Người & AI Agent",
+        subtitle: "Kết hợp tự động hóa tốc độ cao của AI với quyền quyết định kiểm soát của Trưởng phòng Kinh doanh",
+        body: `
+          <div class="space-y-2.5 text-xs">
+            <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between">
+              <span><strong class="text-pink-400">BƯỚC 1 (Con người / API):</strong> Nạp tệp Excel, CSV, ZIP hoặc dán link Google Sheets + Chọn Ngày đối chiếu.</span>
+              <span class="px-2 py-0.5 rounded bg-slate-700 text-slate-200 font-mono">Input Gateway</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between">
+              <span><strong class="text-blue-400">BƯỚC 2 (AI Agent - Skill 1):</strong> Lọc ngày chốt sổ, gộp bản ghi trùng lặp và tính giá trị dự kiến theo trọng số chuẩn.</span>
+              <span class="px-2 py-0.5 rounded bg-blue-900/60 text-blue-300 font-mono">Skill 1</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between">
+              <span><strong class="text-amber-400">BƯỚC 3 (AI Agent - Skill 2):</strong> Quét đối chiếu chéo 3 bảng để phát hiện 8 nhóm rủi ro, quá hạn và mâu thuẫn.</span>
+              <span class="px-2 py-0.5 rounded bg-amber-900/60 text-amber-300 font-mono">Skill 2</span>
+            </div>
+            <div class="p-3 rounded-xl bg-pink-950/40 border border-pink-700/60 flex items-center justify-between">
+              <span><strong class="text-pink-300">BƯỚC 4 (Con người - HITL):</strong> Trưởng phòng KD duyệt các ca nghi vấn (Chuyển Won / Chuyển Lost / Xác minh giữ mở).</span>
+              <span class="px-2 py-0.5 rounded bg-pink-600 text-white font-mono">Human Override</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between">
+              <span><strong class="text-emerald-400">BƯỚC 5 (AI Agent - Skill 3 + Gemini):</strong> Tính KPI 10 Sales, xếp hạng Top 5 cơ hội tuần tới & viết Báo cáo điều hành.</span>
+              <span class="px-2 py-0.5 rounded bg-emerald-900/60 text-emerald-300 font-mono">Skill 3 + LLM</span>
+            </div>
+          </div>
+        `,
+        notes: "Quy trình 5 bước này đảm bảo AI làm hết 95% khối lượng công việc nặng nhọc ở Bước 2, 3 và 5; trong khi con người nắm quyền kiểm soát ở Bước 1 (đầu vào) và Bước 4 (phê duyệt các ca mâu thuẫn)."
+      },
+      {
+        num: 6,
+        tag: "SLIDE 06 • KỸ THUẬT TIẾP NHẬN DỮ LIỆU",
+        module: "app.py & agent_engine.py",
+        title: "Xây Dựng Cổng Tiếp Nhận Đa Nguồn (Excel, CSV, ZIP & Google Sheets)",
+        subtitle: "Giải quyết bài toán người dùng tải lên nhiều định dạng file và đặt tên Sheet khác nhau",
+        body: `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="p-4 rounded-2xl bg-slate-800/70 border border-slate-700 space-y-2">
+              <strong class="text-cyan-400 text-sm block">1. Nhận diện thông minh 4 bảng (parse_excel_bytes)</strong>
+              <p class="text-slate-300">Cơ chế 2 lớp trong <code>agent_engine.py</code>:</p>
+              <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                <li><strong>Lớp 1:</strong> Quét theo từ khóa tên Sheet (<code>opp</code>, <code>co_hoi</code>, <code>act</code>, <code>ord</code>, <code>kpi</code>).</li>
+                <li><strong>Lớp 2 (Fallback theo Schema cột):</strong> Nếu tên Sheet là <code>Sheet1</code>, Agent tự kiểm tra tên các cột bên trong (như <code>deal_value</code>, <code>activity_date</code>, <code>order_amount</code>) để phân loại tự động.</li>
+              </ul>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-800/70 border border-slate-700 space-y-2">
+              <strong class="text-pink-400 text-sm block">2. Kết nối Google Sheets & Webhook API</strong>
+              <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                <li><strong>Google Sheets Connector:</strong> Dùng Regex tách <code>sheet_id</code> từ URL chia sẻ và gọi luồng <code>/export?format=xlsx</code> để đọc toàn bộ các tab trong bảng tính.</li>
+                <li><strong>Hỗ trợ giải nén gói <code>.zip</code>:</strong> Tự động đọc hàng loạt file CSV/XLSX nén bên trong.</li>
+                <li><strong>Endpoint <code>POST /api/webhook/ingest</code>:</strong> Cho phép hệ thống CRM/POS bên ngoài đẩy dữ liệu tự động vào Agent.</li>
+              </ul>
+            </div>
+          </div>
+        `,
+        notes: "Khi làm thực tế, người dùng có thể tải lên 1 file Excel có 4 sheet, hoặc 4 file CSV rời, hoặc dán link Google Sheets. Chúng tôi đã viết hàm tự động nhận diện cấu trúc cột để người dùng không bị lỗi định dạng."
+      },
+      {
+        num: 7,
+        tag: "SLIDE 07 • XÂY DỰNG SKILL 1 (PHẦN 1)",
+        module: "Cut-off & Deduplication",
+        title: "Skill 1: Lọc Ngày Đối Chiếu & Hợp Nhất Cơ Hội Trùng Lặp",
+        subtitle: "Đảm bảo tính nhất quán theo mốc thời gian báo cáo và khử trùng lặp đa tệp",
+        body: `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="p-4 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-2">
+              <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold">RULE-CUTOFF-FILTER</span>
+              <h4 class="text-sm font-black text-white">Lọc theo Ngày Đối Chiếu (Report Date)</h4>
+              <p class="text-slate-300">Mọi đơn hàng (<code>order_date > report_date</code>) hoặc tương tác (<code>activity_date > report_date</code>) phát sinh sau ngày chốt sổ đều được tách riêng vào <code>cutoff_filtered</code>, không tính vào kỳ báo cáo hiện tại.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-2">
+              <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono font-bold">RULE-DEDUP</span>
+              <h4 class="text-sm font-black text-white">Thuật Toán Gộp Trùng Theo Khóa Ngữ Nghĩa</h4>
+              <p class="text-slate-300">Ghép nhóm theo cả mã <code>opp_id</code> lẫn khóa <code>lower(customer_name) || lower(project_name)</code>:</p>
+              <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                <li>Chọn bản ghi có <code>updated_date</code> mới nhất trước ngày báo cáo.</li>
+                <li>Gắn cờ cảnh báo nếu các file lệch nhân viên phụ trách hoặc chênh lệch giá trị thương vụ <strong>&ge; 20%</strong>.</li>
+              </ul>
+            </div>
+          </div>
+        `,
+        notes: "Ở Skill 1, bài toán khó nhất là 2 nhân viên cùng nhập 1 khách hàng và 1 dự án nhưng mã cơ hội khác nhau ở 2 file. Chúng tôi tạo khóa ngữ nghĩa kết hợp Tên khách hàng và Tên dự án để phát hiện và gộp lại chính xác."
+      },
+      {
+        num: 8,
+        tag: "SLIDE 08 • XÂY DỰNG SKILL 1 (PHẦN 2)",
+        module: "Valuation Engine",
+        title: "Skill 1: Tách Bạch Doanh Số Thực Tế & Dự Báo Có Trọng Số",
+        subtitle: "Loại bỏ hoàn toàn việc cộng lẫn lộn đơn hàng đã chốt với cơ hội đang đàm phán",
+        body: `
+          <div class="space-y-4 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-700/50">
+                <strong class="text-emerald-400 block mb-1">1. Doanh số đã ghi nhận</strong>
+                <p class="text-slate-300">Chỉ ghi nhận khi <code>effective_stage == 'Closed Won'</code> hoặc có đơn hàng duyệt trong bảng <code>Orders</code>. Lúc này giá trị mở = 0.</p>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-blue-950/40 border border-blue-700/50">
+                <strong class="text-blue-400 block mb-1">2. Giá trị cơ hội đang mở</strong>
+                <p class="text-slate-300">Tổng <code>deal_value</code> của các cơ hội chưa đóng (khác Won/Lost). Không tính vào doanh số đã thực hiện.</p>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-pink-950/40 border border-pink-700/50">
+                <strong class="text-pink-400 block mb-1">3. Doanh số dự kiến ước tính</strong>
+                <p class="text-slate-300">Tính bằng <code>deal_value &times; rule_weight</code>. Thay thế hoàn toàn xác suất cảm tính của Sales.</p>
+              </div>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex flex-wrap items-center justify-between gap-2 font-mono">
+              <span class="text-slate-400 font-bold">BẢNG TRỌNG SỐ CHUẨN:</span>
+              <span class="px-2.5 py-1 rounded bg-slate-800 text-slate-300">Lead: 10%</span>
+              <span class="px-2.5 py-1 rounded bg-slate-800 text-blue-300">Qualification: 25%</span>
+              <span class="px-2.5 py-1 rounded bg-slate-800 text-cyan-300">Proposal: 50%</span>
+              <span class="px-2.5 py-1 rounded bg-slate-800 text-amber-300">Negotiation: 75%</span>
+              <span class="px-2.5 py-1 rounded bg-slate-800 text-emerald-300">Closing: 90%</span>
+            </div>
+          </div>
+        `,
+        notes: "Nhờ bộ quy tắc trọng số cố định theo từng giai đoạn từ 10% đến 90%, hệ thống loại bỏ được hàng trăm triệu đồng 'doanh số ảo' do nhân viên tự điền xác suất quá cao."
+      },
+      {
+        num: 9,
+        tag: "SLIDE 09 • XÂY DỰNG SKILL 2",
+        module: "Risk & Conflict Detection",
+        title: "Skill 2: Động Cơ Quét 8 Nhóm Rủi Ro & Mâu Thuẫn Dữ Liệu",
+        subtitle: "Đối chiếu chéo 3 bảng (Opportunities ↔ Orders ↔ Activities) để tự động bắt lỗi nghiệp vụ",
+        body: `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+            <div class="p-2.5 rounded-xl bg-rose-950/40 border border-rose-800/60">
+              <strong class="text-rose-400">1. CONFLICT_ORDER_STATUS (Critical):</strong> Đã có đơn hàng bên bảng Orders nhưng cơ hội vẫn để mở -> Tự động chuyển Closed Won.
+            </div>
+            <div class="p-2.5 rounded-xl bg-rose-950/40 border border-rose-800/60">
+              <strong class="text-rose-400">2. CONFLICT_ZOMBIE_LOST (Critical):</strong> Lịch sử liên hệ ghi "mất khách / từ chối / chọn đối thủ" nhưng vẫn để mở -> Chuyển Closed Lost (0%).
+            </div>
+            <div class="p-2.5 rounded-xl bg-amber-950/40 border border-amber-800/60">
+              <strong class="text-amber-400">3. OVERDUE_CLOSE_DATE (High):</strong> Ngày dự kiến chốt <code>expected_close_date &lt; report_date</code> mà vẫn chưa chốt xong.
+            </div>
+            <div class="p-2.5 rounded-xl bg-amber-950/40 border border-amber-800/60">
+              <strong class="text-amber-400">4. INACTIVE_STALE (High/Medium):</strong> Đóng băng tương tác quá 14 ngày không có hoạt động liên hệ mới.
+            </div>
+            <div class="p-2.5 rounded-xl bg-purple-950/40 border border-purple-800/60">
+              <strong class="text-purple-400">5. MISSING_VERIFICATION_INFO:</strong> Thiếu Người quyết định, Xác nhận ngân sách hoặc Bước tiếp theo (đặc biệt các deal &ge; 500 triệu).
+            </div>
+            <div class="p-2.5 rounded-xl bg-blue-950/40 border border-blue-800/60">
+              <strong class="text-blue-400">6–8. LỖI KHÁC:</strong> Mâu thuẫn khi gộp trùng (lệch Sales/giá trị), thiếu Stage/Ngày chốt, và Xác suất tự nhập lệch chuẩn &ge; 20%.
+            </div>
+          </div>
+        `,
+        notes: "Skill 2 đóng vai trò như một kiểm toán viên tự động. Nó đọc từng dòng ghi chú cuộc gọi trong bảng Activities và từng mã đơn hàng trong bảng Orders để phát hiện ngay các cơ hội mâu thuẫn."
+      },
+      {
+        num: 10,
+        tag: "SLIDE 10 • AI AUTO-REPAIR & QUARANTINE",
+        module: "AIFileHealerAndRepairEngine",
+        title: "Kỹ Năng AI Tự Động Sửa Lỗi File & Vùng Cách Ly (Quarantine Zone)",
+        subtitle: "Phát hiện file lỗi ngay khi tải lên, hỏi ý kiến người dùng và tự động làm sạch / phục hồi dữ liệu",
+        body: `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-700/50 space-y-2">
+              <h4 class="text-sm font-black text-emerald-400">✨ AI Auto-Repair Skill (/api/analyze/ai-repair)</h4>
+              <p class="text-slate-300">Khi người dùng tải lên file bị lỗi (sai tên cột, số tiền chứa chữ/âm, thiếu Stage, thiếu ngày chốt, thiếu ngân sách), hệ thống bật thông báo hỏi: <strong>"Bạn có muốn AI chỉnh sửa không?"</strong>. Khi chọn <strong>"Có"</strong>:</p>
+              <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                <li>Tự động ánh xạ tên cột tiếng Việt về chuẩn Schema và tách số tiền sạch.</li>
+                <li>Tự động điền khuyết Người quyết định, Ngân sách, Bước tiếp theo & gia hạn ngày chốt.</li>
+                <li>Xuất bảng đối chiếu <strong>Trước &rarr; Sau khi AI sửa</strong> kèm kết quả Dashboard chuẩn.</li>
+              </ul>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-2">
+              <h4 class="text-sm font-black text-rose-400">📦 Quarantine Zone &amp; Nhật ký Truy vết</h4>
+              <p class="text-slate-300">Nếu người dùng chọn giữ nguyên file gốc, các bản ghi lỗi được cách ly sang <code>/api/export/quarantine.csv</code>. Mọi hành động đều được <code>AuditLogger</code> ghi vào <code>agent_audit_log.jsonl</code>:</p>
+              <div class="p-2.5 rounded-xl bg-slate-950 font-mono text-[11px] text-emerald-300 overflow-x-auto">
+                {"step": "AI AUTO-REPAIR", "skill": "AIFileHealerAndRepairEngine", "rule": "RULE-AI-AUTOREPAIR", "status": "SUCCESS"}
+              </div>
+            </div>
+          </div>
+        `,
+        notes: "Đặc biệt, chúng tôi đã xây dựng kỹ năng AI Auto-Repair: khi người dùng gửi file lỗi lên, hệ thống lập tức thông báo danh sách lỗi và hỏi người dùng có muốn AI tự động chỉnh sửa không. Chỉ cần bấm 'Có', AI sẽ sửa sạch toàn bộ lỗi và trả kết quả ngay."
+      },
+      {
+        num: 11,
+        tag: "SLIDE 11 • BƯỚC 4: HUMAN-IN-THE-LOOP",
+        module: "Manager Override System",
+        title: "Thiết Kế Cơ Chế Con Người Kiểm Duyệt Tại Bước 4 (HITL)",
+        subtitle: "Tại sao cần điểm dừng cho Trưởng phòng Kinh doanh và cách lập trình cơ chế ghi đè tức thì",
+        body: `
+          <div class="space-y-3 text-xs">
+            <p class="text-slate-300">Trong thực tế B2B, có những cơ hội bị quá hạn ngày chốt trên phần mềm nhưng Trưởng phòng KD biết rõ khách hàng vừa xin lùi lịch ký 3 ngày. Do đó, AI không được phép tự ý xóa vĩnh viễn mà phải trình lên tại <strong>Bước 4</strong>:</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="p-3.5 rounded-2xl bg-rose-950/30 border border-rose-700/50">
+                <strong class="text-rose-400 block mb-1">❌ SET_CLOSED_LOST</strong>
+                <p class="text-slate-300">Xác nhận cơ hội đã thất bại -> Đưa trọng số về 0%, loại khỏi dự báo doanh số.</p>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-emerald-950/30 border border-emerald-700/50">
+                <strong class="text-emerald-400 block mb-1">✅ SET_CLOSED_WON</strong>
+                <p class="text-slate-300">Xác nhận đã chốt thành công -> Chuyển sang Doanh số thực tế đã ghi nhận.</p>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-blue-950/30 border border-blue-700/50">
+                <strong class="text-blue-400 block mb-1">🔄 VERIFY_AND_KEEP_OPEN</strong>
+                <p class="text-slate-300">Xác nhận đã bổ sung đủ thông tin & gia hạn -> Giữ mở và cho phép đưa vào xét Top 5 ưu tiên.</p>
+              </div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300">
+              ⚡ Khi Quản lý chọn quyết định trên giao diện và bấm <strong>"Áp Dụng Quyết Định & Chạy Lại"</strong>, biến <code>human_overrides</code> được gửi về Backend để tính toán lại toàn bộ Dashboard ngay lập tức.
+            </div>
+          </div>
+        `,
+        notes: "Đây là điểm sáng của kiến trúc Human-in-the-loop: Quản lý có thể duyệt từng ca nghi vấn ngay trên bảng giao diện, bấm 1 nút và toàn bộ số liệu dự báo sẽ được cập nhật lại theo quyết định của con người."
+      },
+      {
+        num: 12,
+        tag: "SLIDE 12 • XÂY DỰNG SKILL 3",
+        module: "KPI & Top 5 Priority Scoring",
+        title: "Skill 3: Đánh Giá KPI 10 Sales & Công Thức Chấm Điểm Top 5 Ưu Tiên",
+        subtitle: "Thuật toán đa tiêu chí (100 điểm) và xử lý thông minh trường hợp ranh giới < 5 cơ hội hợp lệ",
+        body: `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="p-4 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-2">
+              <strong class="text-amber-400 text-sm block">1. Công thức chấm điểm 4 tiêu chí (Thang 100đ)</strong>
+              <ul class="space-y-1.5 text-slate-300">
+                <li><strong>• 35 điểm — Giá trị dự kiến có trọng số:</strong> Ưu tiên thương vụ mang lại dòng tiền dự kiến lớn nhất.</li>
+                <li><strong>• 25 điểm — Độ chín giai đoạn (Stage):</strong> Closing (25đ), Negotiation (20đ), Proposal (14đ)...</li>
+                <li><strong>• 20 điểm — Độ khẩn cấp ngày chốt:</strong> Dự kiến chốt trong vòng 0–7 ngày tới đạt tối đa 20đ.</li>
+                <li><strong>• 20 điểm — Hỗ trợ thu hẹp KPI Gap:</strong> Ưu tiên hỗ trợ nhân viên đang thiếu hụt chỉ tiêu KPI nhiều.</li>
+              </ul>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-2">
+              <strong class="text-pink-400 text-sm block">2. Điều kiện lọc cứng & Ranh giới &lt; 5 cơ hội</strong>
+              <p class="text-slate-300">Chỉ xét các cơ hội: <strong>Đang mở + Đủ 3 thông tin xác nhận + Không quá hạn + Có tương tác trong 14 ngày qua</strong>.</p>
+              <div class="p-3 rounded-xl bg-rose-950/40 border border-rose-800/60 text-rose-200">
+                <strong>Quy tắc Ranh giới (Boundary Rule):</strong> Nếu toàn công ty chỉ có &lt; 5 cơ hội hợp lệ (ví dụ 3 cơ hội), Agent chỉ xuất đúng 3 cơ hội đó kèm lời giải thích rõ vì sao các cơ hội lớn khác bị loại trừ.
+              </div>
+            </div>
+          </div>
+        `,
+        notes: "Nhiều người mắc sai lầm là cứ lấy 5 cơ hội to tiền nhất đưa vào Top 5. Nhưng nếu một cơ hội 2 tỷ mà chưa biết ai là người quyết định và chưa xác nhận ngân sách, Agent của chúng tôi sẽ kiên quyết loại ra và cảnh báo yêu cầu bổ sung thông tin trước."
+      },
+      {
+        num: 13,
+        tag: "SLIDE 13 • TÍCH HỢP GEMINI AI & FALLBACK",
+        module: "LLM Synthesis Engine",
+        title: "Tích Hợp Google Gemini 3.5 Flash & Cơ Chế Tự Phục Hồi (Fallback)",
+        subtitle: "Đảm bảo hệ thống luôn xuất được Báo cáo Điều hành chất lượng cao trong mọi điều kiện mạng",
+        body: `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="p-4 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-2">
+              <strong class="text-emerald-400 text-sm block">1. Tối ưu hóa Prompt với JSON Summary</strong>
+              <p class="text-slate-300">Hàm <code>_generate_executive_synthesis()</code> đóng gói các chỉ số đã tính toán chính xác thành một JSON nhỏ gọn gửi tới Gemini API:</p>
+              <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                <li>Định danh vai trò: <em>"Chuyên gia Phân tích Vận hành Kinh doanh B2B của Công ty của Duydudi"</em>.</li>
+                <li>Cấu trúc 3 phần: Đánh giá KPI & Dự báo ước tính; Rủi ro dữ liệu cần xử lý; Chỉ đạo hành động tuần tới.</li>
+              </ul>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-2">
+              <strong class="text-cyan-400 text-sm block">2. Xoay vòng Model & Offline Fallback</strong>
+              <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                <li><strong>Multi-Model Rotation:</strong> Tự động thử lần lượt <code>gemini-3.5-flash</code> &rarr; <code>gemini-3-flash-preview</code> &rarr; <code>gemini-flash-latest</code>.</li>
+                <li><strong>Deterministic Fallback:</strong> Nếu mất kết nối Internet hoặc API Key hết hạn mức, hệ thống tự động chuyển sang bộ <em>Built-in Reasoning Template</em> để sinh báo cáo tức thì mà không làm gián đoạn người dùng.</li>
+              </ul>
+            </div>
+          </div>
+        `,
+        notes: "Khi triển khai thực tế, việc gọi API bên ngoài có thể gặp lỗi mạng hoặc giới hạn quota. Nhờ cơ chế xoay vòng model và Built-in Fallback, ứng dụng của chúng tôi đạt độ sẵn sàng 100%."
+      },
+      {
+        num: 14,
+        tag: "SLIDE 14 • THIẾT KẾ GIAO DIỆN UI/UX",
+        module: "static/index.html",
+        title: "Thiết Kế Giao Diện Tối Giản: Trang Bìa, Smallpdf Upload & Studio Dashboard",
+        subtitle: "Tối ưu hóa trải nghiệm người dùng với phong cách trình duyệt Google Chrome và chế độ Ngày / Đêm",
+        body: `
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">
+            <div class="p-4 rounded-2xl bg-pink-950/30 border border-pink-800/50 space-y-1.5">
+              <span class="text-lg">🏠</span>
+              <h4 class="font-black text-white text-sm">1. Trang Bìa Tối Giản</h4>
+              <p class="text-slate-300">Mang thương hiệu <strong>Công ty của Duydudi</strong>, huy hiệu đánh giá <strong>4.9/5.0 ⭐</strong> và nút bấm lớn <strong>"BẮT ĐẦU &rarr;"</strong> dẫn thẳng vào trang nạp tệp.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-blue-950/30 border border-blue-800/50 space-y-1.5">
+              <span class="text-lg">📁</span>
+              <h4 class="font-black text-white text-sm">2. Khung Tải Chuẩn Smallpdf</h4>
+              <p class="text-slate-300">Hộp xanh dương <code>#0070e0</code> viền đứt nét, hoàn toàn trống và sạch sẽ, hỗ trợ kéo thả file, dán link Google Sheets và đánh giá 5 sao tương tác.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-800/50 space-y-1.5">
+              <span class="text-lg">📊</span>
+              <h4 class="font-black text-white text-sm">3. Studio Dashboard</h4>
+              <p class="text-slate-300">4 thẻ KPI nổi bật, biểu đồ Donut 3D, biểu đồ sóng Earning Summary, thanh Tab kiểu Google Chrome và nút chuyển đổi <strong>Ngày / Đêm (☀️/🌙)</strong>.</p>
+            </div>
+          </div>
+        `,
+        notes: "Về mặt giao diện, chúng tôi loại bỏ toàn bộ các nút thừa rối mắt, thiết kế luồng đi thẳng một mạch: Từ Trang bìa bấm Bắt đầu -> Sang khung tải tệp chuẩn Smallpdf -> Bấm Phân tích là vào thẳng Dashboard."
+      },
+      {
+        num: 15,
+        tag: "SLIDE 15 • KIỂM THỬ & TỔNG KẾT",
+        module: "test_runner.py & Vercel Ready",
+        title: "Kiểm Thử Tự Động 3 Kịch Bản, Triển Khai Cloud & Giá Trị Thực Tiễn",
+        subtitle: "Khẳng định độ tin cậy bằng bộ Self-Test tự động 100% PASS và khả năng chạy trên môi trường Serverless",
+        body: `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-700/50 space-y-2">
+              <strong class="text-emerald-400 text-sm block">✅ Bộ Kiểm Thử Tự Động 3 Kịch Bản (/api/self-test)</strong>
+              <ul class="space-y-1 text-slate-300">
+                <li><strong>• Kịch bản 1 (Normal):</strong> Gộp trùng chuẩn, tách đơn hàng đã chốt, xuất đủ 5/5 cơ hội ưu tiên &rarr; <strong>PASS</strong>.</li>
+                <li><strong>• Kịch bản 2 (Missing &amp; Conflict):</strong> Bắt chính xác cơ hội 1.2 tỷ thiếu xác nhận ngân sách và các ca quá hạn &rarr; <strong>PASS</strong>.</li>
+                <li><strong>• Kịch bản 3 (Boundary &lt; 5):</strong> Lọc đúng ngày chốt sổ và chỉ xuất 3/5 cơ hội hợp lệ thực tế &rarr; <strong>PASS</strong>.</li>
+              </ul>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-2">
+              <strong class="text-amber-400 text-sm block">🚀 Sẵn sàng Cloud (Vercel) &amp; Giá trị mang lại</strong>
+              <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                <li>Tự động phát hiện môi trường Serverless (<code>/tmp/logs</code>) để hoạt động ổn định trên cả Local lẫn Vercel.</li>
+                <li>Giúp <strong>Công ty của Duydudi</strong> giảm thời gian làm báo cáo doanh số từ <strong>4 giờ xuống 5 giây</strong>.</li>
+                <li>Loại bỏ 100% doanh số ảo và nâng cao tỷ lệ chốt đơn thực tế hàng tuần.</li>
+              </ul>
+            </div>
+          </div>
+        `,
+        notes: "Cuối cùng, chúng tôi tích hợp sẵn bộ kiểm thử tự động 3 kịch bản đạt 100% PASS và tối ưu hóa cho cả môi trường Vercel Serverless. Cảm ơn mọi người đã lắng nghe, mời mọi người trải nghiệm trực tiếp tại http://localhost:8000!"
+      }
+    ];
+
+    let currentIndex = 0;
+
+    function renderSlide(idx) {
+      if (idx < 0) idx = 0;
+      if (idx >= SLIDES_DATA.length) idx = SLIDES_DATA.length - 1;
+      currentIndex = idx;
+
+      const s = SLIDES_DATA[currentIndex];
+      document.getElementById('slideCounterBadge').textContent = `Slide ${s.num} / ${SLIDES_DATA.length}`;
+      document.getElementById('slideTag').textContent = s.tag;
+      document.getElementById('slideModule').textContent = s.module;
+      document.getElementById('slideTitle').textContent = s.title;
+      document.getElementById('slideSubtitle').textContent = s.subtitle;
+      document.getElementById('slideBody').innerHTML = s.body;
+      document.getElementById('slideNotes').textContent = s.notes;
+
+      document.getElementById('btnPrev').disabled = (currentIndex === 0);
+      document.getElementById('btnNext').disabled = (currentIndex === SLIDES_DATA.length - 1);
+
+      const vp = document.getElementById('slideCardViewport');
+      if (vp) {
+        vp.classList.remove('slide-animate');
+        void vp.offsetWidth;
+        vp.classList.add('slide-animate');
+      }
+
+      const dotsContainer = document.getElementById('slideDots');
+      dotsContainer.innerHTML = SLIDES_DATA.map((item, i) => `
+        <button onclick="renderSlide(${i})" title="Slide ${i + 1}"
+                class="h-2.5 rounded-full transition-all duration-300 cursor-pointer ${i === currentIndex ? 'w-8 bg-[#1ed7b5]' : 'w-2.5 bg-slate-700 hover:bg-[#abbdff]'}">
+        </button>
+      `).join('');
+    }
+
+    function nextSlide() {
+      if (currentIndex < SLIDES_DATA.length - 1) renderSlide(currentIndex + 1);
+    }
+
+    function prevSlide() {
+      if (currentIndex > 0) renderSlide(currentIndex - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevSlide();
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderSlide(0);
+    });
+  </script>
+</body>
+</html>

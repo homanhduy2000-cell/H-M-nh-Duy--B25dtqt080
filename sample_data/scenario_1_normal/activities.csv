@@ -1,0 +1,46 @@
+﻿activity_id,opp_id,activity_date,activity_type,outcome_signal,notes
+ACT-001,OPP-001,2026-11-06,Meeting,POSITIVE,"Họp với CIO Trần Quốc Tuấn, khách đồng ý toàn bộ phạm vi kỹ thuật, hẹn ký HĐ tuần tới."
+ACT-002,OPP-002,2026-11-05,Call,POSITIVE,"CFO xác nhận ngân sách Q4 đã duyệt, đang rà soát điều khoản bảo hành."
+ACT-003,OPP-003,2026-11-07,Email,POSITIVE,Pháp chế khách hàng đã duyệt dự thảo hợp đồng SCM.
+ACT-004,OPP-004,2026-11-04,Demo,POSITIVE,"Demo PoC AI OCR đạt độ chính xác 98.5%, khách hàng rất hài lòng."
+ACT-005,OPP-005,2026-11-06,Meeting,POSITIVE,TGĐ Lê Văn Kiên yêu cầu gửi phương án tích hợp chi tiết để chốt trong tuần tới.
+ACT-006,OPP-006,2026-11-05,Call,NEUTRAL,Đang thương lượng phí bảo trì năm đầu.
+ACT-007,OPP-007,2026-11-02,Contract,WON,Khách hàng đã ký hợp đồng chính thức và chuyển khoản tạm ứng đợt 1.
+ACT-008,OPP-008,2026-11-04,Contract,WON,Đã ký biên bản nghiệm thu đơn hàng ORD-1002.
+ACT-009,OPP-009,2026-10-28,Call,LOST,Khách hàng thông báo đã ký với đối thủ cạnh tranh do giá thấp hơn 20%. Đã mất khách.
+ACT-010,OPP-010,2026-10-25,Email,LOST,"Khách hàng chính thức hủy dự án năm nay, từ chối tiếp tục triển khai."
+ACT-011,OPP-011,2026-11-02,Email,NEUTRAL,"Mới gửi brochure giới thiệu qua email cho chuyên viên IT, chưa gặp được lãnh đạo."
+ACT-012,OPP-012,2026-11-01,Call,NEUTRAL,"Gọi điện hỏi thăm sơ bộ, khách chưa có ngân sách cụ thể."
+ACT-013,OPP-013,2026-10-05,Call,STALLED,"Gọi 3 lần khách báo bận, chưa phản hồi lại từ đầu tháng 10."
+ACT-014,OPP-014,2026-10-10,Email,STALLED,Đã gửi báo giá từ đầu tháng 10 nhưng khách không trả lời email.
+ACT-015,OPP-015,2026-10-28,Contract,WON,Hoàn tất ký kết hợp đồng.
+ACT-016,OPP-016,2026-10-30,Contract,WON,Hoàn tất đơn hàng và ghi nhận doanh số.
+ACT-017,OPP-017,2026-11-03,Meeting,POSITIVE,Trao đổi định kỳ tiến độ dự án Nền tảng CRM & AI Call Center với khách hàng.
+ACT-018,OPP-018,2026-10-30,Call,POSITIVE,Trao đổi định kỳ tiến độ dự án Dịch vụ SOC & Bảo mật An toàn thông tin với khách hàng.
+ACT-019,OPP-019,2026-11-07,Call,WON,Trao đổi định kỳ tiến độ dự án Hạ tầng Data Warehouse & BI Dashboard với khách hàng.
+ACT-020,OPP-020,2026-11-07,Meeting,LOST,Trao đổi định kỳ tiến độ dự án Giải pháp Tự động hóa Quy trình RPA với khách hàng.
+ACT-021,OPP-021,2026-11-01,Meeting,POSITIVE,Trao đổi định kỳ tiến độ dự án Hệ thống Quản lý Chuỗi cung ứng SCM với khách hàng.
+ACT-022,OPP-022,2026-11-07,Meeting,POSITIVE,Trao đổi định kỳ tiến độ dự án Dịch vụ Cloud Migration & Managed K8s với khách hàng.
+ACT-023,OPP-023,2026-11-03,Meeting,POSITIVE,Trao đổi định kỳ tiến độ dự án Giải pháp AI OCR & Số hóa Tài liệu với khách hàng.
+ACT-024,OPP-024,2026-11-06,Demo,POSITIVE,Trao đổi định kỳ tiến độ dự án Hệ thống ERP Cloud SAP/Odoo B2B với khách hàng.
+ACT-025,OPP-025,2026-11-03,Call,POSITIVE,Trao đổi định kỳ tiến độ dự án Nền tảng CRM & AI Call Center với khách hàng.
+ACT-026,OPP-026,2026-11-06,Demo,WON,Trao đổi định kỳ tiến độ dự án Dịch vụ SOC & Bảo mật An toàn thông tin với khách hàng.
+ACT-027,OPP-027,2026-11-02,Meeting,LOST,Trao đổi định kỳ tiến độ dự án Hạ tầng Data Warehouse & BI Dashboard với khách hàng.
+ACT-028,OPP-028,2026-11-04,Email,POSITIVE,Trao đổi định kỳ tiến độ dự án Giải pháp Tự động hóa Quy trình RPA với khách hàng.
+ACT-029,OPP-029,2026-11-01,Email,POSITIVE,Trao đổi định kỳ tiến độ dự án Hệ thống Quản lý Chuỗi cung ứng SCM với khách hàng.
+ACT-030,OPP-030,2026-11-05,Email,POSITIVE,Trao đổi định kỳ tiến độ dự án Dịch vụ Cloud Migration & Managed K8s với khách hàng.
+ACT-031,OPP-031,2026-11-03,Call,POSITIVE,Trao đổi định kỳ tiến độ dự án Giải pháp AI OCR & Số hóa Tài liệu với khách hàng.
+ACT-032,OPP-032,2026-10-30,Meeting,POSITIVE,Trao đổi định kỳ tiến độ dự án Hệ thống ERP Cloud SAP/Odoo B2B với khách hàng.
+ACT-033,OPP-033,2026-11-03,Meeting,WON,Trao đổi định kỳ tiến độ dự án Nền tảng CRM & AI Call Center với khách hàng.
+ACT-034,OPP-034,2026-11-04,Call,LOST,Trao đổi định kỳ tiến độ dự án Dịch vụ SOC & Bảo mật An toàn thông tin với khách hàng.
+ACT-035,OPP-035,2026-11-06,Meeting,POSITIVE,Trao đổi định kỳ tiến độ dự án Hạ tầng Data Warehouse & BI Dashboard với khách hàng.
+ACT-036,OPP-036,2026-11-04,Demo,POSITIVE,Trao đổi định kỳ tiến độ dự án Giải pháp Tự động hóa Quy trình RPA với khách hàng.
+ACT-037,OPP-037,2026-11-05,Email,POSITIVE,Trao đổi định kỳ tiến độ dự án Hệ thống Quản lý Chuỗi cung ứng SCM với khách hàng.
+ACT-038,OPP-038,2026-10-30,Email,POSITIVE,Trao đổi định kỳ tiến độ dự án Dịch vụ Cloud Migration & Managed K8s với khách hàng.
+ACT-039,OPP-039,2026-11-01,Email,POSITIVE,Trao đổi định kỳ tiến độ dự án Giải pháp AI OCR & Số hóa Tài liệu với khách hàng.
+ACT-040,OPP-040,2026-10-31,Call,WON,Trao đổi định kỳ tiến độ dự án Hệ thống ERP Cloud SAP/Odoo B2B với khách hàng.
+ACT-041,OPP-041,2026-11-05,Demo,LOST,Trao đổi định kỳ tiến độ dự án Nền tảng CRM & AI Call Center với khách hàng.
+ACT-042,OPP-042,2026-11-01,Demo,POSITIVE,Trao đổi định kỳ tiến độ dự án Dịch vụ SOC & Bảo mật An toàn thông tin với khách hàng.
+ACT-043,OPP-043,2026-11-07,Call,POSITIVE,Trao đổi định kỳ tiến độ dự án Hạ tầng Data Warehouse & BI Dashboard với khách hàng.
+ACT-044,OPP-044,2026-11-02,Call,POSITIVE,Trao đổi định kỳ tiến độ dự án Giải pháp Tự động hóa Quy trình RPA với khách hàng.
+ACT-045,OPP-045,2026-10-31,Call,POSITIVE,Trao đổi định kỳ tiến độ dự án Hệ thống Quản lý Chuỗi cung ứng SCM với khách hàng.

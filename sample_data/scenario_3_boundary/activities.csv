@@ -1,0 +1,8 @@
+﻿activity_id,opp_id,activity_date,activity_type,outcome_signal,notes
+ACT-B01,OPP-B01,2026-10-25,Meeting,POSITIVE,Tương tác cách đúng 14 ngày so với ngày báo cáo 08/11 (ngay tại ngưỡng biên 14 ngày).
+ACT-B02,OPP-B02,2026-11-06,Call,POSITIVE,Khách đồng ý dự thảo hợp đồng.
+ACT-B03,OPP-B03,2026-11-07,Email,POSITIVE,Xác nhận lịch ký hợp đồng vào ngày 10/11.
+ACT-B03-FUTURE,OPP-B03,2026-11-09,Call,LOST,Bản ghi tương lai sau ngày đối chiếu 08/11 (Dùng để kiểm thử bộ lọc Cut-off Date).
+ACT-B04,OPP-B04,2026-10-24,Call,STALLED,Tương tác cách 15 ngày (> ngưỡng 14 ngày) và ngày dự kiến chốt 07/11 (< 08/11).
+ACT-B05,OPP-B05,2026-11-05,Email,NEUTRAL,Chưa có thông tin người quyết định và ngân sách.
+ACT-B06,OPP-B06,2026-11-08,Contract,WON,Ký hợp đồng đúng vào ngày đối chiếu 08/11/2026.

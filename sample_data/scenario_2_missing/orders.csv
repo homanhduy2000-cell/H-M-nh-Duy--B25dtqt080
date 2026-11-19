@@ -1,0 +1,4 @@
+﻿order_id,opp_id,customer_name,rep_id,order_amount,order_date,order_status
+ORD-M01,OPP-M04,Tập đoàn Dệt may Thành Công,NV04,920000000,2026-11-03,Approved
+ORD-1001,OPP-007,Công ty CP Thép Hòa Phát Mới,NV01,1250000000,2026-11-02,Approved
+ORD-1002,OPP-008,Tổng Công ty Điện lực Miền Bắc,NV03,820000000,2026-11-04,Approved

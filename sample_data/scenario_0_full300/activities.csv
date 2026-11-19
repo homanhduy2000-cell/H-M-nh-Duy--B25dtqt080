@@ -1,0 +1,301 @@
+﻿activity_id,opp_id,activity_date,activity_type,outcome_signal,notes
+ACT-001,OPP-001,2026-11-06,Meeting,POSITIVE,"Họp với CIO Trần Quốc Tuấn, khách đồng ý toàn bộ phạm vi kỹ thuật, hẹn ký HĐ tuần tới."
+ACT-002,OPP-002,2026-11-05,Call,POSITIVE,"CFO xác nhận ngân sách Q4 đã duyệt, đang rà soát điều khoản bảo hành."
+ACT-003,OPP-003,2026-11-07,Email,POSITIVE,Pháp chế khách hàng đã duyệt dự thảo hợp đồng SCM.
+ACT-004,OPP-004,2026-11-04,Demo,POSITIVE,"Demo PoC AI OCR đạt độ chính xác 98.5%, khách hàng rất hài lòng."
+ACT-005,OPP-005,2026-11-06,Meeting,POSITIVE,TGĐ Lê Văn Kiên yêu cầu gửi phương án tích hợp chi tiết để chốt trong tuần tới.
+ACT-006,OPP-006,2026-11-05,Call,NEUTRAL,Đang thương lượng phí bảo trì năm đầu.
+ACT-007,OPP-007,2026-11-02,Contract,WON,Khách hàng đã ký hợp đồng chính thức và chuyển khoản tạm ứng đợt 1.
+ACT-008,OPP-008,2026-11-04,Contract,WON,Đã ký biên bản nghiệm thu đơn hàng ORD-1002.
+ACT-009,OPP-009,2026-10-28,Call,LOST,Khách hàng thông báo đã ký với đối thủ cạnh tranh do giá thấp hơn 20%. Đã mất khách.
+ACT-010,OPP-010,2026-10-25,Email,LOST,"Khách hàng chính thức hủy dự án năm nay, từ chối tiếp tục triển khai."
+ACT-011,OPP-011,2026-11-02,Email,NEUTRAL,"Mới gửi brochure giới thiệu qua email cho chuyên viên IT, chưa gặp được lãnh đạo."
+ACT-012,OPP-012,2026-11-01,Call,NEUTRAL,"Gọi điện hỏi thăm sơ bộ, khách chưa có ngân sách cụ thể."
+ACT-013,OPP-013,2026-10-05,Call,STALLED,"Gọi 3 lần khách báo bận, chưa phản hồi lại từ đầu tháng 10."
+ACT-014,OPP-014,2026-10-10,Email,STALLED,Đã gửi báo giá từ đầu tháng 10 nhưng khách không trả lời email.
+ACT-015,OPP-015,2026-10-28,Contract,WON,Hoàn tất ký kết hợp đồng.
+ACT-016,OPP-016,2026-10-30,Contract,WON,Hoàn tất đơn hàng và ghi nhận doanh số.
+ACT-017,OPP-017,2026-11-03,Meeting,POSITIVE,Trao đổi định kỳ tiến độ dự án Nền tảng CRM & AI Call Center với khách hàng.
+ACT-018,OPP-018,2026-10-30,Call,POSITIVE,Trao đổi định kỳ tiến độ dự án Dịch vụ SOC & Bảo mật An toàn thông tin với khách hàng.
+ACT-019,OPP-019,2026-11-07,Call,WON,Trao đổi định kỳ tiến độ dự án Hạ tầng Data Warehouse & BI Dashboard với khách hàng.
+ACT-020,OPP-020,2026-11-07,Meeting,LOST,Trao đổi định kỳ tiến độ dự án Giải pháp Tự động hóa Quy trình RPA với khách hàng.
+ACT-021,OPP-021,2026-11-01,Meeting,POSITIVE,Trao đổi định kỳ tiến độ dự án Hệ thống Quản lý Chuỗi cung ứng SCM với khách hàng.
+ACT-022,OPP-022,2026-11-07,Meeting,POSITIVE,Trao đổi định kỳ tiến độ dự án Dịch vụ Cloud Migration & Managed K8s với khách hàng.
+ACT-023,OPP-023,2026-11-03,Meeting,POSITIVE,Trao đổi định kỳ tiến độ dự án Giải pháp AI OCR & Số hóa Tài liệu với khách hàng.
+ACT-024,OPP-024,2026-11-06,Demo,POSITIVE,Trao đổi định kỳ tiến độ dự án Hệ thống ERP Cloud SAP/Odoo B2B với khách hàng.
+ACT-025,OPP-025,2026-11-03,Call,POSITIVE,Trao đổi định kỳ tiến độ dự án Nền tảng CRM & AI Call Center với khách hàng.
+ACT-026,OPP-026,2026-11-06,Demo,WON,Trao đổi định kỳ tiến độ dự án Dịch vụ SOC & Bảo mật An toàn thông tin với khách hàng.
+ACT-027,OPP-027,2026-11-02,Meeting,LOST,Trao đổi định kỳ tiến độ dự án Hạ tầng Data Warehouse & BI Dashboard với khách hàng.
+ACT-028,OPP-028,2026-11-04,Email,POSITIVE,Trao đổi định kỳ tiến độ dự án Giải pháp Tự động hóa Quy trình RPA với khách hàng.
+ACT-029,OPP-029,2026-11-01,Email,POSITIVE,Trao đổi định kỳ tiến độ dự án Hệ thống Quản lý Chuỗi cung ứng SCM với khách hàng.
+ACT-030,OPP-030,2026-11-05,Email,POSITIVE,Trao đổi định kỳ tiến độ dự án Dịch vụ Cloud Migration & Managed K8s với khách hàng.
+ACT-031,OPP-031,2026-11-03,Call,POSITIVE,Trao đổi định kỳ tiến độ dự án Giải pháp AI OCR & Số hóa Tài liệu với khách hàng.
+ACT-032,OPP-032,2026-10-30,Meeting,POSITIVE,Trao đổi định kỳ tiến độ dự án Hệ thống ERP Cloud SAP/Odoo B2B với khách hàng.
+ACT-033,OPP-033,2026-11-03,Meeting,WON,Trao đổi định kỳ tiến độ dự án Nền tảng CRM & AI Call Center với khách hàng.
+ACT-034,OPP-034,2026-11-04,Call,LOST,Trao đổi định kỳ tiến độ dự án Dịch vụ SOC & Bảo mật An toàn thông tin với khách hàng.
+ACT-035,OPP-035,2026-11-06,Meeting,POSITIVE,Trao đổi định kỳ tiến độ dự án Hạ tầng Data Warehouse & BI Dashboard với khách hàng.
+ACT-036,OPP-036,2026-11-04,Demo,POSITIVE,Trao đổi định kỳ tiến độ dự án Giải pháp Tự động hóa Quy trình RPA với khách hàng.
+ACT-037,OPP-037,2026-11-05,Email,POSITIVE,Trao đổi định kỳ tiến độ dự án Hệ thống Quản lý Chuỗi cung ứng SCM với khách hàng.
+ACT-038,OPP-038,2026-10-30,Email,POSITIVE,Trao đổi định kỳ tiến độ dự án Dịch vụ Cloud Migration & Managed K8s với khách hàng.
+ACT-039,OPP-039,2026-11-01,Email,POSITIVE,Trao đổi định kỳ tiến độ dự án Giải pháp AI OCR & Số hóa Tài liệu với khách hàng.
+ACT-040,OPP-040,2026-10-31,Call,WON,Trao đổi định kỳ tiến độ dự án Hệ thống ERP Cloud SAP/Odoo B2B với khách hàng.
+ACT-041,OPP-041,2026-11-05,Demo,LOST,Trao đổi định kỳ tiến độ dự án Nền tảng CRM & AI Call Center với khách hàng.
+ACT-042,OPP-042,2026-11-01,Demo,POSITIVE,Trao đổi định kỳ tiến độ dự án Dịch vụ SOC & Bảo mật An toàn thông tin với khách hàng.
+ACT-043,OPP-043,2026-11-07,Call,POSITIVE,Trao đổi định kỳ tiến độ dự án Hạ tầng Data Warehouse & BI Dashboard với khách hàng.
+ACT-044,OPP-044,2026-11-02,Call,POSITIVE,Trao đổi định kỳ tiến độ dự án Giải pháp Tự động hóa Quy trình RPA với khách hàng.
+ACT-045,OPP-045,2026-10-31,Call,POSITIVE,Trao đổi định kỳ tiến độ dự án Hệ thống Quản lý Chuỗi cung ứng SCM với khách hàng.
+ACT-046,OPP-046,2026-10-30,Call,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-047,OPP-047,2026-11-03,Email,WON,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-048,OPP-048,2026-11-05,Meeting,LOST,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-049,OPP-049,2026-10-30,Call,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-050,OPP-050,2026-11-07,Call,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-051,OPP-051,2026-11-07,Call,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-052,OPP-052,2026-10-31,Call,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-053,OPP-053,2026-10-31,Email,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-054,OPP-054,2026-10-29,Meeting,WON,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-055,OPP-055,2026-11-04,Email,LOST,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-056,OPP-056,2026-11-02,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-057,OPP-057,2026-11-04,Call,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-058,OPP-058,2026-10-29,Email,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-059,OPP-059,2026-11-07,Call,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-060,OPP-060,2026-10-02,Call,STALLED,Khách chưa phản hồi từ đầu tháng 10
+ACT-061,OPP-061,2026-11-07,Meeting,WON,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-062,OPP-062,2026-11-03,Email,LOST,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-063,OPP-063,2026-11-05,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-064,OPP-064,2026-11-04,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-065,OPP-065,2026-11-06,Email,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-066,OPP-066,2026-11-01,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-067,OPP-067,2026-11-06,Call,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-068,OPP-068,2026-11-06,Call,WON,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-069,OPP-069,2026-10-31,Call,LOST,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-070,OPP-070,2026-10-31,Call,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-071,OPP-071,2026-10-30,Call,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-072,OPP-072,2026-11-07,Call,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-073,OPP-073,2026-10-31,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-074,OPP-074,2026-11-07,Call,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-075,OPP-075,2026-11-03,Meeting,WON,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-076,OPP-076,2026-10-30,Email,LOST,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-077,OPP-077,2026-11-04,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-078,OPP-078,2026-10-30,Call,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-079,OPP-079,2026-11-07,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-080,OPP-080,2026-10-30,Call,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-081,OPP-081,2026-11-05,Call,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-082,OPP-082,2026-11-04,Meeting,WON,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-083,OPP-083,2026-10-29,Email,LOST,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-084,OPP-084,2026-11-01,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-085,OPP-085,2026-11-02,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-086,OPP-086,2026-11-02,Call,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-087,OPP-087,2026-11-03,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-088,OPP-088,2026-10-31,Email,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-089,OPP-089,2026-10-30,Call,WON,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-090,OPP-090,2026-11-02,Call,LOST,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-091,OPP-091,2026-11-05,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-092,OPP-092,2026-10-29,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-093,OPP-093,2026-10-30,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-094,OPP-094,2026-11-05,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-095,OPP-095,2026-10-30,Call,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-096,OPP-096,2026-11-04,Email,WON,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-097,OPP-097,2026-11-03,Email,LOST,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-098,OPP-098,2026-11-07,Call,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-099,OPP-099,2026-11-03,Call,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-100,OPP-100,2026-11-05,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-101,OPP-101,2026-10-31,Email,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-102,OPP-102,2026-11-07,Call,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-103,OPP-103,2026-11-05,Email,WON,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-104,OPP-104,2026-10-30,Call,LOST,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-105,OPP-105,2026-10-02,Call,STALLED,Khách chưa phản hồi từ đầu tháng 10
+ACT-106,OPP-106,2026-11-07,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-107,OPP-107,2026-11-06,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-108,OPP-108,2026-11-05,Call,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-109,OPP-109,2026-11-01,Call,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-110,OPP-110,2026-11-02,Meeting,WON,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-111,OPP-111,2026-11-04,Meeting,LOST,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-112,OPP-112,2026-11-01,Call,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-113,OPP-113,2026-10-31,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-114,OPP-114,2026-11-07,Email,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-115,OPP-115,2026-11-03,Call,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-116,OPP-116,2026-10-30,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-117,OPP-117,2026-11-07,Call,WON,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-118,OPP-118,2026-11-03,Call,LOST,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-119,OPP-119,2026-11-02,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-120,OPP-120,2026-10-02,Email,STALLED,Khách chưa phản hồi từ đầu tháng 10
+ACT-121,OPP-121,2026-10-29,Call,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-122,OPP-122,2026-11-01,Call,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-123,OPP-123,2026-11-04,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-124,OPP-124,2026-11-02,Email,WON,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-125,OPP-125,2026-11-06,Email,LOST,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-126,OPP-126,2026-11-01,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-127,OPP-127,2026-10-30,Call,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-128,OPP-128,2026-11-01,Email,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-129,OPP-129,2026-10-29,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-130,OPP-130,2026-11-07,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-131,OPP-131,2026-10-29,Email,WON,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-132,OPP-132,2026-10-31,Meeting,LOST,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-133,OPP-133,2026-10-31,Email,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-134,OPP-134,2026-11-03,Email,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-135,OPP-135,2026-10-02,Email,STALLED,Khách chưa phản hồi từ đầu tháng 10
+ACT-136,OPP-136,2026-11-04,Email,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-137,OPP-137,2026-11-04,Call,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-138,OPP-138,2026-10-31,Email,WON,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-139,OPP-139,2026-10-29,Call,LOST,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-140,OPP-140,2026-10-31,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-141,OPP-141,2026-11-07,Call,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-142,OPP-142,2026-10-30,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-143,OPP-143,2026-11-06,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-144,OPP-144,2026-10-30,Email,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-145,OPP-145,2026-10-31,Email,WON,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-146,OPP-146,2026-10-30,Meeting,LOST,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-147,OPP-147,2026-10-31,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-148,OPP-148,2026-11-03,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-149,OPP-149,2026-11-03,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-150,OPP-150,2026-10-02,Meeting,STALLED,Khách chưa phản hồi từ đầu tháng 10
+ACT-151,OPP-151,2026-11-02,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-152,OPP-152,2026-11-04,Meeting,WON,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-153,OPP-153,2026-11-04,Call,LOST,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-154,OPP-154,2026-10-30,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-155,OPP-155,2026-11-01,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-156,OPP-156,2026-10-29,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-157,OPP-157,2026-11-02,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-158,OPP-158,2026-10-30,Email,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-159,OPP-159,2026-11-03,Meeting,WON,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-160,OPP-160,2026-11-02,Email,LOST,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-161,OPP-161,2026-11-05,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-162,OPP-162,2026-11-07,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-163,OPP-163,2026-11-07,Call,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-164,OPP-164,2026-10-31,Call,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-165,OPP-165,2026-10-02,Meeting,STALLED,Khách chưa phản hồi từ đầu tháng 10
+ACT-166,OPP-166,2026-11-02,Meeting,WON,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-167,OPP-167,2026-11-01,Meeting,LOST,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-168,OPP-168,2026-10-30,Call,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-169,OPP-169,2026-11-06,Email,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-170,OPP-170,2026-11-04,Call,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-171,OPP-171,2026-11-04,Call,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-172,OPP-172,2026-10-29,Call,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-173,OPP-173,2026-11-02,Call,WON,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-174,OPP-174,2026-11-06,Call,LOST,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-175,OPP-175,2026-11-07,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-176,OPP-176,2026-11-01,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-177,OPP-177,2026-10-29,Email,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-178,OPP-178,2026-11-03,Email,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-179,OPP-179,2026-10-29,Call,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-180,OPP-180,2026-11-02,Call,WON,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-181,OPP-181,2026-11-07,Meeting,LOST,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-182,OPP-182,2026-11-02,Email,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-183,OPP-183,2026-11-01,Call,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-184,OPP-184,2026-11-03,Email,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-185,OPP-185,2026-11-01,Email,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-186,OPP-186,2026-11-04,Call,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-187,OPP-187,2026-10-31,Email,WON,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-188,OPP-188,2026-11-02,Call,LOST,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-189,OPP-189,2026-10-31,Call,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-190,OPP-190,2026-11-03,Email,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-191,OPP-191,2026-11-07,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-192,OPP-192,2026-11-01,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-193,OPP-193,2026-10-31,Email,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-194,OPP-194,2026-11-07,Call,WON,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-195,OPP-195,2026-11-04,Meeting,LOST,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-196,OPP-196,2026-10-31,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-197,OPP-197,2026-10-30,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-198,OPP-198,2026-11-03,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-199,OPP-199,2026-11-04,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-200,OPP-200,2026-11-05,Call,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-201,OPP-201,2026-11-03,Email,WON,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-202,OPP-202,2026-11-03,Call,LOST,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-203,OPP-203,2026-11-02,Call,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-204,OPP-204,2026-10-30,Call,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-205,OPP-205,2026-10-30,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-206,OPP-206,2026-10-31,Call,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-207,OPP-207,2026-10-31,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-208,OPP-208,2026-11-07,Meeting,WON,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-209,OPP-209,2026-11-06,Meeting,LOST,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-210,OPP-210,2026-10-02,Email,STALLED,Khách chưa phản hồi từ đầu tháng 10
+ACT-211,OPP-211,2026-11-05,Call,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-212,OPP-212,2026-11-04,Call,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-213,OPP-213,2026-10-29,Email,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-214,OPP-214,2026-10-31,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-215,OPP-215,2026-11-03,Email,WON,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-216,OPP-216,2026-11-06,Call,LOST,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-217,OPP-217,2026-11-06,Call,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-218,OPP-218,2026-11-06,Call,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-219,OPP-219,2026-10-29,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-220,OPP-220,2026-11-03,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-221,OPP-221,2026-10-31,Call,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-222,OPP-222,2026-11-03,Email,WON,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-223,OPP-223,2026-11-04,Meeting,LOST,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-224,OPP-224,2026-11-05,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-225,OPP-225,2026-10-02,Call,STALLED,Khách chưa phản hồi từ đầu tháng 10
+ACT-226,OPP-226,2026-10-29,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-227,OPP-227,2026-11-03,Email,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-228,OPP-228,2026-10-30,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-229,OPP-229,2026-11-07,Meeting,WON,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-230,OPP-230,2026-11-03,Call,LOST,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-231,OPP-231,2026-10-29,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-232,OPP-232,2026-11-03,Email,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-233,OPP-233,2026-10-30,Email,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-234,OPP-234,2026-10-29,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-235,OPP-235,2026-10-31,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-236,OPP-236,2026-11-06,Call,WON,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-237,OPP-237,2026-10-31,Meeting,LOST,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-238,OPP-238,2026-10-30,Call,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-239,OPP-239,2026-11-03,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-240,OPP-240,2026-10-02,Email,STALLED,Khách chưa phản hồi từ đầu tháng 10
+ACT-241,OPP-241,2026-10-30,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-242,OPP-242,2026-10-30,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-243,OPP-243,2026-10-31,Call,WON,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-244,OPP-244,2026-11-05,Meeting,LOST,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-245,OPP-245,2026-11-06,Call,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-246,OPP-246,2026-11-04,Email,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-247,OPP-247,2026-11-07,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-248,OPP-248,2026-11-06,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-249,OPP-249,2026-11-05,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-250,OPP-250,2026-11-03,Meeting,WON,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-251,OPP-251,2026-10-31,Email,LOST,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-252,OPP-252,2026-10-29,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-253,OPP-253,2026-11-06,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-254,OPP-254,2026-10-30,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-255,OPP-255,2026-10-02,Email,STALLED,Khách chưa phản hồi từ đầu tháng 10
+ACT-256,OPP-256,2026-10-31,Call,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-257,OPP-257,2026-11-02,Meeting,WON,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-258,OPP-258,2026-10-31,Meeting,LOST,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-259,OPP-259,2026-10-29,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-260,OPP-260,2026-11-02,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-261,OPP-261,2026-11-01,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-262,OPP-262,2026-10-31,Call,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-263,OPP-263,2026-10-29,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-264,OPP-264,2026-10-30,Meeting,WON,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-265,OPP-265,2026-11-01,Email,LOST,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-266,OPP-266,2026-11-03,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-267,OPP-267,2026-11-06,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-268,OPP-268,2026-11-02,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-269,OPP-269,2026-10-30,Call,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-270,OPP-270,2026-10-02,Call,STALLED,Khách chưa phản hồi từ đầu tháng 10
+ACT-271,OPP-271,2026-11-03,Call,WON,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-272,OPP-272,2026-11-06,Email,LOST,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-273,OPP-273,2026-11-05,Email,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-274,OPP-274,2026-11-02,Call,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-275,OPP-275,2026-11-01,Call,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-276,OPP-276,2026-10-29,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-277,OPP-277,2026-11-06,Email,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-278,OPP-278,2026-11-04,Meeting,WON,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-279,OPP-279,2026-10-31,Email,LOST,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-280,OPP-280,2026-11-07,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-281,OPP-281,2026-11-05,Call,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-282,OPP-282,2026-11-03,Email,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-283,OPP-283,2026-10-31,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-284,OPP-284,2026-10-31,Call,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-285,OPP-285,2026-11-02,Email,WON,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-286,OPP-286,2026-11-07,Email,LOST,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-287,OPP-287,2026-10-29,Email,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-288,OPP-288,2026-10-29,Email,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-289,OPP-289,2026-11-04,Email,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-290,OPP-290,2026-11-04,Email,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-291,OPP-291,2026-11-05,Email,POSITIVE,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-292,OPP-292,2026-11-07,Meeting,WON,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.
+ACT-293,OPP-293,2026-11-02,Email,LOST,Cập nhật tiến độ thương vụ Hệ thống Quản lý Chuỗi cung ứng SCM.
+ACT-294,OPP-294,2026-11-03,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ Cloud Migration & Managed K8s.
+ACT-295,OPP-295,2026-11-04,Call,POSITIVE,Cập nhật tiến độ thương vụ Giải pháp AI OCR & Số hóa Tài liệu.
+ACT-296,OPP-296,2026-10-30,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Hệ thống ERP Cloud SAP/Odoo B2B.
+ACT-297,OPP-297,2026-10-31,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Nền tảng CRM & AI Call Center.
+ACT-298,OPP-298,2026-11-06,Meeting,POSITIVE,Cập nhật tiến độ thương vụ Dịch vụ SOC & Bảo mật An toàn thông tin.
+ACT-299,OPP-299,2026-11-04,Email,WON,Cập nhật tiến độ thương vụ Hạ tầng Data Warehouse & BI Dashboard.
+ACT-300,OPP-300,2026-10-30,Meeting,LOST,Cập nhật tiến độ thương vụ Giải pháp Tự động hóa Quy trình RPA.

@@ -1,0 +1,46 @@
+﻿order_id,opp_id,customer_name,rep_id,order_amount,order_date,order_status
+ORD-1001,OPP-007,Công ty CP Thép Hòa Phát Mới,NV01,1250000000,2026-11-02,Approved
+ORD-1002,OPP-008,Tổng Công ty Điện lực Miền Bắc,NV03,820000000,2026-11-04,Approved
+ORD-1003,OPP-015,Công ty Chứng khoán Phú Hưng,NV02,880000000,2026-10-28,Approved
+ORD-1004,OPP-016,Ngân hàng Số Thế Hệ Mới,NV04,760000000,2026-10-30,Approved
+ORD-1019,OPP-019,Công ty CP Cảng Quốc tế - CN 2,NV10,520000000,2026-10-25,Approved
+ORD-1026,OPP-026,Công ty Du lịch Lữ hành Quốc tế - CN 3,NV07,600000000,2026-10-25,Approved
+ORD-1033,OPP-033,Bệnh viện Quốc tế Hòa Bình - CN 4,NV04,320000000,2026-10-25,Approved
+ORD-1040,OPP-040,Công ty TNHH Sản xuất Linh kiện Điện tử - CN 5,NV01,320000000,2026-10-25,Approved
+ORD-1047,OPP-047,Công ty Vận tải Biển Đông (Khối 6),NV08,360000000,2026-10-20,Approved
+ORD-1054,OPP-054,Tập đoàn Nông nghiệp Công nghệ cao (Khối 6),NV05,180000000,2026-10-20,Approved
+ORD-1061,OPP-061,Ngân hàng TMCP Đông Nam (Khối 6),NV02,180000000,2026-10-20,Approved
+ORD-1068,OPP-068,Tập đoàn Giáo dục Tri Thức (Khối 6),NV09,300000000,2026-10-20,Approved
+ORD-1075,OPP-075,Công ty CP Thực phẩm Sạch (Khối 6),NV06,300000000,2026-10-20,Approved
+ORD-1082,OPP-082,Hệ thống Phòng khám Đa khoa Tâm Đức (Khối 6),NV03,360000000,2026-10-20,Approved
+ORD-1089,OPP-089,Công ty Thương mại Điện tử Nhanh (Khối 6),NV10,360000000,2026-10-20,Approved
+ORD-1096,OPP-096,Tổng Công ty Điện lực Miền Bắc (Khối 6),NV07,240000000,2026-10-20,Approved
+ORD-1103,OPP-103,Chuỗi Siêu thị Xanh Mart (Khối 6),NV04,120000000,2026-10-20,Approved
+ORD-1110,OPP-110,Tập đoàn Dệt may Thành Công (Khối 6),NV01,180000000,2026-10-20,Approved
+ORD-1117,OPP-117,Công ty CP Đầu tư Hạ tầng Đô thị (Khối 6),NV08,450000000,2026-10-20,Approved
+ORD-1124,OPP-124,Tập đoàn Bán lẻ Sao Việt (Khối 6),NV05,300000000,2026-10-20,Approved
+ORD-1131,OPP-131,Tập đoàn Bất động sản Hưng Thịnh (Khối 6),NV02,240000000,2026-10-20,Approved
+ORD-1138,OPP-138,Ngân hàng Số Thế Hệ Mới (Khối 6),NV09,120000000,2026-10-20,Approved
+ORD-1145,OPP-145,Công ty CP Nhựa Bình Minh Mới (Khối 6),NV06,360000000,2026-10-20,Approved
+ORD-1152,OPP-152,Công ty CP Logistics Toàn Cầu (Khối 6),NV03,120000000,2026-10-20,Approved
+ORD-1159,OPP-159,Công ty CP Dược phẩm Trung Ương (Khối 6),NV10,180000000,2026-10-20,Approved
+ORD-1166,OPP-166,Tập đoàn Xây dựng Thái Bình (Khối 6),NV07,240000000,2026-10-20,Approved
+ORD-1173,OPP-173,Công ty Phần mềm Tài chính FinTech (Khối 6),NV04,300000000,2026-10-20,Approved
+ORD-1180,OPP-180,Tập đoàn Viễn thông Á Châu (Khối 6),NV01,240000000,2026-10-20,Approved
+ORD-1187,OPP-187,Công ty Bảo hiểm Nhân thọ An Tâm (Khối 6),NV08,240000000,2026-10-20,Approved
+ORD-1194,OPP-194,Công ty Chứng khoán Phú Hưng (Khối 6),NV05,450000000,2026-10-20,Approved
+ORD-1201,OPP-201,Công ty CP Xi măng Hoàng Mai (Khối 6),NV02,180000000,2026-10-20,Approved
+ORD-1208,OPP-208,Tập đoàn Năng lượng Xanh (Khối 6),NV09,300000000,2026-10-20,Approved
+ORD-1215,OPP-215,Công ty CP Thép Hòa Phát Mới (Khối 6),NV06,240000000,2026-10-20,Approved
+ORD-1222,OPP-222,Công ty CP Hàng không Việt Á (Khối 6),NV03,450000000,2026-10-20,Approved
+ORD-1229,OPP-229,Công ty CP Cảng Quốc tế (Khối 6),NV10,300000000,2026-10-20,Approved
+ORD-1236,OPP-236,Công ty Du lịch Lữ hành Quốc tế (Khối 6),NV07,300000000,2026-10-20,Approved
+ORD-1243,OPP-243,Bệnh viện Quốc tế Hòa Bình (Khối 6),NV04,360000000,2026-10-20,Approved
+ORD-1250,OPP-250,Công ty TNHH Sản xuất Linh kiện Điện tử (Khối 6),NV01,450000000,2026-10-20,Approved
+ORD-1257,OPP-257,Công ty Vận tải Biển Đông (Khối 6),NV08,300000000,2026-10-20,Approved
+ORD-1264,OPP-264,Tập đoàn Nông nghiệp Công nghệ cao (Khối 6),NV05,120000000,2026-10-20,Approved
+ORD-1271,OPP-271,Ngân hàng TMCP Đông Nam (Khối 6),NV02,450000000,2026-10-20,Approved
+ORD-1278,OPP-278,Tập đoàn Giáo dục Tri Thức (Khối 6),NV09,300000000,2026-10-20,Approved
+ORD-1285,OPP-285,Công ty CP Thực phẩm Sạch (Khối 6),NV06,180000000,2026-10-20,Approved
+ORD-1292,OPP-292,Hệ thống Phòng khám Đa khoa Tâm Đức (Khối 6),NV03,120000000,2026-10-20,Approved
+ORD-1299,OPP-299,Công ty Thương mại Điện tử Nhanh (Khối 6),NV10,120000000,2026-10-20,Approved

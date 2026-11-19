@@ -1,0 +1,9 @@
+﻿order_id,opp_id,customer_name,rep_id,order_amount,order_date,order_status
+ORD-1001,OPP-007,Công ty CP Thép Hòa Phát Mới,NV01,1250000000,2026-11-02,Approved
+ORD-1002,OPP-008,Tổng Công ty Điện lực Miền Bắc,NV03,820000000,2026-11-04,Approved
+ORD-1003,OPP-015,Công ty Chứng khoán Phú Hưng,NV02,880000000,2026-10-28,Approved
+ORD-1004,OPP-016,Ngân hàng Số Thế Hệ Mới,NV04,760000000,2026-10-30,Approved
+ORD-1019,OPP-019,Công ty CP Cảng Quốc tế - CN 2,NV10,520000000,2026-10-25,Approved
+ORD-1026,OPP-026,Công ty Du lịch Lữ hành Quốc tế - CN 3,NV07,600000000,2026-10-25,Approved
+ORD-1033,OPP-033,Bệnh viện Quốc tế Hòa Bình - CN 4,NV04,320000000,2026-10-25,Approved
+ORD-1040,OPP-040,Công ty TNHH Sản xuất Linh kiện Điện tử - CN 5,NV01,320000000,2026-10-25,Approved

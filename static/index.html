@@ -1,0 +1,3538 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Duydudi — Trợ Lý AI Phân Tích Doanh Số</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              mint: '#1ed7b5',
+              citrus: '#f0f9a7',
+              plum: '#894b77',
+              periwinkle: '#abbdff',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '"Inter"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          }
+        }
+      }
+    };
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --c-mint: #1ed7b5;
+      --c-mint-dark: #10a88c;
+      --c-citrus: #f0f9a7;
+      --c-citrus-dark: #c5d160;
+      --c-plum: #894b77;
+      --c-plum-dark: #6b375c;
+      --c-periwinkle: #abbdff;
+      --c-periwinkle-dark: #6b85e8;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #1e1b2e;
+      background-color: #f6f8ff;
+      background-image:
+        radial-gradient(at 8% 12%, rgba(30, 215, 181, 0.45) 0px, transparent 50%),
+        radial-gradient(at 90% 10%, rgba(240, 249, 167, 0.78) 0px, transparent 48%),
+        radial-gradient(at 86% 88%, rgba(171, 189, 255, 0.65) 0px, transparent 52%),
+        radial-gradient(at 14% 86%, rgba(137, 75, 119, 0.30) 0px, transparent 50%),
+        linear-gradient(135deg, rgba(30, 215, 181, 0.20) 0%, rgba(240, 249, 167, 0.35) 34%, rgba(171, 189, 255, 0.35) 68%, rgba(137, 75, 119, 0.22) 100%);
+      background-attachment: fixed;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.45s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s ease;
+    }
+
+    html.dark body {
+      color: #f8fafc;
+      background-color: #0f0c18;
+      background-image:
+        radial-gradient(at 10% 15%, rgba(30, 215, 181, 0.22) 0px, transparent 50%),
+        radial-gradient(at 88% 14%, rgba(137, 75, 119, 0.38) 0px, transparent 52%),
+        radial-gradient(at 84% 85%, rgba(171, 189, 255, 0.22) 0px, transparent 50%),
+        radial-gradient(at 16% 82%, rgba(240, 249, 167, 0.12) 0px, transparent 46%),
+        linear-gradient(135deg, #0d1518 0%, #191121 52%, #111729 100%);
+      background-attachment: fixed;
+    }
+
+    /* Subtle Geometric Dot Grid */
+    .aurora-canvas {
+      background-image: radial-gradient(rgba(137, 75, 119, 0.08) 1.2px, transparent 1.2px);
+      background-size: 28px 28px;
+    }
+    html.dark .aurora-canvas {
+      background-image: radial-gradient(rgba(171, 189, 255, 0.07) 1.2px, transparent 1.2px);
+    }
+
+    /* Smooth Keyframe Animations */
+    @keyframes floatMint {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(28px, -20px) scale(1.08); }
+      66% { transform: translate(-16px, 14px) scale(0.96); }
+    }
+    @keyframes floatCitrus {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-30px, 22px) scale(1.1); }
+    }
+    @keyframes floatPlum {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      40% { transform: translate(22px, 26px) scale(1.07); }
+      80% { transform: translate(-20px, -12px) scale(0.95); }
+    }
+    @keyframes floatPeriwinkle {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-24px, -24px) scale(1.09); }
+    }
+    @keyframes smoothReveal {
+      0% { opacity: 0; transform: translateY(20px) scale(0.985); filter: blur(4px); }
+      100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+    @keyframes shimmerSweep {
+      0% { transform: translateX(-140%) skewX(-18deg); }
+      100% { transform: translateX(260%) skewX(-18deg); }
+    }
+    @keyframes gradientFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes gentleBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .orb-mint { animation: floatMint 13s ease-in-out infinite; background: rgba(30, 215, 181, 0.52); }
+    .orb-citrus { animation: floatCitrus 15s ease-in-out infinite; background: rgba(240, 249, 167, 0.72); }
+    .orb-plum { animation: floatPlum 17s ease-in-out infinite; background: rgba(137, 75, 119, 0.42); }
+    .orb-periwinkle { animation: floatPeriwinkle 14s ease-in-out infinite; background: rgba(171, 189, 255, 0.62); }
+
+    .fade-1 { animation: smoothReveal 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .fade-2 { animation: smoothReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both; }
+    .fade-3 { animation: smoothReveal 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.16s both; }
+    .float-icon { animation: gentleBounce 3.2s ease-in-out infinite; }
+
+    /* ===================================================================== */
+    /* HIỆU ỨNG QUỸ ĐẠO: CÁC KHỐI CHỮ TRẮNG QUAY VÒNG QUANH HÌNH VUÔNG GIỮA */
+    /* ===================================================================== */
+    @keyframes orbitWheelSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes orbitPillCounterSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(-360deg); }
+    }
+    @keyframes svgRingReverseSpin {
+      0% { transform: rotate(360deg); }
+      100% { transform: rotate(0deg); }
+    }
+    @keyframes centerSquarePulse {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+        box-shadow:
+          0 24px 50px -12px rgba(137, 75, 119, 0.48),
+          0 0 0 6px rgba(255, 255, 255, 0.35),
+          0 0 42px rgba(30, 215, 181, 0.25);
+      }
+      50% {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow:
+          0 30px 60px -12px rgba(137, 75, 119, 0.58),
+          0 0 0 8px rgba(255, 255, 255, 0.48),
+          0 0 56px rgba(171, 189, 255, 0.45);
+      }
+    }
+
+    .orbit-stage {
+      position: relative;
+      width: 440px;
+      height: 440px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+    @media (max-width: 640px) {
+      .orbit-stage {
+        width: 340px;
+        height: 340px;
+        transform: scale(0.86);
+      }
+    }
+
+    /* Vòng tròn nét đứt bên ngoài */
+    .orbit-dashed-ring {
+      position: absolute;
+      width: 348px;
+      height: 348px;
+      border-radius: 9999px;
+      border: 1.6px dashed rgba(137, 75, 119, 0.28);
+      pointer-events: none;
+    }
+    html.dark .orbit-dashed-ring {
+      border-color: rgba(171, 189, 255, 0.28);
+    }
+
+    /* Vòng tròn nét liền bên trong */
+    .orbit-solid-ring {
+      position: absolute;
+      width: 256px;
+      height: 256px;
+      border-radius: 9999px;
+      border: 1.2px solid rgba(137, 75, 119, 0.15);
+      pointer-events: none;
+    }
+    html.dark .orbit-solid-ring {
+      border-color: rgba(30, 215, 181, 0.2);
+    }
+
+    /* Vòng chữ SVG chạy tròn quanh tâm */
+    .orbit-svg-text-ring {
+      position: absolute;
+      width: 304px;
+      height: 304px;
+      animation: svgRingReverseSpin 34s linear infinite;
+      pointer-events: none;
+    }
+
+    /* Hình vuông bo góc ở chính giữa */
+    .center-ai-square {
+      position: relative;
+      z-index: 20;
+      width: 196px;
+      height: 196px;
+      border-radius: 40px;
+      background: linear-gradient(145deg, #d84b7e 0%, #894b77 48%, #9b7eb8 78%, #abbdff 100%);
+      border: 4px solid rgba(255, 255, 255, 0.94);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      text-align: center;
+      cursor: pointer;
+      animation: centerSquarePulse 5s ease-in-out infinite;
+    }
+    html.dark .center-ai-square {
+      border-color: rgba(255, 255, 255, 0.88);
+    }
+
+    /* Bánh xe quỹ đạo chứa 4 khối chữ trắng */
+    .orbit-wheel {
+      position: absolute;
+      width: 348px;
+      height: 348px;
+      border-radius: 9999px;
+      animation: orbitWheelSpin 22s linear infinite;
+      z-index: 30;
+      pointer-events: none;
+    }
+
+    /* 4 điểm neo quanh đường tròn quỹ đạo */
+    .orbit-slot {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+    }
+    .orbit-slot-top {
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .orbit-slot-right {
+      top: 50%;
+      right: 0;
+      transform: translate(50%, -50%);
+    }
+    .orbit-slot-bottom {
+      bottom: 0;
+      left: 50%;
+      transform: translate(-50%, 50%);
+    }
+    .orbit-slot-left {
+      top: 50%;
+      left: 0;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Khối chữ màu trắng tự xoay ngược chiều để chữ luôn nằm ngang đọc rõ */
+    .orbit-white-pill {
+      animation: orbitPillCounterSpin 22s linear infinite;
+      background: #ffffff;
+      color: #241626;
+      font-size: 13.5px;
+      font-weight: 800;
+      padding: 9px 18px;
+      border-radius: 999px;
+      white-space: nowrap;
+      border: 1.5px solid rgba(255, 255, 255, 1);
+      box-shadow:
+        0 10px 25px -5px rgba(137, 75, 119, 0.24),
+        0 2px 8px -1px rgba(15, 23, 42, 0.07);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .orbit-white-pill:hover {
+      background: #f0f9a7;
+      color: #1e1b2e;
+      border-color: #1ed7b5;
+      box-shadow: 0 14px 30px -5px rgba(30, 215, 181, 0.45);
+    }
+
+    /* Animated Gradient Text */
+    .text-palette-gradient {
+      background: linear-gradient(120deg, #894b77 0%, #1ed7b5 48%, #5b76e8 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientFlow 6s ease infinite;
+    }
+    html.dark .text-palette-gradient {
+      background: linear-gradient(120deg, #1ed7b5 0%, #f0f9a7 45%, #abbdff 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientFlow 6s ease infinite;
+    }
+
+    /* Frosted Glass Navigation & Cards */
+    .glass-bar {
+      background: rgba(255, 255, 255, 0.76);
+      backdrop-filter: blur(22px) saturate(160%);
+      -webkit-backdrop-filter: blur(22px) saturate(160%);
+      border-bottom: 1.5px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 4px 24px -6px rgba(137, 75, 119, 0.08);
+      transition: all 0.3s ease;
+    }
+    html.dark .glass-bar {
+      background: rgba(18, 14, 28, 0.82);
+      border-bottom: 1.5px solid rgba(171, 189, 255, 0.14);
+      box-shadow: 0 4px 24px -6px rgba(0, 0, 0, 0.45);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(24px) saturate(150%);
+      -webkit-backdrop-filter: blur(24px) saturate(150%);
+      border: 1.5px solid rgba(255, 255, 255, 0.92);
+      box-shadow:
+        0 18px 42px -16px rgba(137, 75, 119, 0.14),
+        0 4px 12px -2px rgba(30, 215, 181, 0.06);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                  box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                  border-color 0.3s ease;
+    }
+    html.dark .glass-card {
+      background: rgba(22, 18, 34, 0.85);
+      border: 1.5px solid rgba(171, 189, 255, 0.16);
+      box-shadow: 0 18px 42px -14px rgba(0, 0, 0, 0.6);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow:
+        0 24px 48px -14px rgba(137, 75, 119, 0.22),
+        0 0 0 2px rgba(30, 215, 181, 0.45);
+    }
+
+    .bento-tile {
+      background: rgba(255, 255, 255, 0.78);
+      border: 1.5px solid rgba(255, 255, 255, 0.92);
+      box-shadow: 0 6px 20px -8px rgba(137, 75, 119, 0.08);
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .bento-tile:hover {
+      transform: translateY(-3px);
+      background: rgba(255, 255, 255, 0.94);
+      border-color: rgba(171, 189, 255, 0.75);
+      box-shadow: 0 14px 30px -10px rgba(137, 75, 119, 0.14);
+    }
+    html.dark .bento-tile {
+      background: rgba(26, 22, 40, 0.74);
+      border: 1.5px solid rgba(171, 189, 255, 0.14);
+    }
+    html.dark .bento-tile:hover {
+      background: rgba(34, 28, 52, 0.9);
+      border-color: rgba(30, 215, 181, 0.4);
+    }
+
+    /* 4 Signature Color Block Cards */
+    .block-mint {
+      background: linear-gradient(145deg, rgba(255,255,255,0.92) 0%, rgba(30, 215, 181, 0.16) 100%);
+      border-top: 4px solid #1ed7b5;
+    }
+    .block-citrus {
+      background: linear-gradient(145deg, rgba(255,255,255,0.92) 0%, rgba(240, 249, 167, 0.42) 100%);
+      border-top: 4px solid #d4e157;
+    }
+    .block-plum {
+      background: linear-gradient(145deg, rgba(255,255,255,0.92) 0%, rgba(137, 75, 119, 0.16) 100%);
+      border-top: 4px solid #894b77;
+    }
+    .block-periwinkle {
+      background: linear-gradient(145deg, rgba(255,255,255,0.92) 0%, rgba(171, 189, 255, 0.30) 100%);
+      border-top: 4px solid #abbdff;
+    }
+    html.dark .block-mint {
+      background: linear-gradient(145deg, rgba(26, 22, 40, 0.88) 0%, rgba(30, 215, 181, 0.15) 100%);
+      border-top: 4px solid #1ed7b5;
+    }
+    html.dark .block-citrus {
+      background: linear-gradient(145deg, rgba(26, 22, 40, 0.88) 0%, rgba(240, 249, 167, 0.14) 100%);
+      border-top: 4px solid #f0f9a7;
+    }
+    html.dark .block-plum {
+      background: linear-gradient(145deg, rgba(26, 22, 40, 0.88) 0%, rgba(137, 75, 119, 0.28) 100%);
+      border-top: 4px solid #b5699f;
+    }
+    html.dark .block-periwinkle {
+      background: linear-gradient(145deg, rgba(26, 22, 40, 0.88) 0%, rgba(171, 189, 255, 0.18) 100%);
+      border-top: 4px solid #abbdff;
+    }
+
+    /* Tactile Buttons with Palette Gradients */
+    .btn-primary {
+      background: linear-gradient(135deg, #894b77 0%, #6d375d 100%);
+      color: #ffffff;
+      font-weight: 700;
+      border-radius: 999px;
+      box-shadow: 0 10px 26px -8px rgba(137, 75, 119, 0.55);
+      transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #9b5687 0%, #894b77 100%);
+      transform: translateY(-2.5px) scale(1.015);
+      box-shadow: 0 16px 32px -8px rgba(137, 75, 119, 0.65), 0 0 0 3px rgba(30, 215, 181, 0.32);
+    }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .btn-mint {
+      background: linear-gradient(135deg, #1ed7b5 0%, #12b596 100%);
+      color: #09221d;
+      font-weight: 800;
+      border-radius: 999px;
+      box-shadow: 0 10px 26px -8px rgba(30, 215, 181, 0.55);
+      transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      cursor: pointer;
+    }
+    .btn-mint:hover {
+      background: linear-gradient(135deg, #38e2c3 0%, #1ed7b5 100%);
+      transform: translateY(-2.5px) scale(1.015);
+      box-shadow: 0 16px 32px -8px rgba(30, 215, 181, 0.7), 0 0 0 3px rgba(240, 249, 167, 0.5);
+    }
+    .btn-mint:active { transform: scale(0.97); }
+
+    .btn-dark {
+      background: linear-gradient(135deg, #2d192b 0%, #894b77 100%);
+      color: #ffffff;
+      font-weight: 700;
+      border-radius: 999px;
+      box-shadow: 0 10px 24px -8px rgba(137, 75, 119, 0.48);
+      transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      cursor: pointer;
+    }
+    .btn-dark:hover {
+      transform: translateY(-2.5px) scale(1.015);
+      box-shadow: 0 16px 32px -8px rgba(137, 75, 119, 0.6), 0 0 0 3px rgba(171, 189, 255, 0.45);
+    }
+    .btn-dark:active { transform: scale(0.97); }
+    html.dark .btn-dark {
+      background: linear-gradient(135deg, #1ed7b5 0%, #abbdff 100%);
+      color: #0f172a;
+      font-weight: 800;
+    }
+
+    .btn-soft {
+      background: rgba(255, 255, 255, 0.88);
+      color: #2d192b;
+      border: 1.5px solid rgba(137, 75, 119, 0.18);
+      font-weight: 700;
+      border-radius: 999px;
+      transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+      cursor: pointer;
+    }
+    .btn-soft:hover {
+      background: #ffffff;
+      border-color: #894b77;
+      color: #894b77;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px -6px rgba(137, 75, 119, 0.2);
+    }
+    .btn-soft:active { transform: scale(0.97); }
+    html.dark .btn-soft {
+      background: rgba(255, 255, 255, 0.08);
+      color: #f1f5f9;
+      border-color: rgba(171, 189, 255, 0.2);
+    }
+    html.dark .btn-soft:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: #1ed7b5;
+      color: #1ed7b5;
+    }
+
+    .shimmer-btn { position: relative; overflow: hidden; }
+    .shimmer-btn::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 40%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(240, 249, 167, 0.42), transparent);
+      animation: shimmerSweep 3.2s ease-in-out infinite;
+    }
+
+    /* Animated 4-Color Progress Fill Bar */
+    .palette-progress-bar {
+      background: linear-gradient(90deg, #1ed7b5 0%, #f0f9a7 35%, #abbdff 68%, #894b77 100%);
+      background-size: 200% 100%;
+      animation: gradientFlow 4s ease infinite;
+      transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Stepper Pills */
+    .step-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.74);
+      border: 1.5px solid rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      text-align: left;
+      transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      cursor: pointer;
+    }
+    html.dark .step-pill { background: rgba(24, 19, 36, 0.78); border-color: rgba(171, 189, 255, 0.15); }
+    .step-pill:hover:not(.locked) {
+      background: rgba(255, 255, 255, 0.96);
+      border-color: #1ed7b5;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -8px rgba(30, 215, 181, 0.25);
+    }
+    html.dark .step-pill:hover:not(.locked) { background: rgba(34, 27, 50, 0.95); border-color: #1ed7b5; }
+    .step-pill.active {
+      background: #ffffff;
+      border-color: #894b77;
+      box-shadow: 0 10px 24px -8px rgba(137, 75, 119, 0.35), 0 0 0 2px #894b77;
+      transform: translateY(-2px);
+    }
+    html.dark .step-pill.active {
+      background: #231934;
+      border-color: #1ed7b5;
+      box-shadow: 0 10px 24px -8px rgba(30, 215, 181, 0.3), 0 0 0 2px #1ed7b5;
+    }
+    .step-pill.done {
+      border-color: rgba(30, 215, 181, 0.6);
+      background: rgba(255, 255, 255, 0.88);
+    }
+    html.dark .step-pill.done {
+      border-color: rgba(30, 215, 181, 0.45);
+      background: rgba(20, 34, 38, 0.8);
+    }
+    .step-pill.locked { opacity: 0.48; cursor: not-allowed; }
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      background: rgba(137, 75, 119, 0.1);
+      color: #894b77;
+      flex-shrink: 0;
+      transition: all 0.28s ease;
+    }
+    html.dark .step-num { background: rgba(171, 189, 255, 0.14); color: #abbdff; }
+    .step-pill.active .step-num {
+      background: linear-gradient(135deg, #894b77 0%, #1ed7b5 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 10px -2px rgba(137, 75, 119, 0.5);
+    }
+    .step-pill.done .step-num {
+      background: #1ed7b5;
+      color: #082922;
+      font-weight: 800;
+    }
+
+    /* Nav Tabs */
+    .top-tab {
+      padding: 8px 20px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #4a3548;
+      transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+      cursor: pointer;
+    }
+    .top-tab:hover { background: rgba(171, 189, 255, 0.25); color: #894b77; }
+    html.dark .top-tab { color: #cbd5e1; }
+    html.dark .top-tab:hover { background: rgba(255, 255, 255, 0.08); color: #1ed7b5; }
+    .top-tab.active {
+      background: linear-gradient(135deg, #894b77 0%, #6d375d 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 14px -3px rgba(137, 75, 119, 0.5);
+    }
+    html.dark .top-tab.active {
+      background: linear-gradient(135deg, #1ed7b5 0%, #abbdff 100%);
+      color: #0f172a;
+    }
+
+    /* Helper Guide Bar */
+    .guide-bar {
+      background: linear-gradient(90deg, rgba(30, 215, 181, 0.22) 0%, rgba(240, 249, 167, 0.50) 50%, rgba(171, 189, 255, 0.34) 100%);
+      border: 1.5px solid rgba(137, 75, 119, 0.2);
+      border-left: 5px solid #894b77;
+      transition: all 0.3s ease;
+    }
+    html.dark .guide-bar {
+      background: linear-gradient(90deg, rgba(30, 215, 181, 0.14) 0%, rgba(137, 75, 119, 0.22) 50%, rgba(171, 189, 255, 0.14) 100%);
+      border: 1.5px solid rgba(30, 215, 181, 0.25);
+      border-left: 5px solid #1ed7b5;
+    }
+
+    .view-hidden { display: none !important; }
+    .view-active { display: block; animation: smoothReveal 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+    /* Table Row Smooth Hover */
+    tbody tr { transition: background-color 0.18s ease; }
+    tbody tr:hover { background-color: rgba(171, 189, 255, 0.18); }
+    html.dark tbody tr:hover { background-color: rgba(30, 215, 181, 0.08); }
+
+    .custom-scroll::-webkit-scrollbar { width: 7px; height: 7px; }
+    .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #1ed7b5, #894b77);
+      border-radius: 999px;
+    }
+
+    /* Floating Toast Notification */
+    #toastContainer {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 390px;
+    }
+    .toast-item {
+      padding: 14px 18px;
+      border-radius: 18px;
+      background: rgba(28, 18, 34, 0.95);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      border-left: 5px solid #abbdff;
+      box-shadow: 0 18px 38px -10px rgba(0, 0, 0, 0.4);
+      animation: smoothReveal 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .toast-item.error { background: #7f1d1d; border-left-color: #f87171; }
+    .toast-item.success { background: #0d3b33; border-left-color: #1ed7b5; }
+
+    /* ===================================================================== */
+    /* ROBOT AI DUYDUDI CHẠY XUNG QUANH MÀN HÌNH                             */
+    /* ===================================================================== */
+    @keyframes robotBobbing {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      25% { transform: translateY(-6px) rotate(3deg); }
+      50% { transform: translateY(0px) rotate(0deg); }
+      75% { transform: translateY(-5px) rotate(-3deg); }
+    }
+    @keyframes robotLegLeftStep {
+      0% { transform: rotate(-28deg) translateY(0); }
+      100% { transform: rotate(28deg) translateY(-3px); }
+    }
+    @keyframes robotLegRightStep {
+      0% { transform: rotate(28deg) translateY(-3px); }
+      100% { transform: rotate(-28deg) translateY(0); }
+    }
+    @keyframes robotArmSwing {
+      0% { transform: rotate(-22deg); }
+      100% { transform: rotate(26deg); }
+    }
+    @keyframes robotEyeBlink {
+      0%, 46%, 50%, 96%, 100% { transform: scaleY(1); }
+      48%, 98% { transform: scaleY(0.1); }
+    }
+    @keyframes robotAntennaPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35); opacity: 0.75; }
+    }
+    @keyframes robotSparkleFade {
+      0% { transform: scale(1) translateY(0); opacity: 0.9; }
+      100% { transform: scale(0.1) translateY(10px); opacity: 0; }
+    }
+    @keyframes robotHappyJump {
+      0% { transform: translateY(0) scale(1) rotate(0deg); }
+      40% { transform: translateY(-28px) scale(1.15) rotate(-12deg); }
+      75% { transform: translateY(-10px) scale(1.08) rotate(10deg); }
+      100% { transform: translateY(0) scale(1) rotate(0deg); }
+    }
+
+    #roamingRobotContainer {
+      position: fixed;
+      left: 32px;
+      bottom: 24px;
+      z-index: 55;
+      width: 84px;
+      height: 96px;
+      user-select: none;
+      cursor: pointer;
+      will-change: left, top, transform;
+    }
+
+    .robot-body-wrapper {
+      width: 100%;
+      height: 100%;
+      animation: robotBobbing 0.65s ease-in-out infinite;
+      transition: transform 0.25s ease;
+      filter: drop-shadow(0 12px 18px rgba(137, 75, 119, 0.32));
+    }
+    #roamingRobotContainer:hover .robot-body-wrapper {
+      animation-play-state: paused;
+      transform: scale(1.12);
+      filter: drop-shadow(0 16px 26px rgba(30, 215, 181, 0.55));
+    }
+    .robot-jump-once {
+      animation: robotHappyJump 0.65s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    }
+
+    .robot-leg-l {
+      transform-origin: 33px 74px;
+      animation: robotLegLeftStep 0.24s ease-in-out infinite alternate;
+    }
+    .robot-leg-r {
+      transform-origin: 51px 74px;
+      animation: robotLegRightStep 0.24s ease-in-out infinite alternate;
+    }
+    .robot-arm-l {
+      transform-origin: 18px 50px;
+      animation: robotArmSwing 0.32s ease-in-out infinite alternate;
+    }
+    .robot-arm-r {
+      transform-origin: 66px 50px;
+      animation: robotArmSwing 0.32s ease-in-out infinite alternate-reverse;
+    }
+    .robot-eyes {
+      transform-origin: 42px 32px;
+      animation: robotEyeBlink 4.2s infinite;
+    }
+    .robot-antenna-bulb {
+      transform-origin: 42px 7px;
+      animation: robotAntennaPulse 1.4s ease-in-out infinite;
+    }
+
+    /* Hộp thoại nhỏ đi kèm Robot */
+    #robotSpeechBubble {
+      position: absolute;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.96);
+      color: #1e1b2e;
+      border: 2px solid #1ed7b5;
+      border-radius: 18px;
+      padding: 7px 14px;
+      font-size: 12.5px;
+      font-weight: 800;
+      white-space: nowrap;
+      box-shadow: 0 12px 28px -6px rgba(137, 75, 119, 0.28);
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    html.dark #robotSpeechBubble {
+      background: rgba(24, 19, 38, 0.96);
+      color: #f8fafc;
+      border-color: #1ed7b5;
+    }
+    #robotSpeechBubble.bubble-below {
+      bottom: auto;
+      top: 102px;
+    }
+
+    /* Hạt ánh sáng rơi theo bước chân Robot */
+    .robot-trail-dot {
+      position: fixed;
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: 54;
+      animation: robotSparkleFade 0.75s ease-out forwards;
+    }
+
+    /* ===================================================================== */
+    /* HIỆU ỨNG ĐỘNG 2 BÊN MÀN HÌNH (LEFT & RIGHT DYNAMIC AMBIENT WINGS)     */
+    /* ===================================================================== */
+    @keyframes eqBarBounce {
+      0%, 100% { transform: scaleY(0.28); }
+      50% { transform: scaleY(1); }
+    }
+    @keyframes sideCardFloatA {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(0.6deg); }
+    }
+    @keyframes sideCardFloatB {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(8px) rotate(-0.6deg); }
+    }
+    @keyframes dataDashFlow {
+      0% { stroke-dashoffset: 48; }
+      100% { stroke-dashoffset: 0; }
+    }
+    @keyframes laserSweepY {
+      0%, 100% { top: 8%; opacity: 0.35; }
+      50% { top: 86%; opacity: 0.9; }
+    }
+    @keyframes geoRotateSlow {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.08); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+    @keyframes bubbleRiseLoop {
+      0% { transform: translateY(40px) scale(0.75); opacity: 0; }
+      25% { opacity: 0.75; }
+      75% { opacity: 0.75; }
+      100% { transform: translateY(-260px) scale(1.1); opacity: 0; }
+    }
+    @keyframes weightBarPulse {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.18); }
+    }
+
+    .side-wing-panel {
+      position: fixed;
+      top: 82px;
+      bottom: 72px;
+      width: 192px;
+      z-index: 25;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+      pointer-events: none;
+    }
+    @media (min-width: 1180px) {
+      .side-wing-panel {
+        display: flex;
+      }
+    }
+    @media (min-width: 1440px) {
+      .side-wing-panel {
+        width: 215px;
+        gap: 16px;
+      }
+    }
+
+    .side-wing-left { left: 16px; }
+    .side-wing-right { right: 16px; }
+
+    .side-holo-card {
+      pointer-events: auto;
+      background: rgba(255, 255, 255, 0.76);
+      backdrop-filter: blur(16px) saturate(150%);
+      -webkit-backdrop-filter: blur(16px) saturate(150%);
+      border: 1.5px solid rgba(255, 255, 255, 0.92);
+      border-radius: 22px;
+      padding: 13px 14px;
+      box-shadow:
+        0 14px 30px -12px rgba(137, 75, 119, 0.16),
+        0 2px 8px rgba(30, 215, 181, 0.08);
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .side-holo-card:hover {
+      transform: translateY(-4px) scale(1.03) !important;
+      background: rgba(255, 255, 255, 0.95);
+      border-color: #1ed7b5;
+      box-shadow: 0 18px 36px -10px rgba(30, 215, 181, 0.28);
+    }
+    html.dark .side-holo-card {
+      background: rgba(22, 18, 36, 0.78);
+      border-color: rgba(171, 189, 255, 0.18);
+      box-shadow: 0 14px 30px -12px rgba(0, 0, 0, 0.55);
+    }
+    html.dark .side-holo-card:hover {
+      background: rgba(30, 24, 48, 0.94);
+      border-color: #1ed7b5;
+    }
+
+    .float-wing-a { animation: sideCardFloatA 5.2s ease-in-out infinite; }
+    .float-wing-b { animation: sideCardFloatB 6.1s ease-in-out infinite; }
+    .float-wing-c { animation: sideCardFloatA 6.8s ease-in-out 0.6s infinite; }
+
+    .eq-bar {
+      width: 5px;
+      border-radius: 999px;
+      transform-origin: bottom;
+      animation: eqBarBounce 1.1s ease-in-out infinite;
+    }
+    .data-flow-line {
+      stroke-dasharray: 6 6;
+      animation: dataDashFlow 1.8s linear infinite;
+    }
+    .laser-scan-bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #1ed7b5, #f0f9a7, #894b77, transparent);
+      box-shadow: 0 0 10px #1ed7b5;
+      animation: laserSweepY 3.6s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .geo-spin-shape {
+      animation: geoRotateSlow 18s linear infinite;
+    }
+    .rising-side-bubble {
+      position: absolute;
+      border-radius: 999px;
+      pointer-events: none;
+      animation: bubbleRiseLoop 9s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- ========================================================================= -->
+  <!-- THANH ĐIỀU HƯỚNG TỐI GIẢN & ĐỒNG BỘ 4 MẢNG MÀU                            -->
+  <!-- ========================================================================= -->
+  <header class="glass-bar sticky top-0 z-40 w-full">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+
+      <!-- Logo & Tên Công Ty + 4 Chấm Màu Thương Hiệu -->
+      <div class="flex items-center gap-3 cursor-pointer group" onclick="openTopMode('cover')">
+        <div class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-md transition-transform duration-300 group-hover:scale-105"
+             style="background: linear-gradient(135deg, #1ed7b5 0%, #894b77 100%);">
+          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3L4 20h4.2l1.6-3.6h4.4L15.8 20H20L12 3z"/>
+            <circle cx="12" cy="11.5" r="1.4" fill="#f0f9a7" stroke="none"/>
+          </svg>
+        </div>
+        <div class="leading-tight">
+          <div class="flex items-center gap-2">
+            <span class="text-base sm:text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">Duydudi</span>
+            <!-- 4 Mảng màu chủ đạo -->
+            <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/70 dark:bg-slate-900/70 border border-slate-200/70 dark:border-slate-700" title="Bảng màu: #1ed7b5 · #f0f9a7 · #894b77 · #abbdff">
+              <span class="w-2.5 h-2.5 rounded-full inline-block" style="background:#1ed7b5"></span>
+              <span class="w-2.5 h-2.5 rounded-full inline-block" style="background:#f0f9a7; border:1px solid rgba(0,0,0,0.12)"></span>
+              <span class="w-2.5 h-2.5 rounded-full inline-block" style="background:#894b77"></span>
+              <span class="w-2.5 h-2.5 rounded-full inline-block" style="background:#abbdff"></span>
+            </span>
+          </div>
+          <span class="text-xs font-semibold text-[#894b77] dark:text-[#abbdff] hidden sm:block">Công ty của Duydudi</span>
+        </div>
+      </div>
+
+      <!-- 2 Tab chính rõ ràng -->
+      <nav class="flex items-center gap-1 p-1 rounded-full bg-white/65 dark:bg-slate-900/75 border border-white/90 dark:border-slate-800 shadow-xs">
+        <button id="topNavCover" onclick="openTopMode('cover')" class="top-tab active">Trang chủ</button>
+        <button id="topNavWorkspace" onclick="openTopMode('workspace')" class="top-tab">Bắt đầu làm việc</button>
+      </nav>
+
+      <!-- Nút hỗ trợ & Khu vực Đăng Nhập / Đăng Ký Tài Khoản -->
+      <div class="flex items-center gap-2">
+        <button onclick="openHelpModal()" class="btn-soft px-3.5 py-2 text-xs sm:text-sm hidden lg:inline-flex items-center">
+          Cách dùng
+        </button>
+        <a href="/slides" target="_blank" class="btn-soft px-3.5 py-2 text-xs sm:text-sm hidden xl:inline-flex items-center">
+          15 Slide
+        </a>
+        <button onclick="toggleThemeMode()" class="btn-soft px-3.5 py-2 text-xs sm:text-sm">
+          <span id="themeToggleLabel">Tối</span>
+        </button>
+
+        <!-- Trạng thái Chưa đăng nhập: Hiện 2 nút Đăng nhập & Đăng ký -->
+        <div id="headerAuthGuestBox" class="flex items-center gap-1.5">
+          <button onclick="openAuthModal('login')" class="btn-soft px-4 py-2 text-xs sm:text-sm font-extrabold border-[#894b77]/35 text-[#894b77] dark:text-[#abbdff]">
+            Đăng nhập
+          </button>
+          <button onclick="openAuthModal('register')" class="btn-mint px-4 py-2 text-xs sm:text-sm font-extrabold">
+            ✨ Đăng ký
+          </button>
+        </div>
+
+        <!-- Trạng thái Đã đăng nhập: Hiện Avatar + Tên tài khoản + Nút Đăng xuất -->
+        <div id="headerAuthUserBox" class="hidden items-center gap-2 pl-2 pr-1.5 py-1 rounded-full bg-white/85 dark:bg-slate-900/85 border-2 border-[#1ed7b5] shadow-xs">
+          <div id="headerUserInitials" class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-black shrink-0"
+               style="background: linear-gradient(135deg, #894b77 0%, #1ed7b5 100%);">
+            MD
+          </div>
+          <div class="leading-tight hidden sm:block pr-1">
+            <strong id="headerUserName" class="text-xs font-extrabold text-slate-900 dark:text-white block max-w-[120px] truncate">Hồ Mạnh Duy</strong>
+            <span id="headerUserRole" class="text-[10px] font-bold text-[#0c8f76] dark:text-[#1ed7b5] block truncate max-w-[120px]">Admin</span>
+          </div>
+          <button onclick="logoutUserAccount()" title="Đăng xuất tài khoản"
+                  class="px-2.5 py-1 rounded-full bg-red-500/10 hover:bg-red-500/25 text-red-600 dark:text-red-400 text-[11px] font-extrabold cursor-pointer transition">
+            Thoát
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ========================================================================= -->
+  <!-- CÁNH TRÁI ĐỘNG (LEFT DYNAMIC AMBIENT WING — LẤP ĐẦY KHOẢNG TRỐNG TRÁI)     -->
+  <!-- ========================================================================= -->
+  <aside id="leftDynamicSideWing" class="side-wing-panel side-wing-left">
+    <!-- Bong bóng ánh sáng bay lên nền trái -->
+    <div class="rising-side-bubble w-10 h-10 bg-[#1ed7b5]/25 blur-xs" style="left: 18px; bottom: 20px; animation-delay: 0s;"></div>
+    <div class="rising-side-bubble w-7 h-7 bg-[#894b77]/25 blur-xs" style="left: 120px; bottom: 10px; animation-delay: 3.2s;"></div>
+    <div class="rising-side-bubble w-12 h-12 bg-[#abbdff]/35 blur-xs" style="left: 65px; bottom: 40px; animation-delay: 6.1s;"></div>
+
+    <!-- Card 1: Lõi AI Radar Xoay & Sóng Equalizer Động -->
+    <div onclick="toggleRobotChatPanel(true)" class="side-holo-card float-wing-a cursor-pointer">
+      <div class="laser-scan-bar"></div>
+      <div class="flex items-center gap-2.5">
+        <!-- Vòng Radar xoay kép -->
+        <div class="relative w-11 h-11 flex items-center justify-center shrink-0">
+          <div class="absolute inset-0 rounded-full border-2 border-dashed border-[#894b77] dark:border-[#abbdff] geo-spin-shape"></div>
+          <div class="absolute inset-1.5 rounded-full border-2 border-[#1ed7b5] opacity-80" style="animation: svgRingReverseSpin 8s linear infinite;"></div>
+          <span class="text-sm">✨</span>
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-[#1ed7b5] animate-ping"></span>
+            <span class="text-[11px] font-black uppercase tracking-wider text-[#894b77] dark:text-[#1ed7b5]">AI Engine Live</span>
+          </div>
+          <p class="text-xs font-extrabold text-slate-800 dark:text-white truncate">4 Tầng Xử Lý Chuẩn</p>
+        </div>
+      </div>
+
+      <!-- Sóng âm thanh / dữ liệu 8 cột nhảy liên tục -->
+      <div class="mt-3 pt-2.5 border-t border-slate-200/60 dark:border-slate-700/60 flex items-end justify-between h-8 px-1">
+        <span class="eq-bar h-6 bg-[#1ed7b5]" style="animation-delay: 0.05s"></span>
+        <span class="eq-bar h-4 bg-[#894b77]" style="animation-delay: 0.22s"></span>
+        <span class="eq-bar h-7 bg-[#abbdff]" style="animation-delay: 0.40s"></span>
+        <span class="eq-bar h-5 bg-[#c5d160]" style="animation-delay: 0.15s"></span>
+        <span class="eq-bar h-7 bg-[#1ed7b5]" style="animation-delay: 0.35s"></span>
+        <span class="eq-bar h-4 bg-[#894b77]" style="animation-delay: 0.50s"></span>
+        <span class="eq-bar h-6 bg-[#abbdff]" style="animation-delay: 0.12s"></span>
+        <span class="eq-bar h-5 bg-[#1ed7b5]" style="animation-delay: 0.28s"></span>
+      </div>
+    </div>
+
+    <!-- Card 2: Thanh Trọng Số Dự Báo Động (10% - 90%) -->
+    <div onclick="askRobotQuickQuestion('Quy tắc trọng số dự báo 10% đến 90% tính thế nào?')" class="side-holo-card float-wing-b cursor-pointer space-y-2">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-black uppercase tracking-wider text-[#0b6b59] dark:text-[#1ed7b5]">⚖️ Trọng Số Chuẩn</span>
+        <span class="px-2 py-0.5 rounded-full bg-[#f0f9a7] text-[#333a0b] font-mono text-[10px] font-extrabold">AI301</span>
+      </div>
+      <div class="space-y-1.5 text-[11px] font-bold">
+        <div>
+          <div class="flex justify-between text-slate-700 dark:text-slate-300"><span>Closing</span><span class="font-mono text-[#0c8f76] dark:text-[#1ed7b5]">90%</span></div>
+          <div class="w-full h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden mt-0.5">
+            <div class="h-full rounded-full palette-progress-bar" style="width: 90%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-slate-700 dark:text-slate-300"><span>Negotiation</span><span class="font-mono text-[#894b77] dark:text-[#abbdff]">75%</span></div>
+          <div class="w-full h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden mt-0.5">
+            <div class="h-full rounded-full bg-[#894b77]" style="width: 75%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-slate-700 dark:text-slate-300"><span>Proposal</span><span class="font-mono text-[#4c63c9] dark:text-[#abbdff]">50%</span></div>
+          <div class="w-full h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden mt-0.5">
+            <div class="h-full rounded-full bg-[#abbdff]" style="width: 50%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Thẻ Hotline & Mạng Xã Hội Nổi -->
+    <div onclick="askRobotQuickQuestion('Thông tin Hotline và liên hệ Công ty của Duydudi?')" class="side-holo-card float-wing-c cursor-pointer space-y-1.5">
+      <div class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-[#1ed7b5] animate-pulse"></span>
+        <span class="text-[11px] font-black uppercase tracking-wider text-[#894b77] dark:text-[#f0f9a7]">Hotline Hỗ Trợ 24/7</span>
+      </div>
+      <div class="text-xs font-extrabold text-slate-900 dark:text-white font-mono flex items-center gap-1.5">
+        <span>📞</span><span>0817737782</span>
+      </div>
+      <div class="text-[11px] font-semibold text-slate-600 dark:text-slate-300 truncate">
+        🌐 FB: <strong class="text-[#894b77] dark:text-[#1ed7b5]">Hồ Mạnh Duy</strong>
+      </div>
+      <div class="text-[11px] font-semibold text-slate-600 dark:text-slate-300 truncate">
+        📸 IG: <strong class="text-[#894b77] dark:text-[#f0f9a7]">Duybird</strong>
+      </div>
+    </div>
+  </aside>
+
+
+  <!-- ========================================================================= -->
+  <!-- CÁNH PHẢI ĐỘNG (RIGHT DYNAMIC AMBIENT WING — LẤP ĐẦY KHOẢNG TRỐNG PHẢI)   -->
+  <!-- ========================================================================= -->
+  <aside id="rightDynamicSideWing" class="side-wing-panel side-wing-right">
+    <!-- Bong bóng ánh sáng bay lên nền phải -->
+    <div class="rising-side-bubble w-9 h-9 bg-[#f0f9a7]/50 blur-xs" style="right: 24px; bottom: 30px; animation-delay: 1.4s;"></div>
+    <div class="rising-side-bubble w-11 h-11 bg-[#1ed7b5]/25 blur-xs" style="right: 110px; bottom: 15px; animation-delay: 4.5s;"></div>
+    <div class="rising-side-bubble w-8 h-8 bg-[#894b77]/25 blur-xs" style="right: 60px; bottom: 50px; animation-delay: 7.2s;"></div>
+
+    <!-- Card 1: Mạng Lưới Dữ Liệu Neural Constellation Động -->
+    <div onclick="runInstantDemoWithCleanFile()" class="side-holo-card float-wing-b cursor-pointer">
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="text-[11px] font-black uppercase tracking-wider text-[#894b77] dark:text-[#1ed7b5]">⚡ Data Pipeline</span>
+        <span class="w-2 h-2 rounded-full bg-[#1ed7b5] animate-ping"></span>
+      </div>
+
+      <!-- Đồ thị luồng dữ liệu chạy động SVG -->
+      <svg viewBox="0 0 170 68" class="w-full h-16 overflow-visible">
+        <!-- Đường truyền dữ liệu nét đứt chạy liên tục -->
+        <path d="M 18 34 Q 52 10 85 34 T 152 24" fill="none" stroke="#1ed7b5" stroke-width="2.2" class="data-flow-line" />
+        <path d="M 18 46 Q 55 62 85 34 T 152 48" fill="none" stroke="#894b77" stroke-width="1.8" class="data-flow-line" />
+
+        <!-- Các nút mạng phát sáng -->
+        <circle cx="18" cy="34" r="5" fill="#1ed7b5" />
+        <circle cx="18" cy="46" r="4" fill="#abbdff" />
+        <circle cx="85" cy="34" r="7" fill="#894b77" stroke="#f0f9a7" stroke-width="2" />
+        <circle cx="152" cy="24" r="5" fill="#1ed7b5" />
+        <circle cx="152" cy="48" r="5" fill="#f0f9a7" stroke="#894b77" stroke-width="1.5" />
+      </svg>
+
+      <div class="flex items-center justify-between text-[10.5px] font-extrabold text-slate-600 dark:text-slate-300 pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
+        <span>4 Nguồn CRM</span>
+        <span class="text-[#0c8f76] dark:text-[#1ed7b5]">&rarr; 100% Sạch</span>
+      </div>
+    </div>
+
+    <!-- Card 2: 4 Định Dạng Xuất Báo Cáo Động -->
+    <div onclick="startStepWorkflow(6)" class="side-holo-card float-wing-a cursor-pointer space-y-2">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-black uppercase tracking-wider text-slate-800 dark:text-white">📥 Xuất Báo Cáo</span>
+        <span class="text-[10px] font-mono font-extrabold text-[#0c8f76] dark:text-[#1ed7b5]">4 File</span>
+      </div>
+      <div class="grid grid-cols-2 gap-1.5 text-[11px] font-extrabold">
+        <div class="px-2 py-1.5 rounded-xl bg-[#1ed7b5]/20 text-[#075e4d] dark:text-[#1ed7b5] flex items-center gap-1">
+          <span>📊</span><span>.XLSX</span>
+        </div>
+        <div class="px-2 py-1.5 rounded-xl bg-[#abbdff]/35 text-[#28387d] dark:text-[#abbdff] flex items-center gap-1">
+          <span>📑</span><span>.DOCX</span>
+        </div>
+        <div class="px-2 py-1.5 rounded-xl bg-[#894b77]/20 text-[#894b77] dark:text-[#f0f9a7] flex items-center gap-1">
+          <span>📽️</span><span>.PPTX</span>
+        </div>
+        <div class="px-2 py-1.5 rounded-xl bg-[#f0f9a7] text-[#383f0c] flex items-center gap-1">
+          <span>📥</span><span>.CSV</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Nút Gọi Nhanh Trợ Lý Robot AI -->
+    <div onclick="toggleRobotChatPanel(true)" class="side-holo-card float-wing-c cursor-pointer">
+      <div class="flex items-center gap-2.5">
+        <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#1ed7b5] to-[#894b77] text-white flex items-center justify-center text-lg shadow-xs shrink-0">
+          🤖
+        </span>
+        <div class="min-w-0">
+          <strong class="text-xs font-extrabold text-slate-900 dark:text-white block truncate">Hỏi Robot AI Ngay</strong>
+          <span class="text-[11px] font-semibold text-[#0c8f76] dark:text-[#1ed7b5] flex items-center gap-1">
+            <span>● Trực tuyến</span>
+            <span>&rarr; Mở Chat</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+
+  <!-- ========================================================================= -->
+  <!-- TRANG CHỦ (KHỐI CHỮ MÀU TRẮNG QUAY VÒNG QUANH HÌNH VUÔNG Ở GIỮA)          -->
+  <!-- ========================================================================= -->
+  <section id="modeCover" class="view-active flex-1 relative overflow-hidden aurora-canvas">
+    <!-- 4 Quả cầu ánh sáng chuyển động mượt theo 4 mã màu -->
+    <div class="pointer-events-none absolute -top-16 left-8 w-80 h-80 rounded-full blur-3xl orb-mint"></div>
+    <div class="pointer-events-none absolute top-12 right-10 w-80 h-80 rounded-full blur-3xl orb-citrus"></div>
+    <div class="pointer-events-none absolute -bottom-20 left-1/4 w-96 h-96 rounded-full blur-3xl orb-plum"></div>
+    <div class="pointer-events-none absolute -bottom-16 right-1/4 w-96 h-96 rounded-full blur-3xl orb-periwinkle"></div>
+
+    <div class="relative z-10 max-w-4xl 2xl:max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16 space-y-12">
+
+      <!-- Bố cục Hero 2 cột: Bên trái Tiêu đề & Nút bấm — Bên phải Hình vuông trung tâm + 4 Khối chữ trắng quay vòng -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center">
+
+        <!-- CỘT TRÁI (7 PHẦN): LỜI CHÀO, TIÊU ĐỀ LỚN & NÚT HÀNH ĐỘNG -->
+        <div class="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left space-y-6">
+
+          <!-- Lời chào thân thiện theo giờ -->
+          <div class="fade-1 inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/92 dark:bg-slate-900/85 border-2 border-[#abbdff]/60 dark:border-[#1ed7b5]/40 shadow-sm">
+            <span class="relative flex h-3 w-3">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1ed7b5] opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-[#1ed7b5]"></span>
+            </span>
+            <span id="coverTimeGreeting" class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100">
+              Chào mừng bạn đến với Công ty của Duydudi
+            </span>
+          </div>
+
+          <!-- Tiêu đề rõ ràng, chữ lớn có hiệu ứng chuyển màu mượt -->
+          <div class="fade-2 space-y-4">
+            <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.13]">
+              Trợ Lý AI Phân Tích <br class="hidden sm:inline" />
+              <span class="text-palette-gradient">Tiến Độ &amp; Dự Kiến Doanh Số</span>
+            </h1>
+            <p id="coverDynamicWelcomeText" class="text-lg sm:text-xl text-slate-700 dark:text-slate-300 leading-relaxed max-w-2xl font-medium min-h-[60px]">
+              Không cần biết kỹ thuật. Tự động hợp nhất dữ liệu trùng, phát hiện ngoại lệ, áp trọng số chuẩn và đề xuất Top 5 cơ hội ưu tiên tuần tới.
+            </p>
+          </div>
+
+          <!-- 2 Nút tối ưu: 1 Nút chính lớn + 1 Nút dùng thử ngay -->
+          <div class="fade-3 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 w-full sm:w-auto pt-1">
+            <button onclick="startStepWorkflow(1)" class="btn-primary shimmer-btn w-full sm:w-auto px-10 py-4 text-base sm:text-lg flex items-center justify-center gap-2.5">
+              <span>Bắt đầu ngay</span>
+              <span>&rarr;</span>
+            </button>
+            <button onclick="runInstantDemoWithCleanFile()" class="btn-mint w-full sm:w-auto px-8 py-4 text-base flex items-center justify-center gap-2">
+              <span>✨ Xem thử kết quả mẫu ngay</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- CỘT PHẢI (5 PHẦN): HÌNH VUÔNG Ở GIỮA & CÁC KHỐI CHỮ MÀU TRẮNG QUAY VÒNG QUANH -->
+        <div class="lg:col-span-5 flex items-center justify-center fade-2">
+          <div class="orbit-stage">
+
+            <!-- Quầng sáng nền phía sau hình vuông -->
+            <div class="pointer-events-none absolute w-72 h-72 rounded-full blur-3xl opacity-70"
+                 style="background: radial-gradient(circle, rgba(137,75,119,0.45) 0%, rgba(171,189,255,0.45) 55%, rgba(30,215,181,0.2) 100%);"></div>
+
+            <!-- Vòng tròn nét đứt ngoài & vòng tròn nét liền trong -->
+            <div class="orbit-dashed-ring"></div>
+            <div class="orbit-solid-ring"></div>
+
+            <!-- Vòng chữ tròn xoay nhẹ quanh hình vuông trung tâm -->
+            <svg class="orbit-svg-text-ring" viewBox="0 0 300 300">
+              <defs>
+                <path id="circleOrbitTextPath" d="M 150, 150 m -120, 0 a 120,120 0 1,1 240,0 a 120,120 0 1,1 -240,0" />
+              </defs>
+              <text fill="#7c5674" class="dark:fill-[#abbdff]" font-size="10.2" font-weight="800" letter-spacing="3.15">
+                <textPath href="#circleOrbitTextPath" startOffset="0%">
+                  • DATA CLEANING • AI INSIGHTS • HUMAN APPROVAL • REPORT EXPORT
+                </textPath>
+              </text>
+            </svg>
+
+            <!-- HÌNH VUÔNG BO GÓC Ở GIỮA -->
+            <div onclick="startStepWorkflow(1)" class="center-ai-square" title="Bấm để bắt đầu làm việc">
+              <div class="text-4xl mb-1.5 drop-shadow-xs select-none">✨</div>
+              <div class="text-white font-extrabold text-lg sm:text-xl tracking-wide leading-tight">
+                DUYDUDI AI
+              </div>
+              <div class="text-white/90 text-xs sm:text-sm font-semibold mt-0.5 mb-3">
+                4 Agents · 6 Bước
+              </div>
+              <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#eefdf9] border-2 border-[#1ed7b5]/50 shadow-sm">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#0d947a] animate-pulse"></span>
+                <span class="text-xs font-extrabold tracking-wider text-[#0b7a64] uppercase">SẴN SÀNG</span>
+              </div>
+            </div>
+
+            <!-- BÁNH XE QUỸ ĐẠO CHỨA 4 KHỐI CHỮ MÀU TRẮNG QUAY VÒNG QUANH HÌNH VUÔNG -->
+            <div class="orbit-wheel">
+
+              <!-- Khối chữ trắng 1 (Đỉnh quỹ đạo) -->
+              <div class="orbit-slot orbit-slot-top">
+                <div onclick="runInstantDemoWithCleanFile()" class="orbit-white-pill">
+                  <span class="text-[#894b77]">★</span>
+                  <span>Top 5 Ưu tiên tuần tới</span>
+                </div>
+              </div>
+
+              <!-- Khối chữ trắng 2 (Bên phải quỹ đạo) -->
+              <div class="orbit-slot orbit-slot-right">
+                <div onclick="startStepWorkflow(1)" class="orbit-white-pill">
+                  <span class="text-[#0c8f76]">✓</span>
+                  <span>Trọng số chuẩn 10–75%</span>
+                </div>
+              </div>
+
+              <!-- Khối chữ trắng 3 (Đáy quỹ đạo) -->
+              <div class="orbit-slot orbit-slot-bottom">
+                <div onclick="startStepWorkflow(1)" class="orbit-white-pill">
+                  <span class="text-[#0c8f76]">✓</span>
+                  <span>Hợp nhất trùng lặp</span>
+                </div>
+              </div>
+
+              <!-- Khối chữ trắng 4 (Bên trái quỹ đạo) -->
+              <div class="orbit-slot orbit-slot-left">
+                <div onclick="startStepWorkflow(1)" class="orbit-white-pill">
+                  <span class="text-[#0c8f76]">✓</span>
+                  <span>Tách doanh số đã bán</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bento 3 bước đơn giản phối theo 4 mảng màu -->
+      <div class="fade-3 w-full pt-2">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 text-left">
+          <!-- Thẻ 1: Mảng màu Mint #1ed7b5 -->
+          <div onclick="startStepWorkflow(1)" class="glass-card feature-card block-mint rounded-[26px] p-6 cursor-pointer">
+            <span class="inline-block px-3.5 py-1 rounded-full bg-[#1ed7b5]/25 text-[#0b6b59] dark:text-[#1ed7b5] font-mono text-xs font-extrabold">
+              PHẦN 1 · NHẬP LIỆU
+            </span>
+            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white mt-3">Chọn tệp của bạn</h3>
+            <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 mt-1.5">
+              Hỗ trợ Excel, CSV và Google Sheets. Tệp rỗng hoặc lỗi sẽ được kiểm tra và báo ngay.
+            </p>
+          </div>
+
+          <!-- Thẻ 2: Mảng màu Plum #894b77 & Citrus #f0f9a7 -->
+          <div onclick="startStepWorkflow(1)" class="glass-card feature-card block-plum rounded-[26px] p-6 cursor-pointer">
+            <span class="inline-block px-3.5 py-1 rounded-full bg-[#894b77]/20 text-[#894b77] dark:text-[#f0f9a7] font-mono text-xs font-extrabold">
+              PHẦN 2 · TỰ ĐỘNG HÓA
+            </span>
+            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white mt-3">AI tự tính &amp; kiểm tra</h3>
+            <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 mt-1.5">
+              Tự động tách doanh số đã bán, cơ hội mở, tìm rủi ro và chờ bạn xác nhận dễ dàng.
+            </p>
+          </div>
+
+          <!-- Thẻ 3: Mảng màu Periwinkle #abbdff & Citrus #f0f9a7 -->
+          <div onclick="startStepWorkflow(1)" class="glass-card feature-card block-periwinkle rounded-[26px] p-6 cursor-pointer">
+            <span class="inline-block px-3.5 py-1 rounded-full bg-[#abbdff]/45 text-[#2d3a78] dark:text-[#abbdff] font-mono text-xs font-extrabold">
+              PHẦN 3 · BÁO CÁO
+            </span>
+            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white mt-3">Xem biểu đồ &amp; Tải file</h3>
+            <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 mt-1.5">
+              Xem biểu đồ trực quan và tải ngay báo cáo Excel, Word, PowerPoint hoặc CSV về máy.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ========================================================================= -->
+  <!-- KHÔNG GIAN LÀM VIỆC 6 BƯỚC RIÊNG LẺ (CHỈ 1 VIỆC MỖI MÀN HÌNH)             -->
+  <!-- ========================================================================= -->
+  <section id="modeWorkspace" class="view-hidden flex-1 aurora-canvas py-7 px-4 sm:px-6">
+    <div class="relative z-10 max-w-4xl 2xl:max-w-5xl mx-auto space-y-6">
+
+      <!-- Thanh tiến độ mượt 4 màu + 6 Bước riêng lẻ -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between text-sm font-bold text-slate-800 dark:text-slate-200 px-1">
+          <span id="progressStepText">Bước 1 / 6 — Chọn tệp dữ liệu</span>
+          <span id="progressPercentText" class="font-mono font-extrabold text-[#894b77] dark:text-[#1ed7b5]">16%</span>
+        </div>
+        <div class="w-full h-2.5 rounded-full bg-white/80 dark:bg-slate-800 overflow-hidden shadow-inner">
+          <div id="progressFillBar" class="h-full rounded-full palette-progress-bar" style="width: 16%"></div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pt-1">
+          <button id="stepTab1" onclick="goToStep(1)" class="step-pill active">
+            <span id="stepNum1" class="step-num">1</span>
+            <strong class="text-sm font-extrabold text-slate-900 dark:text-white leading-tight">Chọn tệp</strong>
+          </button>
+          <button id="stepTab2" onclick="goToStep(2)" class="step-pill locked">
+            <span id="stepNum2" class="step-num">2</span>
+            <strong class="text-sm font-extrabold text-slate-900 dark:text-white leading-tight">Tính toán</strong>
+          </button>
+          <button id="stepTab3" onclick="goToStep(3)" class="step-pill locked">
+            <span id="stepNum3" class="step-num">3</span>
+            <strong class="text-sm font-extrabold text-slate-900 dark:text-white leading-tight">Cảnh báo</strong>
+          </button>
+          <button id="stepTab4" onclick="goToStep(4)" class="step-pill locked">
+            <span id="stepNum4" class="step-num">4</span>
+            <strong class="text-sm font-extrabold text-slate-900 dark:text-white leading-tight">Xác nhận</strong>
+          </button>
+          <button id="stepTab5" onclick="goToStep(5)" class="step-pill locked">
+            <span id="stepNum5" class="step-num">5</span>
+            <strong class="text-sm font-extrabold text-slate-900 dark:text-white leading-tight">Biểu đồ</strong>
+          </button>
+          <button id="stepTab6" onclick="goToStep(6)" class="step-pill locked">
+            <span id="stepNum6" class="step-num">6</span>
+            <strong class="text-sm font-extrabold text-slate-900 dark:text-white leading-tight">Hoàn tất</strong>
+          </button>
+        </div>
+      </div>
+
+
+      <!-- =================================================================== -->
+      <!-- BƯỚC 1: CHỌN TỆP HOẶC LINK GOOGLE SHEETS                            -->
+      <!-- =================================================================== -->
+      <div id="stepView1" class="view-active glass-card rounded-[28px] p-6 sm:p-10 space-y-6">
+        <div class="guide-bar rounded-2xl px-5 py-3.5 text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100">
+          Hướng dẫn: Bấm nút lớn bên dưới để chọn tệp Excel / CSV từ máy tính, hoặc dán link Google Sheets. Chọn xong hệ thống tự động chạy ngay!
+        </div>
+
+        <!-- Khung chọn tệp siêu rõ ràng với hiệu ứng mượt -->
+        <div id="smallpdfDropzone"
+             ondragover="handleDropzoneDragOver(event)"
+             ondragleave="handleDropzoneDragLeave(event)"
+             ondrop="handleDropzoneDrop(event)"
+             onclick="triggerFileInputClick()"
+             class="rounded-[26px] border-2 border-dashed border-[#894b77]/45 hover:border-[#1ed7b5] bg-gradient-to-br from-white/75 via-[#f0f9a7]/20 to-[#abbdff]/25 dark:from-slate-900/60 dark:via-[#894b77]/15 dark:to-[#1ed7b5]/15 p-10 text-center cursor-pointer transition-all duration-300 hover:shadow-xl">
+          <input type="file" id="portalFileInput" multiple accept=".xlsx,.xls,.csv,.zip" class="hidden" onchange="handlePortalFilesChosen(this)" />
+          <div class="flex flex-col items-center space-y-4">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center shadow-md float-icon"
+                 style="background: linear-gradient(135deg, #1ed7b5 0%, #abbdff 55%, #894b77 100%);">
+              <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+              Chọn tệp dữ liệu của bạn
+            </h2>
+            <p class="text-base text-slate-600 dark:text-slate-300">
+              Kéo thả tệp vào khung này hoặc bấm nút bên dưới (Excel <span class="font-mono font-bold text-[#894b77] dark:text-[#1ed7b5]">.xlsx</span>, <span class="font-mono font-bold text-[#894b77] dark:text-[#1ed7b5]">.csv</span>)
+            </p>
+            <button id="btnStartPipeline" type="button" onclick="event.stopPropagation(); triggerFileInputClick();" class="btn-primary shimmer-btn px-10 py-4 text-base sm:text-lg">
+              Chọn tệp từ máy tính
+            </button>
+
+            <div id="dropzoneSelectedCard" class="hidden mt-2 inline-flex items-center gap-3 px-5 py-3 rounded-2xl bg-white dark:bg-slate-800 border-2 border-[#1ed7b5] shadow-sm max-w-full">
+              <div class="text-left truncate">
+                <strong id="dropzoneFileName" class="text-sm sm:text-base font-bold block text-slate-900 dark:text-white truncate max-w-xs sm:max-w-md"></strong>
+                <span id="dropzoneFileSize" class="text-xs font-mono text-[#894b77] dark:text-[#1ed7b5] block"></span>
+              </div>
+              <button type="button" onclick="clearSelectedFiles(event)" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs cursor-pointer hover:bg-red-100 hover:text-red-600 transition">✕</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hộp Báo Lỗi Nghiêm Ngặt (Chỉ hiện khi tệp rỗng hoặc bị lỗi) -->
+        <div id="inlineFileErrorBox" class="hidden p-6 rounded-2xl bg-red-50/95 dark:bg-red-950/50 border-2 border-red-500 space-y-4">
+          <div class="space-y-1.5">
+            <span class="inline-block px-3 py-1 rounded-full bg-red-600 text-white text-xs font-bold uppercase">
+              Không thể chạy — Tệp không hợp lệ
+            </span>
+            <h4 id="inlineFileErrorTitle" class="text-xl font-extrabold text-red-700 dark:text-red-400">
+              Tệp bị rỗng hoặc có lỗi dữ liệu
+            </h4>
+            <p id="inlineFileErrorDesc" class="text-sm sm:text-base text-slate-800 dark:text-slate-200"></p>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <button type="button" onclick="openAiFileRepairModal(lastFileErrorData)" class="btn-dark px-6 py-2.5 text-sm">
+              Xem rõ vị trí lỗi
+            </button>
+            <button type="button" onclick="clearSelectedFiles(event)" class="btn-primary px-6 py-2.5 text-sm">
+              Chọn tệp khác
+            </button>
+          </div>
+        </div>
+
+        <!-- Cách 2: Dán link Google Sheets -->
+        <div class="bento-tile block-periwinkle rounded-2xl p-5 flex flex-col sm:flex-row items-center gap-3">
+          <span class="text-base font-bold text-slate-900 dark:text-white shrink-0">Hoặc dùng Google Sheets:</span>
+          <input type="url" id="portalGsheetUrl" placeholder="Dán đường link Google Sheets vào đây..."
+                 class="w-full sm:flex-1 bg-white dark:bg-slate-950 border border-[#abbdff] dark:border-slate-700 rounded-full px-5 py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#1ed7b5] text-slate-900 dark:text-white transition" />
+          <button type="button" onclick="executeStartPipeline()" class="btn-dark w-full sm:w-auto px-7 py-3 text-sm sm:text-base shrink-0">
+            Đọc ngay
+          </button>
+        </div>
+
+        <!-- Khu vực dùng thử siêu thân thiện cho người mới chưa có file -->
+        <div class="pt-4 border-t border-slate-200/70 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="flex flex-wrap items-center justify-center md:justify-start gap-2.5">
+            <span class="text-sm font-bold text-slate-600 dark:text-slate-400">Chưa có tệp sẵn?</span>
+            <button type="button" onclick="runInstantDemoWithCleanFile()" class="btn-mint px-5 py-2 text-sm">
+              ✨ Chạy thử bằng tệp mẫu chuẩn
+            </button>
+            <a href="/api/download-sample/scenario_1_normal?format=xlsx" class="text-sm font-bold text-[#894b77] dark:text-[#1ed7b5] hover:underline px-2">
+              Tải tệp mẫu về máy
+            </a>
+          </div>
+          <div class="flex items-center gap-3 text-xs sm:text-sm font-semibold text-slate-500">
+            <button type="button" onclick="loadBrokenSampleFileForTest()" class="hover:text-red-600 underline cursor-pointer">Thử tệp lỗi</button>
+            <span>·</span>
+            <button type="button" onclick="loadEmptySampleFileForTest()" class="hover:text-red-600 underline cursor-pointer">Thử tệp rỗng</button>
+            <span>·</span>
+            <button type="button" onclick="toggleAdvancedSettings()" class="hover:text-[#894b77] dark:hover:text-[#1ed7b5] underline cursor-pointer">Cài đặt nâng cao</button>
+          </div>
+        </div>
+
+        <!-- Cài đặt nâng cao -->
+        <div id="advancedSettingsBox" class="hidden bento-tile rounded-2xl p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Ngày đối chiếu dữ liệu:</label>
+            <input type="date" id="portalReportDate" value="2026-11-12" class="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 font-mono text-sm text-slate-900 dark:text-white" />
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Mã kết nối AI (Gemini):</label>
+            <input type="password" id="portalApiKey" value="AQ.Ab8RN6InYyqJ-KtuhaX0jncAZVHrO45id7dCaYqu6tWuAsRu9A" class="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 font-mono text-sm text-slate-900 dark:text-white" />
+          </div>
+        </div>
+
+        <!-- Đánh giá sao -->
+        <div class="pt-4 border-t border-slate-200/70 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div class="text-center sm:text-left">
+            <span class="text-base font-extrabold text-slate-900 dark:text-white">Đánh giá Công ty của Duydudi</span>
+            <span class="text-sm text-slate-600 dark:text-slate-400 block">4.9 / 5.0 sao từ người dùng</span>
+          </div>
+          <div class="flex flex-col items-center sm:items-end gap-1">
+            <div class="flex items-center gap-1.5 text-3xl cursor-pointer select-none" onmouseleave="resetStars()">
+              <button type="button" class="star-rating-item text-[#894b77] dark:text-[#f0f9a7] transition hover:scale-125" onmouseover="highlightStars(1)" onclick="submitUserRating(1)">★</button>
+              <button type="button" class="star-rating-item text-[#894b77] dark:text-[#f0f9a7] transition hover:scale-125" onmouseover="highlightStars(2)" onclick="submitUserRating(2)">★</button>
+              <button type="button" class="star-rating-item text-[#894b77] dark:text-[#f0f9a7] transition hover:scale-125" onmouseover="highlightStars(3)" onclick="submitUserRating(3)">★</button>
+              <button type="button" class="star-rating-item text-[#894b77] dark:text-[#f0f9a7] transition hover:scale-125" onmouseover="highlightStars(4)" onclick="submitUserRating(4)">★</button>
+              <button type="button" class="star-rating-item text-[#894b77] dark:text-[#f0f9a7] transition hover:scale-125" onmouseover="highlightStars(5)" onclick="submitUserRating(5)">★</button>
+            </div>
+            <span id="starRatingFeedbackText" class="text-xs font-bold text-slate-600 dark:text-slate-400">Chạm vào ngôi sao để đánh giá</span>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- =================================================================== -->
+      <!-- BƯỚC 2: KẾT QUẢ TÍNH TOÁN TỰ ĐỘNG (4 MẢNG MÀU RÕ RÀNG)              -->
+      <!-- =================================================================== -->
+      <div id="stepView2" class="view-hidden glass-card rounded-[28px] p-6 sm:p-10 space-y-6">
+        <div class="guide-bar rounded-2xl px-5 py-3.5 text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100">
+          Hướng dẫn: AI đã tự động cộng doanh số và tách rõ khách đã mua với khách đang theo đuổi. Xem xong bạn bấm nút "Tiếp theo" ở góc dưới nhé.
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Kết Quả Tính Toán</h2>
+          <span id="step2DatasetBadge" class="px-4 py-1.5 rounded-full bg-[#f0f9a7] dark:bg-slate-800 text-xs sm:text-sm font-extrabold text-slate-900 dark:text-[#f0f9a7]"></span>
+        </div>
+
+        <!-- 4 Ô Số Lớn Đại Diện 4 Mảng Màu -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bento-tile block-periwinkle rounded-2xl p-5">
+            <span class="text-sm font-bold text-slate-600 dark:text-slate-400">Tổng số khách hàng</span>
+            <div id="s2TotalUnique" class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mt-1">0</div>
+            <span id="s2DedupNote" class="text-xs font-semibold text-[#5268c7] dark:text-[#abbdff] block mt-1"></span>
+          </div>
+          <div class="bento-tile block-mint rounded-2xl p-5">
+            <span class="text-sm font-bold text-slate-600 dark:text-slate-400">Doanh số đã bán</span>
+            <div id="s2RecordedRev" class="text-3xl sm:text-4xl font-extrabold text-[#0c8f76] dark:text-[#1ed7b5] mt-1">0 đ</div>
+            <span class="text-xs font-semibold text-slate-500 block mt-1">Đã chốt đơn</span>
+          </div>
+          <div class="bento-tile block-citrus rounded-2xl p-5">
+            <span class="text-sm font-bold text-slate-600 dark:text-slate-400">Khách đang theo đuổi</span>
+            <div id="s2OpenCount" class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mt-1">0</div>
+            <span class="text-xs font-semibold text-slate-600 dark:text-slate-400 block mt-1">Chưa chốt</span>
+          </div>
+          <div class="bento-tile block-plum rounded-2xl p-5">
+            <span class="text-sm font-bold text-slate-600 dark:text-slate-400">Dự kiến thu thêm</span>
+            <div id="s2ForecastRev" class="text-3xl sm:text-4xl font-extrabold text-[#894b77] dark:text-[#abbdff] mt-1">0 đ</div>
+            <span class="text-xs font-semibold text-slate-500 block mt-1">Ước tính theo tiến độ</span>
+          </div>
+        </div>
+
+        <!-- 2 Tab đơn giản -->
+        <div class="space-y-4">
+          <div class="flex flex-wrap gap-2.5">
+            <button id="s2TabOpenBtn" onclick="switchStep2SubTab('open')" class="btn-dark px-6 py-2.5 text-sm">Khách đang theo đuổi</button>
+            <button id="s2TabWonBtn" onclick="switchStep2SubTab('won')" class="btn-soft px-6 py-2.5 text-sm">Đơn đã bán thành công</button>
+          </div>
+          <div id="s2TableContainer" class="overflow-x-auto max-h-[380px] custom-scroll rounded-2xl bg-white/85 dark:bg-slate-950/75 border border-[#abbdff]/50 dark:border-slate-800"></div>
+        </div>
+
+        <!-- Nút điều hướng to, rõ ràng -->
+        <div class="flex items-center justify-between pt-4 border-t border-slate-200/70 dark:border-slate-800">
+          <button onclick="goToStep(1)" class="btn-soft px-7 py-3.5 text-sm sm:text-base">&larr; Quay lại</button>
+          <button onclick="goToStep(3)" class="btn-primary px-9 py-3.5 text-base">Tiếp theo: Xem cảnh báo &rarr;</button>
+        </div>
+      </div>
+
+
+      <!-- =================================================================== -->
+      <!-- BƯỚC 3: CẢNH BÁO RỦI RO & QUÁ HẠN                                   -->
+      <!-- =================================================================== -->
+      <div id="stepView3" class="view-hidden glass-card rounded-[28px] p-6 sm:p-10 space-y-6">
+        <div class="guide-bar rounded-2xl px-5 py-3.5 text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100">
+          Hướng dẫn: Đây là danh sách các khách hàng quá hạn hoặc có thông tin chưa khớp mà AI tự tìm thấy giúp bạn.
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Các Mục Cần Lưu Ý</h2>
+          <span id="s3AnomCountBadge" class="px-5 py-2 rounded-full bg-[#894b77] text-white font-mono text-sm font-bold shrink-0 shadow-sm"></span>
+        </div>
+
+        <div id="s3AnomaliesList" class="space-y-3.5 max-h-[440px] overflow-y-auto custom-scroll pr-1"></div>
+
+        <div class="flex items-center justify-between pt-4 border-t border-slate-200/70 dark:border-slate-800">
+          <button onclick="goToStep(2)" class="btn-soft px-7 py-3.5 text-sm sm:text-base">&larr; Quay lại</button>
+          <button onclick="goToStep(4)" class="btn-primary px-9 py-3.5 text-base">Tiếp theo: Xác nhận lại &rarr;</button>
+        </div>
+      </div>
+
+
+      <!-- =================================================================== -->
+      <!-- BƯỚC 4: QUẢN LÝ XÁC NHẬN & CẬP NHẬT                                 -->
+      <!-- =================================================================== -->
+      <div id="stepView4" class="view-hidden glass-card rounded-[28px] p-6 sm:p-10 space-y-6">
+        <div class="guide-bar rounded-2xl px-5 py-3.5 text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100">
+          Hướng dẫn: Nếu muốn đổi trạng thái của khách nào, bạn chọn ở cột bên phải rồi bấm "Lưu &amp; Tính lại". Nếu không cần đổi, cứ bấm "Tiếp theo".
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Xác Nhận Trạng Thái Thực Tế</h2>
+          <button id="btnStep4Apply" onclick="applyOverridesAndRerun()" class="btn-mint px-7 py-3 text-sm sm:text-base shrink-0">
+            Lưu thay đổi &amp; Tính lại
+          </button>
+        </div>
+
+        <div id="s4ReviewTable" class="overflow-x-auto max-h-[420px] custom-scroll rounded-2xl bg-white/85 dark:bg-slate-950/75 border border-[#abbdff]/50 dark:border-slate-800"></div>
+
+        <div class="flex items-center justify-between pt-4 border-t border-slate-200/70 dark:border-slate-800">
+          <button onclick="goToStep(3)" class="btn-soft px-7 py-3.5 text-sm sm:text-base">&larr; Quay lại</button>
+          <button onclick="goToStep(5)" class="btn-primary px-9 py-3.5 text-base">Tiếp theo: Xem biểu đồ &rarr;</button>
+        </div>
+      </div>
+
+
+      <!-- =================================================================== -->
+      <!-- BƯỚC 5: BIỂU ĐỒ TRỰC QUAN KPI & TOP 5 KHÁCH HÀNG ƯU TIÊN            -->
+      <!-- =================================================================== -->
+      <div id="stepView5" class="view-hidden glass-card rounded-[28px] p-6 sm:p-10 space-y-6">
+        <div class="guide-bar rounded-2xl px-5 py-3.5 text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100">
+          Hướng dẫn: Chạm hoặc di chuột vào bất kỳ cột biểu đồ nào để xem số tiền và việc cần làm cho tuần tới.
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Biểu Đồ Doanh Số &amp; Ưu Tiên</h2>
+          <strong id="s5CompanyAttain" class="px-5 py-2 rounded-full bg-[#f0f9a7] dark:bg-slate-800 font-mono text-sm sm:text-base font-extrabold text-[#894b77] dark:text-[#1ed7b5]">0%</strong>
+        </div>
+
+        <!-- 2 Biểu đồ trên -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <div class="lg:col-span-4 bento-tile block-plum rounded-2xl p-6 flex flex-col justify-between space-y-4">
+            <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">Mục Tiêu Cả Công Ty</h3>
+            <div class="relative h-56 flex items-center justify-center">
+              <canvas id="chartCompanyKpi"></canvas>
+              <div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                <strong id="s5DoughnutCenterPct" class="font-mono text-3xl font-extrabold text-slate-900 dark:text-white">0%</strong>
+                <span class="text-xs font-bold text-slate-500">Dự kiến đạt</span>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 pt-3 border-t border-slate-200/70 dark:border-slate-800 text-center text-sm">
+              <div><span class="text-xs text-slate-500 block">Đã bán</span><strong id="s5LegendActual" class="font-mono text-[#0c8f76] dark:text-[#1ed7b5]">0%</strong></div>
+              <div><span class="text-xs text-slate-500 block">Dự kiến</span><strong id="s5LegendProj" class="font-mono text-[#5268c7] dark:text-[#abbdff]">0%</strong></div>
+              <div><span class="text-xs text-slate-500 block">Còn thiếu</span><strong id="s5LegendGap" class="font-mono text-[#894b77] dark:text-[#f0f9a7]">0%</strong></div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-8 bento-tile block-mint rounded-2xl p-6 flex flex-col justify-between space-y-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">Top 5 Khách Hàng Cần Chăm Sóc Ngay</h3>
+              <span id="s5BoundaryNote" class="px-3.5 py-1 rounded-full bg-[#f0f9a7] dark:bg-slate-800 font-mono text-xs font-extrabold text-slate-900 dark:text-[#f0f9a7]"></span>
+            </div>
+            <div class="relative h-64 w-full">
+              <canvas id="chartTop5Priorities"></canvas>
+            </div>
+            <div id="s5Top5CompactStrip" class="flex flex-wrap gap-2 pt-2 border-t border-slate-200/70 dark:border-slate-800"></div>
+          </div>
+        </div>
+
+        <!-- Biểu đồ 3: 10 Nhân viên -->
+        <div class="bento-tile block-periwinkle rounded-2xl p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">Kết Quả Của 10 Nhân Viên (Triệu VNĐ)</h3>
+            <div class="flex flex-wrap items-center gap-4 text-sm font-bold text-slate-700 dark:text-slate-300">
+              <span class="inline-flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm" style="background:#1ed7b5"></span>Đã bán</span>
+              <span class="inline-flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm" style="background:#abbdff"></span>Dự kiến</span>
+              <span class="inline-flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm" style="background:#894b77"></span>Mục tiêu</span>
+            </div>
+          </div>
+          <div class="relative h-80 w-full">
+            <canvas id="chartRepsKpi"></canvas>
+          </div>
+        </div>
+
+        <details class="text-sm bento-tile rounded-2xl p-4">
+          <summary class="cursor-pointer font-bold text-slate-800 dark:text-slate-200 select-none">
+            Mở rộng: Xem bảng số chi tiết
+          </summary>
+          <div class="space-y-4 pt-4 mt-3 border-t border-slate-200/70 dark:border-slate-800">
+            <div id="s5Top5Cards" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            <div id="s5KpiTable" class="overflow-x-auto rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800"></div>
+          </div>
+        </details>
+
+        <div class="flex items-center justify-between pt-4 border-t border-slate-200/70 dark:border-slate-800">
+          <button onclick="goToStep(4)" class="btn-soft px-7 py-3.5 text-sm sm:text-base">&larr; Quay lại</button>
+          <button onclick="goToStep(6)" class="btn-primary px-9 py-3.5 text-base">Tiếp theo: Hoàn tất &amp; Tải về &rarr;</button>
+        </div>
+      </div>
+
+
+      <!-- =================================================================== -->
+      <!-- BƯỚC 6 (ĐẦU RA): PHÊ DUYỆT & TẢI BÁO CÁO ĐA ĐỊNH DẠNG               -->
+      <!-- =================================================================== -->
+      <div id="stepView6" class="view-hidden glass-card rounded-[28px] p-6 sm:p-10 space-y-6">
+        <div class="guide-bar rounded-2xl px-5 py-3.5 text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100">
+          Hoàn tất rồi! Bạn có thể bấm nút "Chốt báo cáo &amp; Giao việc" và chọn định dạng file muốn tải về máy tính.
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Tổng Kết Báo Cáo</h2>
+          <button id="btnApproveFinalReport" onclick="approveFinalReport()" class="btn-primary shimmer-btn px-8 py-4 text-base shrink-0">
+            Chốt báo cáo &amp; Giao việc cho Sales
+          </button>
+        </div>
+
+        <!-- 4 Con số chốt theo 4 mảng màu -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bento-tile block-mint rounded-2xl p-5">
+            <span class="text-sm font-bold text-slate-500">Đã bán</span>
+            <div id="s6RecordedRev" class="text-2xl sm:text-3xl font-extrabold text-[#0c8f76] dark:text-[#1ed7b5] mt-1">0 đ</div>
+          </div>
+          <div class="bento-tile block-periwinkle rounded-2xl p-5">
+            <span class="text-sm font-bold text-slate-500">Dự kiến thêm</span>
+            <div id="s6ForecastRev" class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">0 đ</div>
+          </div>
+          <div class="bento-tile block-citrus rounded-2xl p-5">
+            <span class="text-sm font-bold text-slate-500">Khách theo đuổi</span>
+            <div id="s6OpenCount" class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">0</div>
+          </div>
+          <div class="bento-tile block-plum rounded-2xl p-5">
+            <span class="text-sm font-bold text-slate-500">Đạt mục tiêu</span>
+            <div id="s6AttainPct" class="text-2xl sm:text-3xl font-extrabold text-[#894b77] dark:text-[#f0f9a7] mt-1">0%</div>
+          </div>
+        </div>
+
+        <!-- Nhận xét dễ đọc của AI -->
+        <div class="space-y-2.5">
+          <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">Nhận Xét Tổng Quan Từ AI</h3>
+          <div id="s6ExecutiveBrief" class="p-6 rounded-2xl bg-white/88 dark:bg-slate-950/80 border border-[#abbdff]/60 dark:border-slate-800 text-sm sm:text-base text-slate-800 dark:text-slate-200 whitespace-pre-line leading-relaxed max-h-[320px] overflow-y-auto custom-scroll"></div>
+        </div>
+
+        <!-- Khối tải báo cáo đa định dạng phối theo 4 mảng màu (#1ed7b5, #abbdff, #894b77, #f0f9a7) -->
+        <div class="space-y-4 pt-2">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                <span>📥</span> Tải Báo Cáo Về Máy Tính
+              </h3>
+              <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300">
+                Chọn định dạng file bạn cần. Chỉ với 1 lần bấm, toàn bộ số liệu và phân tích sẽ được xuất tự động:
+              </p>
+            </div>
+          </div>
+
+          <!-- Lưới 4 Thẻ Định Dạng Tải Về theo 4 Mảng Màu Chủ Đạo -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+            <!-- 1. EXCEL (.XLSX) — Mảng màu Mint #1ed7b5 -->
+            <div class="bento-tile block-mint rounded-2xl p-5 flex flex-col justify-between">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="w-12 h-12 rounded-xl bg-[#1ed7b5]/25 text-[#096b58] dark:text-[#1ed7b5] flex items-center justify-center text-2xl font-black">
+                    📊
+                  </span>
+                  <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-[#1ed7b5]/25 text-[#085e4e] dark:text-[#1ed7b5]">
+                    4 Sheets Đầy Đủ
+                  </span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-extrabold text-slate-900 dark:text-white">Báo Cáo Excel</h4>
+                  <span class="text-xs font-mono text-[#0c8f76] dark:text-[#1ed7b5] font-bold">.XLSX</span>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                  Đầy đủ 4 sheet: Tổng quan KPI, Top 5 cơ hội ưu tiên, Bảng 10 Sales và Toàn bộ cơ hội sạch.
+                </p>
+              </div>
+              <div class="pt-4">
+                <a href="/api/export/report.xlsx" download="bao_cao_duydudi_tong_hop.xlsx" class="btn-mint w-full py-3 text-sm font-extrabold flex items-center justify-center gap-2 text-center">
+                  <span>⤓</span> Tải Excel (.xlsx)
+                </a>
+              </div>
+            </div>
+
+            <!-- 2. WORD (.DOCX) — Mảng màu Periwinkle #abbdff -->
+            <div class="bento-tile block-periwinkle rounded-2xl p-5 flex flex-col justify-between">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="w-12 h-12 rounded-xl bg-[#abbdff]/35 text-[#2d3d8a] dark:text-[#abbdff] flex items-center justify-center text-2xl font-black">
+                    📑
+                  </span>
+                  <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-[#abbdff]/40 text-[#28387d] dark:text-[#abbdff]">
+                    Văn Bản Trình Ký
+                  </span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-extrabold text-slate-900 dark:text-white">Tài Liệu Word</h4>
+                  <span class="text-xs font-mono text-[#4c63c9] dark:text-[#abbdff] font-bold">.DOCX</span>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                  Văn bản điều hành hoàn chỉnh kèm bảng số liệu KPI, nhận xét AI và khu vực ký duyệt.
+                </p>
+              </div>
+              <div class="pt-4">
+                <a href="/api/export/report.docx" download="bao_cao_dieu_hanh_duydudi.docx"
+                   class="btn-primary w-full py-3 text-sm font-extrabold flex items-center justify-center gap-2 text-center"
+                   style="background: linear-gradient(135deg, #627ae0 0%, #495fc4 100%); box-shadow: 0 10px 24px -8px rgba(98, 122, 224, 0.55);">
+                  <span>⤓</span> Tải Word (.docx)
+                </a>
+              </div>
+            </div>
+
+            <!-- 3. POWERPOINT (.PPTX) — Mảng màu Plum #894b77 -->
+            <div class="bento-tile block-plum rounded-2xl p-5 flex flex-col justify-between">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="w-12 h-12 rounded-xl bg-[#894b77]/20 text-[#894b77] dark:text-[#f0f9a7] flex items-center justify-center text-2xl font-black">
+                    📽️
+                  </span>
+                  <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-[#894b77]/20 text-[#894b77] dark:text-[#f0f9a7]">
+                    Slide 16:9 Lãnh Đạo
+                  </span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-extrabold text-slate-900 dark:text-white">Slide PowerPoint</h4>
+                  <span class="text-xs font-mono text-[#894b77] dark:text-[#f0f9a7] font-bold">.PPTX</span>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                  Slide trình chiếu tỉ lệ 16:9 hiện đại, sẵn sàng báo cáo cuộc họp Ban Giám Đốc.
+                </p>
+              </div>
+              <div class="pt-4">
+                <a href="/api/export/report.pptx" download="slide_thuyet_trinh_duydudi.pptx" class="btn-primary w-full py-3 text-sm font-extrabold flex items-center justify-center gap-2 text-center">
+                  <span>⤓</span> Tải PowerPoint (.pptx)
+                </a>
+              </div>
+            </div>
+
+            <!-- 4. CSV (.CSV) — Mảng màu Citrus #f0f9a7 -->
+            <div class="bento-tile block-citrus rounded-2xl p-5 flex flex-col justify-between">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="w-12 h-12 rounded-xl bg-[#f0f9a7] text-[#4b5314] flex items-center justify-center text-2xl font-black shadow-2xs">
+                    📥
+                  </span>
+                  <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-[#f0f9a7] text-[#3d440e]">
+                    Dữ Liệu Nguồn Sạch
+                  </span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-extrabold text-slate-900 dark:text-white">Dữ Liệu Nguồn</h4>
+                  <span class="text-xs font-mono text-[#68731a] dark:text-[#f0f9a7] font-bold">.CSV</span>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                  Toàn bộ cơ hội đã được AI chuẩn hóa, khử trùng lặp và tính điểm ưu tiên mở rộng.
+                </p>
+              </div>
+              <div class="pt-4">
+                <a href="/api/export/cleaned.csv" download="bao_cao_duydudi_sach.csv"
+                   class="w-full py-3 text-sm font-extrabold flex items-center justify-center gap-2 text-center rounded-full transition-all duration-200 hover:-translate-y-0.5 shadow-md"
+                   style="background: linear-gradient(135deg, #e5f27e 0%, #c8d94a 100%); color: #1f2408;">
+                  <span>⤓</span> Tải CSV (.csv)
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Các nút phụ trợ bên dưới -->
+          <div class="flex flex-wrap items-center gap-3 pt-1">
+            <button onclick="openUtilityModal('audit')" class="btn-soft px-6 py-3.5 text-sm sm:text-base font-semibold flex items-center gap-2">
+              <span>📋</span> Xem lịch sử AI xử lý
+            </button>
+            <button onclick="openUtilityModal('selfTest')" class="btn-soft px-6 py-3.5 text-sm sm:text-base font-semibold flex items-center gap-2">
+              <span>🧪</span> Kiểm tra độ chính xác
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-4 border-t border-slate-200/70 dark:border-slate-800">
+          <button onclick="goToStep(5)" class="btn-soft px-7 py-3.5 text-sm sm:text-base">&larr; Quay lại</button>
+          <button onclick="goToStep(1)" class="btn-soft px-7 py-3.5 text-sm sm:text-base">Phân tích tệp mới</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ========================================================================= -->
+  <!-- THANH CHÂN TRANG: THÔNG TIN HOTLINE & LIÊN HỆ CHÍNH THỨC                  -->
+  <!-- ========================================================================= -->
+  <footer class="glass-bar border-t border-white/80 dark:border-slate-800/80 py-4 px-4 sm:px-6 z-30">
+    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-3 text-xs sm:text-sm">
+      <div class="flex items-center gap-2.5 font-extrabold text-slate-900 dark:text-white">
+        <span class="w-3 h-3 rounded-full bg-[#1ed7b5] inline-block"></span>
+        <span>CÔNG TY CỦA DUYDUDI — TRỢ LÝ AI PHÂN TÍCH DOANH SỐ</span>
+      </div>
+
+      <!-- Các kênh Hotline & Mạng xã hội -->
+      <div class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+        <a href="tel:0817737782" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#1ed7b5]/20 hover:bg-[#1ed7b5]/35 text-[#085e4e] dark:text-[#1ed7b5] font-bold transition">
+          <span>📞 Hotline:</span>
+          <span class="font-mono font-extrabold">0817737782</span>
+        </a>
+        <a href="mailto:homanhduy2000@gmail.com" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#abbdff]/35 hover:bg-[#abbdff]/55 text-[#28387d] dark:text-[#abbdff] font-bold transition">
+          <span>✉️ Gmail:</span>
+          <span class="font-mono font-extrabold">homanhduy2000@gmail.com</span>
+        </a>
+        <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#894b77]/15 text-[#894b77] dark:text-[#f0f9a7] font-bold">
+          <span>🌐 FB:</span>
+          <strong>Hồ Mạnh Duy</strong>
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#f0f9a7] text-[#3d440e] font-bold">
+          <span>📸 IG:</span>
+          <strong>Duybird</strong>
+        </span>
+        <button onclick="toggleRobotChatPanel(true)" class="btn-primary px-4 py-1.5 text-xs font-extrabold inline-flex items-center gap-1.5">
+          <span>🤖</span>
+          <span>Chat với Robot AI</span>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ========================================================================= -->
+  <!-- MODAL HƯỚNG DẪN NHANH CHO NGƯỜI MỚI                                       -->
+  <!-- ========================================================================= -->
+  <div id="helpModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div class="glass-card rounded-[28px] w-full max-w-xl p-7 space-y-5 fade-1">
+      <div class="flex items-center justify-between">
+        <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">Cách dùng siêu đơn giản</h3>
+        <button onclick="closeHelpModal()" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold cursor-pointer">✕</button>
+      </div>
+      <div class="space-y-4 text-base text-slate-700 dark:text-slate-200">
+        <div class="bento-tile block-mint rounded-2xl p-4">
+          <strong class="text-[#0c8f76] dark:text-[#1ed7b5] block">1. Chọn tệp Excel / CSV hoặc Google Sheets</strong>
+          <span>Nếu chưa có sẵn tệp, chỉ cần bấm nút "Chạy thử bằng tệp mẫu chuẩn" để xem ngay.</span>
+        </div>
+        <div class="bento-tile block-plum rounded-2xl p-4">
+          <strong class="text-[#894b77] dark:text-[#f0f9a7] block">2. Bấm "Tiếp theo" đi qua từng màn hình</strong>
+          <span>Mỗi màn hình chỉ có 1 nhiệm vụ: xem tổng tiền, xem cảnh báo, xác nhận và xem biểu đồ.</span>
+        </div>
+        <div class="bento-tile block-periwinkle rounded-2xl p-4">
+          <strong class="text-[#495fc4] dark:text-[#abbdff] block">3. Bấm "Chốt báo cáo" &amp; Tải kết quả</strong>
+          <span>Cuối cùng tải tệp Excel, Word, PowerPoint hoặc CSV sạch về máy tính.</span>
+        </div>
+      </div>
+      <div class="flex justify-end pt-2">
+        <button onclick="closeHelpModal()" class="btn-primary px-8 py-3 text-base">Đã hiểu</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- MODAL BÁO LỖI NGHIÊM NGẶT (CHẶN TỆP RỖNG & TỆP LỖI)                       -->
+  <!-- ========================================================================= -->
+  <div id="aiFileRepairModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-[24px] w-full max-w-3xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden border-2 border-red-500 fade-1">
+      <div class="px-6 py-5 bg-slate-950 text-white flex items-center justify-between shrink-0">
+        <div>
+          <span class="px-3 py-1 rounded-full bg-red-600 text-white text-xs font-bold uppercase">Báo lỗi — Không thể chạy</span>
+          <h3 id="aiFileRepairModalTitle" class="text-xl font-extrabold text-white mt-2">Tệp bị rỗng hoặc có lỗi</h3>
+        </div>
+        <button onclick="closeAiFileRepairModal()" class="w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 text-white font-bold cursor-pointer">✕</button>
+      </div>
+      <div id="aiFileRepairModalBody" class="p-6 overflow-y-auto custom-scroll flex-1 space-y-4 text-sm sm:text-base text-slate-700 dark:text-slate-200"></div>
+      <div class="px-6 py-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+        <span class="text-sm font-bold text-red-700 dark:text-red-400">Chỉ tệp hợp lệ không lỗi mới chạy được.</span>
+        <div class="flex items-center gap-2.5">
+          <button type="button" onclick="closeAiFileRepairModal()" class="btn-soft px-5 py-2.5 text-sm">Đóng</button>
+          <button type="button" onclick="closeErrorAndResetFile()" class="btn-primary px-6 py-2.5 text-sm">Chọn tệp khác</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- MODAL TIỆN ÍCH (LỊCH SỬ XỬ LÝ & KIỂM TRA ĐỘ CHÍNH XÁC)                    -->
+  <!-- ========================================================================= -->
+  <div id="utilityModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-[24px] w-full max-w-3xl max-h-[86vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 fade-1">
+      <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
+        <h3 id="utilityModalTitle" class="text-lg font-extrabold text-slate-900 dark:text-white">Thông tin</h3>
+        <button onclick="closeUtilityModal()" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold cursor-pointer">✕</button>
+      </div>
+      <div id="utilityModalBody" class="p-6 overflow-y-auto custom-scroll flex-1 text-sm sm:text-base text-slate-700 dark:text-slate-200"></div>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- MODAL ĐĂNG NHẬP & ĐĂNG KÝ TÀI KHOẢN (THEO 4 MẢNG MÀU CHỦ ĐẠO)            -->
+  <!-- ========================================================================= -->
+  <div id="authModal" class="fixed inset-0 bg-slate-950/65 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="glass-card rounded-[30px] w-full max-w-md overflow-hidden border-2 border-[#abbdff] dark:border-[#1ed7b5]/50 shadow-2xl fade-1">
+
+      <!-- Header Modal Đăng Nhập / Đăng Ký -->
+      <div class="px-6 py-5 text-white relative overflow-hidden"
+           style="background: linear-gradient(135deg, #894b77 0%, #6b385d 50%, #109b82 100%);">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-white/20 border border-white/40 flex items-center justify-center text-xl shadow-inner">
+              🔐
+            </div>
+            <div>
+              <h3 id="authModalHeading" class="text-lg font-extrabold text-white">Tài Khoản Duydudi AI</h3>
+              <p class="text-xs text-[#f0f9a7] font-medium">Công ty của Duydudi · Bảo mật &amp; Đồng bộ</p>
+            </div>
+          </div>
+          <button onclick="closeAuthModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/30 text-white font-bold text-sm cursor-pointer transition">
+            ✕
+          </button>
+        </div>
+
+        <!-- Thanh chuyển Tab Đăng Nhập / Đăng Ký -->
+        <div class="grid grid-cols-2 gap-1.5 p-1 mt-4 rounded-full bg-black/25 border border-white/20">
+          <button type="button" id="authTabLoginBtn" onclick="switchAuthTab('login')"
+                  class="py-2 rounded-full text-xs sm:text-sm font-extrabold transition cursor-pointer bg-white text-[#894b77] shadow-sm">
+            Đăng nhập
+          </button>
+          <button type="button" id="authTabRegisterBtn" onclick="switchAuthTab('register')"
+                  class="py-2 rounded-full text-xs sm:text-sm font-extrabold transition cursor-pointer text-white/90 hover:text-white">
+            ✨ Đăng ký mới
+          </button>
+        </div>
+      </div>
+
+      <!-- Nội dung Form -->
+      <div class="p-6 space-y-4">
+
+        <!-- Khung thông báo lỗi / thành công trong Modal -->
+        <div id="authErrorAlert" class="hidden p-3 rounded-2xl bg-red-50 dark:bg-red-950/60 border border-red-400 text-red-700 dark:text-red-300 text-xs sm:text-sm font-bold"></div>
+
+        <!-- TAB 1: FORM ĐĂNG NHẬP -->
+        <form id="authLoginForm" onsubmit="handleAuthLoginSubmit(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs sm:text-sm font-extrabold text-slate-700 dark:text-slate-200 mb-1.5">
+              Email hoặc Số điện thoại:
+            </label>
+            <input type="text" id="loginAccountInput" required
+                   placeholder="VD: homanhduy2000@gmail.com hoặc 0817737782"
+                   class="w-full px-4 py-3 rounded-2xl bg-white dark:bg-slate-950 border-2 border-[#abbdff]/70 dark:border-slate-700 focus:border-[#1ed7b5] focus:outline-none text-sm text-slate-900 dark:text-white font-semibold transition" />
+          </div>
+          <div>
+            <label class="block text-xs sm:text-sm font-extrabold text-slate-700 dark:text-slate-200 mb-1.5">
+              Mật khẩu:
+            </label>
+            <input type="password" id="loginPasswordInput" required
+                   placeholder="Nhập mật khẩu của bạn..."
+                   class="w-full px-4 py-3 rounded-2xl bg-white dark:bg-slate-950 border-2 border-[#abbdff]/70 dark:border-slate-700 focus:border-[#1ed7b5] focus:outline-none text-sm text-slate-900 dark:text-white font-semibold transition" />
+          </div>
+
+          <button type="submit" id="btnSubmitLogin" class="btn-primary shimmer-btn w-full py-3.5 text-sm sm:text-base font-extrabold">
+            Đăng nhập vào hệ thống &rarr;
+          </button>
+
+          <!-- Nút Đăng nhập nhanh 1 chạm cho Chủ sở hữu / Khách trải nghiệm -->
+          <div class="pt-2 border-t border-slate-200/80 dark:border-slate-800 text-center space-y-2">
+            <span class="text-xs font-semibold text-slate-500 block">Hoặc trải nghiệm tức thì không cần gõ phím:</span>
+            <button type="button" onclick="quickDemoAdminLogin()"
+                    class="btn-mint w-full py-2.5 text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2">
+              <span>⚡</span>
+              <span>Đăng nhập nhanh (Admin Hồ Mạnh Duy)</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- TAB 2: FORM ĐĂNG KÝ TÀI KHOẢN MỚI -->
+        <form id="authRegisterForm" onsubmit="handleAuthRegisterSubmit(event)" class="hidden space-y-3.5">
+          <div>
+            <label class="block text-xs sm:text-sm font-extrabold text-slate-700 dark:text-slate-200 mb-1">
+              Họ và tên của bạn:
+            </label>
+            <input type="text" id="regFullNameInput" required
+                   placeholder="VD: Nguyễn Văn An"
+                   class="w-full px-4 py-2.5 rounded-2xl bg-white dark:bg-slate-950 border-2 border-[#abbdff]/70 dark:border-slate-700 focus:border-[#1ed7b5] focus:outline-none text-sm text-slate-900 dark:text-white font-semibold transition" />
+          </div>
+          <div>
+            <label class="block text-xs sm:text-sm font-extrabold text-slate-700 dark:text-slate-200 mb-1">
+              Email hoặc Số điện thoại:
+            </label>
+            <input type="text" id="regAccountInput" required
+                   placeholder="VD: tenban@gmail.com hoặc 0912345678"
+                   class="w-full px-4 py-2.5 rounded-2xl bg-white dark:bg-slate-950 border-2 border-[#abbdff]/70 dark:border-slate-700 focus:border-[#1ed7b5] focus:outline-none text-sm text-slate-900 dark:text-white font-semibold transition" />
+          </div>
+          <div>
+            <label class="block text-xs sm:text-sm font-extrabold text-slate-700 dark:text-slate-200 mb-1">
+              Vai trò công việc:
+            </label>
+            <select id="regRoleInput"
+                    class="w-full px-4 py-2.5 rounded-2xl bg-white dark:bg-slate-950 border-2 border-[#abbdff]/70 dark:border-slate-700 focus:border-[#1ed7b5] focus:outline-none text-sm text-slate-900 dark:text-white font-bold cursor-pointer">
+              <option value="Trưởng phòng Kinh doanh">Trưởng phòng Kinh doanh (Sales Manager)</option>
+              <option value="Giám đốc Điều hành (CEO)">Giám đốc Điều hành (CEO)</option>
+              <option value="Chuyên viên Sales Ops">Chuyên viên Sales Ops</option>
+              <option value="Nhân viên Kinh doanh (Sales)">Nhân viên Kinh doanh (Sales Rep)</option>
+              <option value="Khách hàng & Đối tác">Khách hàng &amp; Đối tác</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs sm:text-sm font-extrabold text-slate-700 dark:text-slate-200 mb-1">
+              Mật khẩu (tối thiểu 4 ký tự):
+            </label>
+            <input type="password" id="regPasswordInput" required minlength="4"
+                   placeholder="Tạo mật khẩu dễ nhớ..."
+                   class="w-full px-4 py-2.5 rounded-2xl bg-white dark:bg-slate-950 border-2 border-[#abbdff]/70 dark:border-slate-700 focus:border-[#1ed7b5] focus:outline-none text-sm text-slate-900 dark:text-white font-semibold transition" />
+          </div>
+
+          <button type="submit" id="btnSubmitRegister" class="btn-mint w-full py-3.5 text-sm sm:text-base font-extrabold">
+            ✨ Hoàn tất Đăng ký Tài khoản
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer"></div>
+
+  <!-- ========================================================================= -->
+  <!-- ROBOT AI DUYDUDI CHẠY TUẦN TRA XUNG QUANH MÀN HÌNH                        -->
+  <!-- ========================================================================= -->
+  <div id="roamingRobotContainer"
+       onmouseenter="onRobotMouseEnter()"
+       onmouseleave="onRobotMouseLeave()"
+       onclick="onRobotClick()"
+       title="Bấm vào Robot AI Duydudi để tương tác!">
+    <!-- Hộp thoại thông minh đi theo Robot -->
+    <div id="robotSpeechBubble">🤖 Xin chào! Tôi là Robot Duydudi</div>
+
+    <!-- Hình dáng Robot SVG hoạt hình theo 4 mảng màu (#1ed7b5, #f0f9a7, #894b77, #abbdff) -->
+    <div id="robotBodyWrapper" class="robot-body-wrapper">
+      <svg id="robotSvgSprite" viewBox="0 0 84 96" class="w-full h-full overflow-visible">
+        <defs>
+          <linearGradient id="robotHeadGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff" />
+            <stop offset="60%" stop-color="#e5ecff" />
+            <stop offset="100%" stop-color="#abbdff" />
+          </linearGradient>
+          <linearGradient id="robotTorsoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1ed7b5" />
+            <stop offset="55%" stop-color="#abbdff" />
+            <stop offset="100%" stop-color="#894b77" />
+          </linearGradient>
+        </defs>
+
+        <!-- Đế phản lực sáng dưới chân -->
+        <ellipse cx="42" cy="90" rx="18" ry="4" fill="rgba(30, 215, 181, 0.35)" />
+
+        <!-- Hai chân chạy bước -->
+        <g class="robot-leg-l">
+          <rect x="28" y="71" width="9" height="15" rx="4.5" fill="#894b77" stroke="#ffffff" stroke-width="1.5" />
+          <ellipse cx="32.5" cy="86" rx="6" ry="3.2" fill="#1ed7b5" />
+        </g>
+        <g class="robot-leg-r">
+          <rect x="47" y="71" width="9" height="15" rx="4.5" fill="#894b77" stroke="#ffffff" stroke-width="1.5" />
+          <ellipse cx="51.5" cy="86" rx="6" ry="3.2" fill="#1ed7b5" />
+        </g>
+
+        <!-- Hai tay vung vẩy -->
+        <g class="robot-arm-l">
+          <rect x="9" y="47" width="10" height="20" rx="5" fill="#abbdff" stroke="#894b77" stroke-width="1.8" />
+          <circle cx="14" cy="67" r="4" fill="#f0f9a7" stroke="#894b77" stroke-width="1.5" />
+        </g>
+        <g class="robot-arm-r">
+          <rect x="65" y="47" width="10" height="20" rx="5" fill="#abbdff" stroke="#894b77" stroke-width="1.8" />
+          <circle cx="70" cy="67" r="4" fill="#f0f9a7" stroke="#894b77" stroke-width="1.5" />
+        </g>
+
+        <!-- Thân Robot -->
+        <rect x="22" y="46" width="40" height="28" rx="13" fill="url(#robotTorsoGrad)" stroke="#ffffff" stroke-width="2.5" />
+        <!-- Lõi năng lượng AI trước ngực -->
+        <circle cx="42" cy="60" r="7" fill="#1e1b2e" stroke="#f0f9a7" stroke-width="2" />
+        <circle cx="42" cy="60" r="3.5" fill="#1ed7b5" />
+
+        <!-- Ăng-ten phát sáng trên đỉnh đầu -->
+        <line x1="42" y1="10" x2="42" y2="18" stroke="#894b77" stroke-width="3" stroke-linecap="round" />
+        <circle class="robot-antenna-bulb" cx="42" cy="7" r="5" fill="#f0f9a7" stroke="#1ed7b5" stroke-width="2" />
+
+        <!-- Tai nghe hai bên -->
+        <rect x="13" y="25" width="6" height="14" rx="3" fill="#894b77" />
+        <rect x="65" y="25" width="6" height="14" rx="3" fill="#894b77" />
+
+        <!-- Đầu Robot -->
+        <rect x="17" y="16" width="50" height="31" rx="14" fill="url(#robotHeadGrad)" stroke="#894b77" stroke-width="2.2" />
+
+        <!-- Màn hình khuôn mặt kính đen -->
+        <rect x="22" y="21" width="40" height="21" rx="9" fill="#1b1326" />
+
+        <!-- Đôi mắt LED xanh #1ed7b5 chớp mắt + Má hồng + Miệng cười -->
+        <g class="robot-eyes">
+          <circle cx="33" cy="30" r="4" fill="#1ed7b5" />
+          <circle cx="34.2" cy="28.8" r="1.3" fill="#ffffff" />
+          <circle cx="51" cy="30" r="4" fill="#1ed7b5" />
+          <circle cx="52.2" cy="28.8" r="1.3" fill="#ffffff" />
+        </g>
+        <!-- Má ửng hồng -->
+        <ellipse cx="27.5" cy="35" rx="2.6" ry="1.4" fill="#f472b6" opacity="0.8" />
+        <ellipse cx="56.5" cy="35" rx="2.6" ry="1.4" fill="#f472b6" opacity="0.8" />
+        <!-- Miệng cười LED -->
+        <path d="M 37 35.5 Q 42 39.5 47 35.5" fill="none" stroke="#f0f9a7" stroke-width="2.2" stroke-linecap="round" />
+      </svg>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- CỬA SỔ CHAT TRỰC TIẾP VỚI ROBOT AI DUYDUDI & THÔNG TIN HOTLINE            -->
+  <!-- ========================================================================= -->
+  <div id="robotChatPanel"
+       class="fixed bottom-6 right-6 z-50 hidden w-[92vw] sm:w-[410px] max-h-[82vh] flex-col rounded-[28px] overflow-hidden shadow-2xl border-2 border-[#1ed7b5] bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl fade-1">
+
+    <!-- Header cửa sổ Chat -->
+    <div class="px-5 py-4 text-white flex items-center justify-between shrink-0"
+         style="background: linear-gradient(135deg, #894b77 0%, #5c3152 55%, #12947c 100%);">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-white/20 border border-white/40 flex items-center justify-center text-xl shadow-inner">
+          🤖
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="text-base font-extrabold tracking-tight text-white">Robot AI Duydudi</h3>
+            <span class="px-2 py-0.5 rounded-full bg-[#1ed7b5] text-[#062922] text-[10px] font-black uppercase">Online</span>
+          </div>
+          <p class="text-xs text-[#f0f9a7] font-medium">Trả lời câu hỏi thường gặp &amp; Hỗ trợ 24/7</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button id="btnToggleRobotRun" onclick="toggleRobotPatrolMode()" title="Tạm dừng / Cho Robot chạy tiếp"
+                class="px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs font-bold cursor-pointer transition">
+          🏃 Chạy tiếp
+        </button>
+        <button onclick="toggleRobotChatPanel(false)" title="Đóng khung chat"
+                class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/30 text-white font-bold text-sm cursor-pointer transition flex items-center justify-center">
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- Thanh Thông Tin Hotline & Liên Hệ Nhanh -->
+    <div class="px-4 py-2.5 bg-gradient-to-r from-[#1ed7b5]/15 via-[#f0f9a7]/35 to-[#abbdff]/25 dark:from-slate-950 dark:to-slate-900 border-b border-[#abbdff]/40 dark:border-slate-800 text-[11.5px] space-y-1 shrink-0">
+      <div class="flex flex-wrap items-center justify-between gap-1 font-bold text-slate-800 dark:text-slate-200">
+        <a href="tel:0817737782" class="text-[#096b58] dark:text-[#1ed7b5] hover:underline flex items-center gap-1">
+          <span>📞 Hotline:</span><strong class="font-mono">0817737782</strong>
+        </a>
+        <a href="mailto:homanhduy2000@gmail.com" class="text-[#36499e] dark:text-[#abbdff] hover:underline flex items-center gap-1">
+          <span>✉️</span><strong class="font-mono">homanhduy2000@gmail.com</strong>
+        </a>
+      </div>
+      <div class="flex flex-wrap items-center justify-between gap-1 text-slate-700 dark:text-slate-300 font-semibold">
+        <span>🌐 FB: <strong class="text-[#894b77] dark:text-[#f0f9a7]">Hồ Mạnh Duy</strong></span>
+        <span>📸 IG: <strong class="text-[#894b77] dark:text-[#f0f9a7]">Duybird</strong></span>
+      </div>
+    </div>
+
+    <!-- Khung hiển thị tin nhắn Chat -->
+    <div id="robotChatMessages" class="p-4 overflow-y-auto custom-scroll flex-1 space-y-3 max-h-[310px] min-h-[220px] text-sm">
+      <!-- Tin nhắn chào mừng mặc định từ Robot -->
+      <div class="flex items-start gap-2.5">
+        <span class="w-8 h-8 rounded-xl bg-[#1ed7b5]/25 text-[#085e4e] dark:text-[#1ed7b5] flex items-center justify-center text-base shrink-0 font-bold">🤖</span>
+        <div class="p-3.5 rounded-2xl rounded-tl-xs bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 space-y-1.5 leading-relaxed shadow-2xs">
+          <p class="font-bold text-[#894b77] dark:text-[#1ed7b5]">Xin chào! Tôi là Robot AI Duydudi 👋</p>
+          <p>Bạn có thể bấm vào các câu hỏi thường gặp bên dưới hoặc nhập câu hỏi bất kỳ để tôi trả lời ngay nhé!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gợi ý Câu hỏi thường gặp (1-Click FAQ Chips) -->
+    <div class="px-3.5 py-2.5 bg-slate-50/90 dark:bg-slate-950/80 border-t border-slate-200/80 dark:border-slate-800 shrink-0">
+      <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 block mb-1.5">Câu hỏi thường gặp (Bấm để hỏi):</span>
+      <div class="flex flex-wrap gap-1.5 max-h-[76px] overflow-y-auto custom-scroll">
+        <button type="button" onclick="askRobotQuickQuestion('Thông tin Hotline và liên hệ Công ty của Duydudi?')"
+                class="px-2.5 py-1 rounded-full bg-[#f0f9a7] hover:bg-[#e4f07d] text-[#282e07] text-xs font-extrabold cursor-pointer transition">
+          📞 Hotline &amp; Liên hệ
+        </button>
+        <button type="button" onclick="askRobotQuickQuestion('Tóm tắt doanh số và KPI hiện tại?')"
+                class="px-2.5 py-1 rounded-full bg-[#1ed7b5]/20 hover:bg-[#1ed7b5]/35 text-[#075949] dark:text-[#1ed7b5] text-xs font-bold cursor-pointer transition">
+          📊 Tóm tắt doanh số
+        </button>
+        <button type="button" onclick="askRobotQuickQuestion('Top 5 khách hàng ưu tiên tuần tới là ai?')"
+                class="px-2.5 py-1 rounded-full bg-[#894b77]/15 hover:bg-[#894b77]/25 text-[#894b77] dark:text-[#f0f9a7] text-xs font-bold cursor-pointer transition">
+          ⭐ Top 5 ưu tiên
+        </button>
+        <button type="button" onclick="askRobotQuickQuestion('Hướng dẫn cách sử dụng trang web này?')"
+                class="px-2.5 py-1 rounded-full bg-[#abbdff]/35 hover:bg-[#abbdff]/55 text-[#233375] dark:text-[#abbdff] text-xs font-bold cursor-pointer transition">
+          📖 Cách dùng web
+        </button>
+        <button type="button" onclick="askRobotQuickQuestion('Làm sao để tải báo cáo Excel, Word, PowerPoint?')"
+                class="px-2.5 py-1 rounded-full bg-[#1ed7b5]/20 hover:bg-[#1ed7b5]/35 text-[#075949] dark:text-[#1ed7b5] text-xs font-bold cursor-pointer transition">
+          📥 Tải Excel/Word/PPTX
+        </button>
+        <button type="button" onclick="askRobotQuickQuestion('Quy tắc trọng số dự báo 10% đến 90% tính thế nào?')"
+                class="px-2.5 py-1 rounded-full bg-[#abbdff]/35 hover:bg-[#abbdff]/55 text-[#233375] dark:text-[#abbdff] text-xs font-bold cursor-pointer transition">
+          ⚖️ Quy tắc trọng số
+        </button>
+        <button type="button" onclick="askRobotQuickQuestion('Tình hình 10 nhân viên Sales hiện tại ra sao?')"
+                class="px-2.5 py-1 rounded-full bg-[#894b77]/15 hover:bg-[#894b77]/25 text-[#894b77] dark:text-[#f0f9a7] text-xs font-bold cursor-pointer transition">
+          👥 Đội ngũ 10 Sales
+        </button>
+      </div>
+    </div>
+
+    <!-- Ô nhập tin nhắn Chat -->
+    <form onsubmit="handleRobotChatSubmit(event)" class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2 shrink-0">
+      <input type="text" id="robotChatInput" placeholder="Nhập câu hỏi cho Robot AI..."
+             class="flex-1 bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#1ed7b5]" />
+      <button type="submit" id="btnRobotChatSend"
+              class="btn-mint px-5 py-2.5 text-sm font-extrabold shrink-0">
+        Gửi &rarr;
+      </button>
+    </form>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT                                                                -->
+  <!-- ========================================================================= -->
+  <script>
+    let currentStep = 1;
+    let currentStep2SubTab = 'open';
+    let currentAnalysisResult = null;
+    let lastFileErrorData = null;
+    let humanOverridesState = {};
+    let selectedUploadFiles = [];
+    let currentUserRating = 5;
+    let chartCompanyKpiInst = null;
+    let chartTop5Inst = null;
+    let chartRepsKpiInst = null;
+
+    const STEP_LABELS = {
+      1: 'Bước 1 / 6 — Chọn tệp dữ liệu',
+      2: 'Bước 2 / 6 — Xem kết quả tính toán',
+      3: 'Bước 3 / 6 — Xem cảnh báo rủi ro',
+      4: 'Bước 4 / 6 — Xác nhận trạng thái',
+      5: 'Bước 5 / 6 — Xem biểu đồ doanh số',
+      6: 'Bước 6 / 6 — Chốt báo cáo & Tải về'
+    };
+
+    function showToast(msg, type = 'info') {
+      const box = document.getElementById('toastContainer');
+      if (!box) return;
+      const el = document.createElement('div');
+      el.className = `toast-item ${type}`;
+      el.textContent = msg;
+      box.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(10px)';
+        el.style.transition = 'all 0.3s ease';
+        setTimeout(() => el.remove(), 300);
+      }, 3600);
+    }
+
+    function initTheme() { applyTheme(localStorage.getItem('duydudi_theme') || 'light'); }
+    function toggleThemeMode() {
+      const target = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+      applyTheme(target);
+      localStorage.setItem('duydudi_theme', target);
+    }
+    function applyTheme(theme) {
+      const lbl = document.getElementById('themeToggleLabel');
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+        if (lbl) lbl.textContent = 'Sáng';
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+        if (lbl) lbl.textContent = 'Tối';
+      }
+      if (currentAnalysisResult && currentStep === 5) renderStep5Charts(currentAnalysisResult);
+    }
+
+    function initCoverGreeting() {
+      const timeEl = document.getElementById('coverTimeGreeting');
+      const msgEl = document.getElementById('coverDynamicWelcomeText');
+      const h = new Date().getHours();
+      let greet = 'Xin chào! Chào mừng đến với Công ty của Duydudi';
+      if (h >= 5 && h < 12) greet = 'Chào buổi sáng! Chúc bạn ngày mới thuận lợi cùng Công ty của Duydudi';
+      else if (h >= 12 && h < 18) greet = 'Chào buổi chiều! Trợ lý AI Công ty của Duydudi luôn sẵn sàng';
+      else greet = 'Chào buổi tối! Hãy để Công ty của Duydudi giúp bạn làm báo cáo thật nhanh';
+      if (timeEl) timeEl.textContent = greet;
+
+      const msgs = [
+        'Không cần biết kỹ thuật. Bạn chỉ cần chọn tệp Excel hoặc Google Sheets — hệ thống sẽ tự tính doanh số và vẽ biểu đồ ngay.',
+        'Mỗi bước chỉ có đúng một việc đơn giản, có hướng dẫn rõ ràng ngay trên màn hình.',
+        'Chưa có tệp sẵn? Bấm "Xem thử kết quả mẫu ngay" để trải nghiệm tức thì chỉ trong 1 lần chạm.'
+      ];
+      let idx = 0;
+      if (msgEl) {
+        msgEl.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        setInterval(() => {
+          idx = (idx + 1) % msgs.length;
+          msgEl.style.opacity = '0';
+          msgEl.style.transform = 'translateY(6px)';
+          setTimeout(() => {
+            msgEl.textContent = msgs[idx];
+            msgEl.style.opacity = '1';
+            msgEl.style.transform = 'translateY(0)';
+          }, 360);
+        }, 5500);
+      }
+    }
+
+    function openTopMode(mode) {
+      const cover = document.getElementById('modeCover');
+      const ws = document.getElementById('modeWorkspace');
+      const nCover = document.getElementById('topNavCover');
+      const nWs = document.getElementById('topNavWorkspace');
+      if (mode === 'cover') {
+        cover.className = 'view-active flex-1 relative overflow-hidden aurora-canvas';
+        ws.className = 'view-hidden flex-1 aurora-canvas py-7 px-4 sm:px-6';
+        nCover.classList.add('active'); nWs.classList.remove('active');
+      } else {
+        cover.className = 'view-hidden flex-1 relative overflow-hidden aurora-canvas';
+        ws.className = 'view-active flex-1 aurora-canvas py-7 px-4 sm:px-6';
+        nCover.classList.remove('active'); nWs.classList.add('active');
+      }
+      if (mode === 'workspace' && currentStep === 5 && currentAnalysisResult) {
+        requestAnimationFrame(() => renderStep5Charts(currentAnalysisResult));
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function startStepWorkflow(stepNum) { openTopMode('workspace'); goToStep(stepNum); }
+
+    function goToStep(stepNum) {
+      if (stepNum > 1 && !currentAnalysisResult) {
+        showToast('Hãy chọn tệp hợp lệ ở Bước 1 trước nhé!', 'error');
+        stepNum = 1;
+      }
+      currentStep = stepNum;
+
+      const pct = Math.round((stepNum / 6) * 100);
+      document.getElementById('progressStepText').textContent = STEP_LABELS[stepNum] || '';
+      document.getElementById('progressPercentText').textContent = pct + '%';
+      document.getElementById('progressFillBar').style.width = pct + '%';
+
+      for (let i = 1; i <= 6; i++) {
+        const v = document.getElementById('stepView' + i);
+        const t = document.getElementById('stepTab' + i);
+        const n = document.getElementById('stepNum' + i);
+        if (v) {
+          v.classList.toggle('view-active', i === stepNum);
+          v.classList.toggle('view-hidden', i !== stepNum);
+        }
+        if (t) {
+          t.classList.remove('active', 'locked', 'done');
+          if (i === stepNum) {
+            t.classList.add('active');
+            if (n) n.textContent = String(i);
+          } else if (i > 1 && !currentAnalysisResult) {
+            t.classList.add('locked');
+            if (n) n.textContent = String(i);
+          } else if (i < stepNum && currentAnalysisResult) {
+            t.classList.add('done');
+            if (n) n.textContent = '✓';
+          } else {
+            if (n) n.textContent = String(i);
+          }
+        }
+      }
+      if (stepNum === 5 && currentAnalysisResult) {
+        requestAnimationFrame(() => renderStep5Charts(currentAnalysisResult));
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleAdvancedSettings() {
+      document.getElementById('advancedSettingsBox')?.classList.toggle('hidden');
+    }
+    function openHelpModal() {
+      const m = document.getElementById('helpModal');
+      if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
+    }
+    function closeHelpModal() {
+      const m = document.getElementById('helpModal');
+      if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+    }
+
+    function fmtVND(n) {
+      if (n === null || n === undefined || isNaN(n)) return '0 đ';
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n);
+    }
+    function fmtShortBill(n) {
+      if (!n) return '0 đ';
+      if (Math.abs(n) >= 1_000_000_000) return (n / 1_000_000_000).toFixed(2) + ' Tỷ';
+      if (Math.abs(n) >= 1_000_000) return (n / 1_000_000).toFixed(0) + ' Tr';
+      return fmtVND(n);
+    }
+
+    function highlightStars(r) {
+      document.querySelectorAll('.star-rating-item').forEach((s, idx) => {
+        s.classList.toggle('text-[#894b77]', idx < r);
+        s.classList.toggle('dark:text-[#f0f9a7]', idx < r);
+        s.classList.toggle('text-slate-300', idx >= r);
+        s.classList.toggle('dark:text-slate-600', idx >= r);
+      });
+    }
+    function resetStars() { highlightStars(currentUserRating); }
+    function submitUserRating(r) {
+      currentUserRating = r; highlightStars(r);
+      document.getElementById('starRatingFeedbackText').textContent = `Cảm ơn bạn đã đánh giá ${r}/5 sao!`;
+      showToast(`Cảm ơn bạn đã gửi đánh giá ${r}/5 sao cho Công ty của Duydudi!`, 'success');
+    }
+
+    // STEP 1: UPLOAD, DEMO & STRICT VALIDATION
+    function triggerFileInputClick() { document.getElementById('portalFileInput')?.click(); }
+    function handleDropzoneDragOver(e) { e.preventDefault(); document.getElementById('smallpdfDropzone')?.classList.add('border-[#1ed7b5]', 'scale-[1.01]'); }
+    function handleDropzoneDragLeave(e) { e.preventDefault(); document.getElementById('smallpdfDropzone')?.classList.remove('border-[#1ed7b5]', 'scale-[1.01]'); }
+    function handleDropzoneDrop(e) {
+      e.preventDefault();
+      document.getElementById('smallpdfDropzone')?.classList.remove('border-[#1ed7b5]', 'scale-[1.01]');
+      const files = e.dataTransfer?.files;
+      if (files && files.length > 0) {
+        selectedUploadFiles = Array.from(files);
+        updateSelectedFilesUI();
+        executeStartPipeline();
+      }
+    }
+    function handlePortalFilesChosen(inp) {
+      if (inp.files && inp.files.length > 0) {
+        selectedUploadFiles = Array.from(inp.files);
+        updateSelectedFilesUI();
+        executeStartPipeline();
+      }
+    }
+    function updateSelectedFilesUI() {
+      if (!selectedUploadFiles.length) return;
+      document.getElementById('dropzoneSelectedCard')?.classList.remove('hidden');
+      document.getElementById('dropzoneFileName').textContent = selectedUploadFiles.map(f => f.name).join(', ');
+      const kb = (selectedUploadFiles.reduce((a, f) => a + f.size, 0) / 1024).toFixed(1);
+      document.getElementById('dropzoneFileSize').textContent = `${kb} KB · Đang kiểm tra...`;
+    }
+    function clearSelectedFiles(e) {
+      if (e) e.stopPropagation();
+      selectedUploadFiles = [];
+      document.getElementById('dropzoneSelectedCard')?.classList.add('hidden');
+      document.getElementById('inlineFileErrorBox')?.classList.add('hidden');
+      const inp = document.getElementById('portalFileInput');
+      if (inp) inp.value = '';
+    }
+
+    async function runInstantDemoWithCleanFile() {
+      openTopMode('workspace');
+      goToStep(1);
+      showToast('Đang tải tệp mẫu chuẩn và phân tích giúp bạn...', 'info');
+      try {
+        const res = await fetch('/api/download-sample/scenario_1_normal?format=xlsx');
+        const blob = await res.blob();
+        selectedUploadFiles = [new File([blob], 'Du_Lieu_Mau_Chuan_Duydudi.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })];
+        updateSelectedFilesUI();
+        await executeStartPipeline();
+      } catch (err) {
+        showToast('Không thể tải tệp mẫu: ' + err.message, 'error');
+      }
+    }
+
+    async function loadBrokenSampleFileForTest() {
+      const res = await fetch('/api/sample-broken-file');
+      const txt = await res.text();
+      selectedUploadFiles = [new File([new Blob([txt], { type: 'text/csv;charset=utf-8;' })], 'File_Loi_Mau.csv', { type: 'text/csv' })];
+      updateSelectedFilesUI();
+      await executeStartPipeline();
+    }
+    async function loadEmptySampleFileForTest() {
+      selectedUploadFiles = [new File([new Blob([], { type: 'text/csv;charset=utf-8;' })], 'File_Rong.csv', { type: 'text/csv' })];
+      updateSelectedFilesUI();
+      await executeStartPipeline();
+    }
+
+    async function executeStartPipeline() {
+      const gsheetUrl = document.getElementById('portalGsheetUrl')?.value?.trim();
+      if (!selectedUploadFiles.length && !gsheetUrl) {
+        showToast('Vui lòng chọn tệp từ máy hoặc dán link Google Sheets!', 'error');
+        return;
+      }
+
+      const emptyFiles = selectedUploadFiles.filter(f => !f || f.size === 0);
+      if (emptyFiles.length > 0) {
+        currentAnalysisResult = null;
+        goToStep(1);
+        showToast('Tệp bị rỗng (0 byte) nên không thể chạy!', 'error');
+        openAiFileRepairModal({
+          can_run: false,
+          file_diagnostics: {
+            can_run: false, has_errors: true, is_empty_file: true, total_error_count: emptyFiles.length,
+            summary_message: `Tệp "${emptyFiles.map(f => f.name).join(', ')}" bị rỗng (0 byte). Hệ thống chỉ chạy khi tệp có dữ liệu hợp lệ.`,
+            sample_errors: emptyFiles.map(f => ({ opp_id: 'RỖNG', customer_name: f.name, error_title: 'Tệp không có dữ liệu', error_detail: 'Dung lượng 0 byte.' }))
+          }
+        });
+        return;
+      }
+
+      const btn = document.getElementById('btnStartPipeline');
+      const oldTxt = btn ? btn.innerHTML : '';
+      if (btn) { btn.innerHTML = 'Đang kiểm tra tệp...'; btn.disabled = true; }
+
+      try {
+        const data = await triggerRunAgent(false);
+        const blocked = !data || data.can_run === false || (data.file_diagnostics && data.file_diagnostics.has_errors);
+        if (blocked) {
+          currentAnalysisResult = null;
+          goToStep(1);
+          showToast(data?.file_diagnostics?.is_empty_file ? 'Tệp bị rỗng — Không thể chạy!' : 'Tệp bị lỗi — Không thể chạy!', 'error');
+          openAiFileRepairModal(data);
+        } else {
+          currentAnalysisResult = data;
+          renderAllStepViews(data);
+          document.getElementById('inlineFileErrorBox')?.classList.add('hidden');
+          closeAiFileRepairModal();
+          showToast('Tệp hợp lệ! Đã tính xong số liệu cho bạn.', 'success');
+          goToStep(2);
+        }
+      } catch (err) {
+        currentAnalysisResult = null;
+        goToStep(1);
+        showToast('Tệp bị lỗi định dạng — Không thể chạy!', 'error');
+        openAiFileRepairModal({
+          can_run: false,
+          file_diagnostics: {
+            can_run: false, has_errors: true, is_empty_file: false, total_error_count: 1,
+            summary_message: `Không thể đọc tệp do lỗi: ${err.message}`,
+            sample_errors: [{ opp_id: 'LỖI', customer_name: 'Tệp tải lên', error_title: 'Không đọc được tệp', error_detail: err.message }]
+          }
+        });
+      } finally {
+        if (btn) { btn.innerHTML = oldTxt; btn.disabled = false; }
+      }
+    }
+
+    async function triggerRunAgent(useLastUploaded = false) {
+      const reportDate = document.getElementById('portalReportDate')?.value || '2026-11-12';
+      const apiKey = document.getElementById('portalApiKey')?.value?.trim() || 'AQ.Ab8RN6InYyqJ-KtuhaX0jncAZVHrO45id7dCaYqu6tWuAsRu9A';
+      const gsheetUrl = document.getElementById('portalGsheetUrl')?.value?.trim();
+      let res;
+
+      if (selectedUploadFiles.length > 0 && !useLastUploaded) {
+        const fd = new FormData();
+        selectedUploadFiles.forEach(f => fd.append('files', f));
+        fd.append('report_date', reportDate);
+        fd.append('inactivity_threshold_days', 14);
+        fd.append('api_key', apiKey);
+        fd.append('human_overrides', JSON.stringify(humanOverridesState));
+        res = await fetch('/api/analyze/upload', { method: 'POST', body: fd });
+      } else if (gsheetUrl && !useLastUploaded) {
+        res = await fetch('/api/analyze/gsheet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ gsheet_url: gsheetUrl, report_date: reportDate, inactivity_threshold_days: 14, human_overrides: humanOverridesState, api_key: apiKey })
+        });
+      } else {
+        res = await fetch('/api/analyze/preset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ scenario_id: 'scenario_1_normal', report_date: reportDate, inactivity_threshold_days: 14, human_overrides: humanOverridesState, llm_provider: 'gemini', api_key: apiKey, use_last_uploaded: true })
+        });
+      }
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({}));
+        throw new Error(e.detail || `HTTP ${res.status}`);
+      }
+      return await res.json();
+    }
+
+    function renderAllStepViews(data) {
+      const kpi = data.company_kpis;
+      const anoms = data.anomalies || [];
+      const topOpps = data.priority_recommendations?.top_opportunities || [];
+      const reps = data.rep_summary || [];
+
+      // BƯỚC 2
+      document.getElementById('step2DatasetBadge').textContent = data.dataset_label || 'Dữ liệu hợp lệ';
+      document.getElementById('s2TotalUnique').textContent = kpi.total_unique_opportunities || 0;
+      document.getElementById('s2DedupNote').textContent = `Đã gộp ${(data.duplicates_merged || []).length} trùng lặp`;
+      document.getElementById('s2RecordedRev').textContent = fmtShortBill(kpi.total_recorded_revenue);
+      document.getElementById('s2OpenCount').textContent = kpi.total_open_opportunities || 0;
+      document.getElementById('s2ForecastRev').textContent = fmtShortBill(kpi.total_weighted_forecast_estimate || kpi.total_weighted_forecast_value);
+      renderStep2Table(data, currentStep2SubTab);
+
+      // BƯỚC 3
+      document.getElementById('s3AnomCountBadge').textContent = `${anoms.length} mục cần xem`;
+      document.getElementById('s3AnomaliesList').innerHTML = anoms.length === 0
+        ? '<div class="p-8 bento-tile block-mint rounded-2xl text-center text-base font-bold text-slate-700 dark:text-slate-200">Tuyệt vời! Không có mục rủi ro nào. Bạn bấm "Tiếp theo" nhé.</div>'
+        : anoms.map(a => `
+          <div class="bento-tile block-plum rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2.5 flex-wrap">
+                <span class="font-mono text-sm font-extrabold px-2.5 py-0.5 rounded-full bg-[#894b77]/15 text-[#894b77] dark:text-[#f0f9a7]">${a.opp_id}</span>
+                <strong class="text-base text-slate-900 dark:text-white">${a.customer_name}</strong>
+              </div>
+              <p class="text-sm font-bold text-slate-800 dark:text-slate-200">${a.title}</p>
+              <p class="text-sm text-slate-600 dark:text-slate-400">${a.description}</p>
+            </div>
+            <strong class="font-mono text-base text-[#894b77] dark:text-[#1ed7b5] shrink-0">${fmtShortBill(a.deal_value)}</strong>
+          </div>
+        `).join('');
+
+      // BƯỚC 4
+      document.getElementById('s4ReviewTable').innerHTML = anoms.length === 0
+        ? '<div class="p-8 text-center text-base font-semibold text-slate-500">Không có mục nào cần thay đổi. Bạn bấm "Tiếp theo" để xem biểu đồ.</div>'
+        : `
+          <table class="w-full text-left border-collapse text-sm sm:text-base">
+            <thead>
+              <tr class="bg-[#abbdff]/25 dark:bg-slate-950 text-slate-700 dark:text-slate-400 uppercase text-xs border-b dark:border-slate-800">
+                <th class="p-4">Khách Hàng</th><th class="p-4">Cảnh Báo</th><th class="p-4">Lựa Chọn Của Bạn</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y dark:divide-slate-800">
+              ${anoms.map(a => {
+                const cur = humanOverridesState[a.opp_id]?.action || '';
+                return `
+                  <tr class="align-middle">
+                    <td class="p-4 font-bold">${a.customer_name}<span class="block text-xs font-mono text-slate-500">${a.opp_id} · ${fmtShortBill(a.deal_value)}</span></td>
+                    <td class="p-4 text-sm text-slate-700 dark:text-slate-300">${a.title}</td>
+                    <td class="p-4 min-w-[230px]">
+                      <select onchange="onHumanOverrideChange('${a.opp_id}', this.value)" class="w-full p-3 rounded-xl bg-white dark:bg-slate-950 border-2 border-[#abbdff] dark:border-slate-700 focus:border-[#1ed7b5] text-sm font-bold cursor-pointer transition">
+                        <option value="" ${cur === '' ? 'selected' : ''}>Giữ nguyên theo AI</option>
+                        <option value="SET_CLOSED_LOST" ${cur === 'SET_CLOSED_LOST' ? 'selected' : ''}>Đã mất khách</option>
+                        <option value="SET_CLOSED_WON" ${cur === 'SET_CLOSED_WON' ? 'selected' : ''}>Đã chốt đơn</option>
+                        <option value="VERIFY_AND_KEEP_OPEN" ${cur === 'VERIFY_AND_KEEP_OPEN' ? 'selected' : ''}>Vẫn đang theo đuổi</option>
+                      </select>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        `;
+
+      // BƯỚC 5 (Biểu đồ)
+      document.getElementById('s5CompanyAttain').textContent = `Đạt ${kpi.company_actual_attainment_pct}% · Dự kiến ${kpi.company_projected_attainment_pct}%`;
+      document.getElementById('s5BoundaryNote').textContent = `${topOpps.length} khách ưu tiên`;
+      renderStep5Charts(data);
+
+      document.getElementById('s5Top5Cards').innerHTML = topOpps.map(o => `
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-[#abbdff]/60 dark:border-slate-800 space-y-1.5 text-sm">
+          <div class="flex justify-between font-bold">
+            <span>#${o.rank} ${o.customer_name}</span>
+            <span class="font-mono text-[#0c8f76] dark:text-[#1ed7b5]">${fmtShortBill(o.weighted_forecast_value)}</span>
+          </div>
+          <div class="text-slate-600 dark:text-slate-300">Tiến độ: <strong>${o.effective_stage}</strong> · Hạn: <span class="font-mono">${o.expected_close_date || '-'}</span></div>
+          <div class="font-semibold text-slate-900 dark:text-white">Việc tuần tới: ${o.recommended_action_next_week}</div>
+        </div>
+      `).join('');
+
+      document.getElementById('s5KpiTable').innerHTML = `
+        <table class="w-full text-left border-collapse text-sm">
+          <thead>
+            <tr class="bg-[#abbdff]/25 dark:bg-slate-950 text-slate-700 dark:text-slate-400 uppercase text-xs border-b dark:border-slate-800">
+              <th class="p-3">Nhân Viên</th><th class="p-3 text-right">Mục Tiêu</th><th class="p-3 text-right">Đã Bán</th><th class="p-3 text-center">% Đạt</th><th class="p-3 text-right">Dự Kiến</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y dark:divide-slate-800">
+            ${reps.map(r => `
+              <tr>
+                <td class="p-3 font-bold">${r.rep_name} <span class="font-mono text-xs text-slate-400">(${r.rep_id})</span></td>
+                <td class="p-3 text-right">${fmtShortBill(r.kpi_target)}</td>
+                <td class="p-3 text-right font-bold text-[#0c8f76] dark:text-[#1ed7b5]">${fmtShortBill(r.recorded_revenue)}</td>
+                <td class="p-3 text-center font-mono font-bold">${r.actual_attainment_pct}%</td>
+                <td class="p-3 text-right font-semibold text-[#894b77] dark:text-[#abbdff]">${fmtShortBill(r.weighted_forecast_value)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+
+      // BƯỚC 6 (Hoàn tất)
+      document.getElementById('s6RecordedRev').textContent = fmtShortBill(kpi.total_recorded_revenue);
+      document.getElementById('s6ForecastRev').textContent = fmtShortBill(kpi.total_weighted_forecast_estimate || kpi.total_weighted_forecast_value);
+      document.getElementById('s6OpenCount').textContent = kpi.total_open_opportunities || 0;
+      document.getElementById('s6AttainPct').textContent = `${kpi.company_projected_attainment_pct}%`;
+      const eb = data.ai_executive_brief || data.executive_brief || { content: '' };
+      document.getElementById('s6ExecutiveBrief').textContent = (eb.content || '').replace(/[\#\*\_]/g, '');
+    }
+
+    function renderStep5Charts(data) {
+      if (typeof Chart === 'undefined' || !data) return;
+      const isDark = document.documentElement.classList.contains('dark');
+      const tickColor = isDark ? '#cbd5e1' : '#334155';
+      const gridColor = isDark ? 'rgba(171,189,255,0.12)' : 'rgba(137,75,119,0.08)';
+      const kpi = data.company_kpis || {};
+      const topOpps = data.priority_recommendations?.top_opportunities || [];
+      const reps = data.rep_summary || [];
+
+      const actualPct = Number(kpi.company_actual_attainment_pct || 0);
+      const projTotalPct = Number(kpi.company_projected_attainment_pct || 0);
+      const extraProjPct = Math.max(0, +(projTotalPct - actualPct).toFixed(1));
+      const gapPct = Math.max(0, +(100 - projTotalPct).toFixed(1));
+
+      document.getElementById('s5DoughnutCenterPct').textContent = `${projTotalPct}%`;
+      document.getElementById('s5LegendActual').textContent = `${actualPct}%`;
+      document.getElementById('s5LegendProj').textContent = `+${extraProjPct}%`;
+      document.getElementById('s5LegendGap').textContent = `${gapPct}%`;
+
+      // Biểu đồ 1: Doughnut theo đúng 4 mảng màu (#1ed7b5, #abbdff, #894b77)
+      const ctx1 = document.getElementById('chartCompanyKpi');
+      if (ctx1) {
+        if (chartCompanyKpiInst) chartCompanyKpiInst.destroy();
+        chartCompanyKpiInst = new Chart(ctx1, {
+          type: 'doughnut',
+          data: {
+            labels: ['Đã bán (%)', 'Dự kiến thêm (%)', 'Còn thiếu (%)'],
+            datasets: [{
+              data: [actualPct, extraProjPct, gapPct],
+              backgroundColor: ['#1ed7b5', '#abbdff', '#894b77'],
+              borderWidth: 0,
+              hoverOffset: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            animation: { animateScale: true, animateRotate: true, duration: 900, easing: 'easeOutQuart' },
+            plugins: { legend: { display: false } }
+          }
+        });
+      }
+
+      document.getElementById('s5Top5CompactStrip').innerHTML = topOpps.map(o => `
+        <span class="px-3.5 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-[#abbdff]/60 dark:border-slate-700 text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100">
+          <strong class="font-mono text-[#894b77] dark:text-[#1ed7b5]">#${o.rank}</strong> ${o.customer_name}
+        </span>
+      `).join('');
+
+      // Biểu đồ 2: Top 5 theo dải màu #894b77 -> #1ed7b5 -> #abbdff -> #f0f9a7
+      const ctx2 = document.getElementById('chartTop5Priorities');
+      if (ctx2) {
+        if (chartTop5Inst) chartTop5Inst.destroy();
+        const labels2 = topOpps.map(o => `#${o.rank} ${o.customer_name.length > 22 ? o.customer_name.slice(0, 21) + '…' : o.customer_name}`);
+        const vals2 = topOpps.map(o => +((o.weighted_forecast_value || 0) / 1_000_000).toFixed(0));
+        chartTop5Inst = new Chart(ctx2, {
+          type: 'bar',
+          data: {
+            labels: labels2,
+            datasets: [{
+              data: vals2,
+              backgroundColor: ['#894b77', '#1ed7b5', '#7e96f7', '#5de3c8', '#d4e157'],
+              borderRadius: 10,
+              barThickness: 28
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 850, easing: 'easeOutQuart' },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                bodyFont: { size: 13 }, titleFont: { size: 14 },
+                callbacks: {
+                  title: (items) => { const o = topOpps[items[0].dataIndex]; return o ? `#${o.rank} ${o.customer_name}` : ''; },
+                  label: (ctx) => {
+                    const o = topOpps[ctx.dataIndex];
+                    return [` Dự kiến: ${fmtShortBill(o.weighted_forecast_value)}`, ` Tiến độ: ${o.effective_stage}`, ` Việc tuần tới: ${o.recommended_action_next_week}`];
+                  }
+                }
+              }
+            },
+            scales: {
+              x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 13, weight: '600' }, callback: v => v + ' Tr' } },
+              y: { grid: { display: false }, ticks: { color: tickColor, font: { size: 13, weight: '700' } } }
+            }
+          }
+        });
+      }
+
+      // Biểu đồ 3: 10 Sales với 3 mảng màu #1ed7b5, #abbdff, #894b77
+      const ctx3 = document.getElementById('chartRepsKpi');
+      if (ctx3) {
+        if (chartRepsKpiInst) chartRepsKpiInst.destroy();
+        const labels3 = reps.map(r => `${r.rep_id} ${(r.rep_name || '').split(' ').slice(-1)[0]}`);
+        chartRepsKpiInst = new Chart(ctx3, {
+          type: 'bar',
+          data: {
+            labels: labels3,
+            datasets: [
+              { label: 'Đã bán (Tr)', data: reps.map(r => +((r.recorded_revenue || 0) / 1_000_000).toFixed(0)), backgroundColor: '#1ed7b5', borderRadius: 6 },
+              { label: 'Dự kiến (Tr)', data: reps.map(r => +((r.weighted_forecast_value || 0) / 1_000_000).toFixed(0)), backgroundColor: '#abbdff', borderRadius: 6 },
+              { label: 'Mục tiêu (Tr)', data: reps.map(r => +((r.kpi_target || 0) / 1_000_000).toFixed(0)), backgroundColor: '#894b77', borderRadius: 6 }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 900, easing: 'easeOutQuart' },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                bodyFont: { size: 13 }, titleFont: { size: 14 },
+                callbacks: {
+                  title: (items) => { const r = reps[items[0].dataIndex]; return r ? `${r.rep_name} (${r.rep_id})` : ''; },
+                  afterBody: (items) => { const r = reps[items[0].dataIndex]; return r ? `\nĐã bán: ${r.actual_attainment_pct}% · Dự kiến: ${r.projected_attainment_pct}%` : ''; }
+                }
+              }
+            },
+            scales: {
+              x: { grid: { display: false }, ticks: { color: tickColor, font: { size: 13, weight: '700' } } },
+              y: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 13, weight: '600' }, callback: v => v + ' Tr' } }
+            }
+          }
+        });
+      }
+    }
+
+    function switchStep2SubTab(tab) {
+      currentStep2SubTab = tab;
+      const bOpen = document.getElementById('s2TabOpenBtn');
+      const bWon = document.getElementById('s2TabWonBtn');
+      bOpen.className = tab === 'open' ? 'btn-dark px-6 py-2.5 text-sm' : 'btn-soft px-6 py-2.5 text-sm';
+      bWon.className = tab === 'won' ? 'btn-dark px-6 py-2.5 text-sm' : 'btn-soft px-6 py-2.5 text-sm';
+      if (currentAnalysisResult) renderStep2Table(currentAnalysisResult, tab);
+    }
+
+    function renderStep2Table(data, tab) {
+      const box = document.getElementById('s2TableContainer');
+      if (tab === 'open') {
+        const rows = (data.opportunities_clean || []).filter(o => o.open_pipeline_value > 0);
+        box.innerHTML = `
+          <table class="w-full text-left border-collapse text-sm sm:text-base">
+            <thead>
+              <tr class="bg-[#abbdff]/25 dark:bg-slate-950 text-slate-700 dark:text-slate-400 uppercase text-xs border-b dark:border-slate-800">
+                <th class="p-4">Khách Hàng</th><th class="p-4">Tiến Độ</th><th class="p-4 text-right">Giá Trị</th><th class="p-4 text-right">Dự Kiến Thu</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y dark:divide-slate-800">
+              ${rows.map(o => `
+                <tr>
+                  <td class="p-4 font-bold">${o.customer_name}<span class="block text-xs font-mono text-slate-400">${o.opp_id}</span></td>
+                  <td class="p-4"><span class="px-3 py-1 rounded-full bg-[#1ed7b5]/20 text-[#096b58] dark:text-[#1ed7b5] font-bold text-xs">${o.effective_stage} (${((o.rule_weight || o.stage_weight || 0)*100).toFixed(0)}%)</span></td>
+                  <td class="p-4 text-right font-semibold">${fmtShortBill(o.open_pipeline_value)}</td>
+                  <td class="p-4 text-right font-extrabold text-[#894b77] dark:text-[#abbdff]">${fmtShortBill(o.weighted_forecast_value)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      } else {
+        const rows = (data.opportunities_clean || []).filter(o => o.actual_recorded_revenue > 0 || o.effective_stage === 'Closed Won');
+        box.innerHTML = `
+          <table class="w-full text-left border-collapse text-sm sm:text-base">
+            <thead>
+              <tr class="bg-[#abbdff]/25 dark:bg-slate-950 text-slate-700 dark:text-slate-400 uppercase text-xs border-b dark:border-slate-800">
+                <th class="p-4">Khách Hàng</th><th class="p-4">Nhân Viên</th><th class="p-4 text-right">Doanh Số Đã Bán</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y dark:divide-slate-800">
+              ${rows.map(o => `
+                <tr>
+                  <td class="p-4 font-bold">${o.customer_name}<span class="block text-xs font-mono text-slate-400">${o.opp_id}</span></td>
+                  <td class="p-4 font-mono">${o.rep_id}</td>
+                  <td class="p-4 text-right font-extrabold text-[#0c8f76] dark:text-[#1ed7b5]">${fmtShortBill(o.actual_recorded_revenue || o.deal_value)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      }
+    }
+
+    function onHumanOverrideChange(oppId, action) {
+      if (!action) delete humanOverridesState[oppId];
+      else humanOverridesState[oppId] = { action, note: 'Quản lý xác nhận ở Bước 4' };
+    }
+
+    async function applyOverridesAndRerun() {
+      const btn = document.getElementById('btnStep4Apply');
+      if (btn) { btn.textContent = 'Đang tính lại...'; btn.disabled = true; }
+      try {
+        const data = await triggerRunAgent(true);
+        currentAnalysisResult = data;
+        renderAllStepViews(data);
+        showToast('Đã lưu thay đổi và tính lại toàn bộ số liệu!', 'success');
+      } catch (err) { showToast('Lỗi: ' + err.message, 'error'); }
+      finally { if (btn) { btn.textContent = 'Lưu thay đổi & Tính lại'; btn.disabled = false; } }
+    }
+
+    function approveFinalReport() {
+      const btn = document.getElementById('btnApproveFinalReport');
+      if (btn) {
+        btn.textContent = 'Đã chốt báo cáo & Giao việc ✓';
+        btn.style.background = 'linear-gradient(135deg, #1ed7b5 0%, #10a88c 100%)';
+        btn.style.color = '#07241e';
+      }
+      showToast('Đã chốt báo cáo cuối cùng của Công ty của Duydudi và giao việc cho Sales!', 'success');
+    }
+
+    function openAiFileRepairModal(data) {
+      lastFileErrorData = data;
+      const modal = document.getElementById('aiFileRepairModal');
+      const body = document.getElementById('aiFileRepairModalBody');
+      const diag = data?.file_diagnostics || { is_empty_file: false, total_error_count: 1, summary_message: 'Tệp bị lỗi.', sample_errors: [] };
+      const isEmpty = Boolean(diag.is_empty_file);
+
+      document.getElementById('aiFileRepairModalTitle').textContent = isEmpty ? 'Tệp bị rỗng — Không có dữ liệu!' : `Tệp có ${diag.total_error_count} lỗi — Không thể chạy!`;
+      body.innerHTML = `
+        <div class="p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900">
+          <p class="font-bold text-red-700 dark:text-red-400">${diag.summary_message}</p>
+        </div>
+        ${(diag.sample_errors || []).length ? `
+          <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+            <table class="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr class="bg-slate-50 dark:bg-slate-950 text-slate-500 text-xs uppercase border-b dark:border-slate-800">
+                  <th class="p-3">Vị trí</th><th class="p-3">Khách Hàng</th><th class="p-3">Lỗi Phát Hiện</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y dark:divide-slate-800">
+                ${diag.sample_errors.map(s => `
+                  <tr>
+                    <td class="p-3 font-mono font-bold text-red-600 whitespace-nowrap">${s.opp_id}</td>
+                    <td class="p-3 font-bold">${s.customer_name}</td>
+                    <td class="p-3"><strong class="block">${s.error_title}</strong><span class="text-xs text-slate-500">${s.error_detail}</span></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        ` : ''}
+      `;
+
+      document.getElementById('inlineFileErrorBox')?.classList.remove('hidden');
+      document.getElementById('inlineFileErrorTitle').textContent = isEmpty ? 'Tệp bị rỗng — Không thể chạy!' : `Tệp có ${diag.total_error_count} lỗi — Không thể chạy!`;
+      document.getElementById('inlineFileErrorDesc').textContent = diag.summary_message;
+      const sz = document.getElementById('dropzoneFileSize');
+      if (sz) sz.textContent = isEmpty ? 'Tệp rỗng · Không chạy được' : `Có ${diag.total_error_count} lỗi · Không chạy được`;
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeAiFileRepairModal() {
+      const m = document.getElementById('aiFileRepairModal');
+      if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+    }
+    function closeErrorAndResetFile() {
+      closeAiFileRepairModal();
+      clearSelectedFiles();
+      const gs = document.getElementById('portalGsheetUrl');
+      if (gs) gs.value = '';
+    }
+
+    async function openUtilityModal(kind) {
+      const m = document.getElementById('utilityModal');
+      const title = document.getElementById('utilityModalTitle');
+      const body = document.getElementById('utilityModalBody');
+
+      if (kind === 'audit' && currentAnalysisResult) {
+        const logs = currentAnalysisResult.audit_logs || [];
+        title.textContent = 'Lịch Sử AI Đã Xử Lý';
+        body.innerHTML = `<div class="space-y-3">${logs.map((l, i) => `
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-[#abbdff]/50 dark:border-slate-800 space-y-1">
+            <div class="font-bold text-[#894b77] dark:text-[#1ed7b5]">#${i+1} ${l.step}</div>
+            <div class="font-semibold">${l.action}</div>
+          </div>
+        `).join('')}</div>`;
+      } else if (kind === 'selfTest') {
+        title.textContent = 'Kiểm Tra Độ Chính Xác Hệ Thống';
+        body.innerHTML = '<p class="text-slate-500">Đang kiểm tra...</p>';
+        m.classList.remove('hidden'); m.classList.add('flex');
+        const res = await fetch('/api/self-test');
+        const d = await res.json();
+        body.innerHTML = `<div class="space-y-3">${(d.suites || []).map(s => `
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-[#abbdff]/50 dark:border-slate-800 space-y-2">
+            <div class="flex justify-between font-bold text-base"><span>${s.scenario_title || s.scenario_id}</span><span class="font-mono text-[#0c8f76] dark:text-[#1ed7b5]">${s.all_passed ? 'ĐẠT ✓' : 'KIỂM TRA'}</span></div>
+            ${(s.checks || []).map(c => `<div class="p-2.5 rounded-lg bg-white dark:bg-slate-900 border dark:border-slate-800 flex justify-between gap-2"><span>${c.check_name}</span><span class="font-mono font-bold">${c.passed ? 'ĐẠT' : 'LỖI'}</span></div>`).join('')}
+          </div>
+        `).join('')}</div>`;
+        return;
+      }
+      m.classList.remove('hidden'); m.classList.add('flex');
+    }
+
+    function closeUtilityModal() {
+      const m = document.getElementById('utilityModal');
+      if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+    }
+
+    // =========================================================================
+    // ĐIỀU KHIỂN ROBOT AI CHẠY XUNG QUANH MÀN HÌNH
+    // =========================================================================
+    let robotPaused = false;
+    let robotChatOpen = false;
+    let robotForceStopped = false;
+    let robotX = 36;
+    let robotY = 0;
+    let robotSegment = 0; // 0: đáy (trái -> phải), 1: cạnh phải (dưới -> trên), 2: đỉnh (phải -> trái), 3: cạnh trái (trên -> dưới)
+    let robotSpeed = 2.15;
+    let robotTrailCounter = 0;
+
+    const ROBOT_MESSAGES = [
+      '🤖 Bấm vào tôi để Chat với AI nhé!',
+      '📞 Hotline: 0817737782 · FB: Hồ Mạnh Duy',
+      '✨ Hỏi tôi về Doanh số & Top 5 khách hàng!',
+      '🚀 Tải báo cáo Excel, Word, PPTX chỉ 1 chạm!',
+      '💡 Tôi đang tuần tra dữ liệu giúp bạn!'
+    ];
+    let robotMsgIdx = 0;
+
+    function getStepContextualRobotMessage() {
+      const isWorkspace = !document.getElementById('modeWorkspace')?.classList.contains('view-hidden');
+      if (!isWorkspace) {
+        return ROBOT_MESSAGES[robotMsgIdx % ROBOT_MESSAGES.length];
+      }
+      const stepTips = {
+        1: '💬 Bước 1: Bấm vào tôi nếu cần hỏi cách chọn tệp!',
+        2: '🧮 Bước 2: Hỏi tôi để xem tóm tắt doanh số nhanh!',
+        3: '⚠️ Bước 3: Hỏi tôi về các mục cảnh báo quá hạn!',
+        4: '✅ Bước 4: Bấm vào tôi để hỏi cách xác nhận!',
+        5: '📈 Bước 5: Hỏi tôi về Top 5 khách hàng ưu tiên!',
+        6: '📥 Bước 6: Hỏi tôi cách tải Excel, Word, PowerPoint!'
+      };
+      return stepTips[currentStep] || ROBOT_MESSAGES[0];
+    }
+
+    function spawnRobotTrailDot(x, y) {
+      const dot = document.createElement('div');
+      dot.className = 'robot-trail-dot';
+      const palette = ['#1ed7b5', '#f0f9a7', '#894b77', '#abbdff'];
+      const color = palette[Math.floor(Math.random() * palette.length)];
+      dot.style.background = color;
+      dot.style.boxShadow = `0 0 8px ${color}`;
+      dot.style.left = `${x + 36 + (Math.random() * 12 - 6)}px`;
+      dot.style.top = `${y + 78 + (Math.random() * 8 - 4)}px`;
+      document.body.appendChild(dot);
+      setTimeout(() => dot.remove(), 750);
+    }
+
+    function onRobotMouseEnter() {
+      robotPaused = true;
+      const bubble = document.getElementById('robotSpeechBubble');
+      if (bubble) {
+        bubble.textContent = '💬 Bấm vào tôi để mở khung Chat với AI!';
+        bubble.style.opacity = '1';
+      }
+    }
+
+    function onRobotMouseLeave() {
+      if (!robotChatOpen && !robotForceStopped) {
+        robotPaused = false;
+      }
+      const bubble = document.getElementById('robotSpeechBubble');
+      if (bubble) {
+        bubble.textContent = getStepContextualRobotMessage();
+      }
+    }
+
+    function onRobotClick() {
+      const wrapper = document.getElementById('robotBodyWrapper');
+      if (wrapper) {
+        wrapper.classList.remove('robot-jump-once');
+        void wrapper.offsetWidth;
+        wrapper.classList.add('robot-jump-once');
+        setTimeout(() => wrapper.classList.remove('robot-jump-once'), 700);
+      }
+      toggleRobotChatPanel(true);
+    }
+
+    function toggleRobotChatPanel(openState) {
+      const panel = document.getElementById('robotChatPanel');
+      if (!panel) return;
+      const shouldOpen = openState !== undefined ? openState : panel.classList.contains('hidden');
+      robotChatOpen = shouldOpen;
+
+      if (shouldOpen) {
+        panel.classList.remove('hidden');
+        panel.classList.add('flex');
+        robotPaused = true;
+        updateRobotRunButtonLabel();
+        setTimeout(() => document.getElementById('robotChatInput')?.focus(), 120);
+      } else {
+        panel.classList.add('hidden');
+        panel.classList.remove('flex');
+        if (!robotForceStopped) robotPaused = false;
+      }
+    }
+
+    function toggleRobotPatrolMode() {
+      robotPaused = !robotPaused;
+      robotForceStopped = robotPaused;
+      updateRobotRunButtonLabel();
+    }
+
+    function updateRobotRunButtonLabel() {
+      const btn = document.getElementById('btnToggleRobotRun');
+      if (!btn) return;
+      btn.textContent = robotPaused ? '🏃 Cho chạy' : '⏸️ Đứng yên';
+    }
+
+    function formatRobotReplyHtml(rawText) {
+      return String(rawText || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\*\*(.+?)\*\*/g, '<strong class="text-[#894b77] dark:text-[#1ed7b5]">$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/`(.+?)`/g, '<code class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 font-mono text-xs">$1</code>')
+        .replace(/\n/g, '<br/>');
+    }
+
+    function appendRobotChatMessage(sender, text) {
+      const box = document.getElementById('robotChatMessages');
+      if (!box) return;
+      const row = document.createElement('div');
+      if (sender === 'user') {
+        row.className = 'flex items-end justify-end gap-2';
+        row.innerHTML = `
+          <div class="p-3 rounded-2xl rounded-br-xs text-white text-sm max-w-[82%] leading-relaxed shadow-sm"
+               style="background: linear-gradient(135deg, #894b77 0%, #6d375d 100%);">
+            ${formatRobotReplyHtml(text)}
+          </div>
+        `;
+      } else {
+        row.className = 'flex items-start gap-2.5';
+        row.innerHTML = `
+          <span class="w-8 h-8 rounded-xl bg-[#1ed7b5]/25 text-[#085e4e] dark:text-[#1ed7b5] flex items-center justify-center text-base shrink-0 font-bold">🤖</span>
+          <div class="p-3.5 rounded-2xl rounded-tl-xs bg-slate-100 dark:bg-slate-800 border border-[#abbdff]/40 dark:border-slate-700 text-slate-800 dark:text-slate-100 text-sm max-w-[86%] leading-relaxed shadow-2xs">
+            ${formatRobotReplyHtml(text)}
+          </div>
+        `;
+      }
+      box.appendChild(row);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function askRobotQuickQuestion(qText) {
+      toggleRobotChatPanel(true);
+      sendQuestionToRobotAI(qText);
+    }
+
+    function handleRobotChatSubmit(e) {
+      e.preventDefault();
+      const inp = document.getElementById('robotChatInput');
+      const msg = inp?.value?.trim();
+      if (!msg) return;
+      inp.value = '';
+      sendQuestionToRobotAI(msg);
+    }
+
+    async function sendQuestionToRobotAI(questionText) {
+      appendRobotChatMessage('user', questionText);
+      const box = document.getElementById('robotChatMessages');
+      const typingEl = document.createElement('div');
+      typingEl.className = 'flex items-center gap-2 text-xs font-bold text-slate-400 pl-2';
+      typingEl.innerHTML = '<span>🤖 Robot AI đang trả lời...</span>';
+      if (box) {
+        box.appendChild(typingEl);
+        box.scrollTop = box.scrollHeight;
+      }
+
+      try {
+        const apiKey = document.getElementById('portalApiKey')?.value?.trim() || '';
+        const res = await fetch('/api/robot-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: questionText,
+            api_key: apiKey,
+            current_step: currentStep
+          })
+        });
+        const data = await res.json();
+        typingEl.remove();
+        appendRobotChatMessage('robot', data.reply || 'Tôi luôn sẵn sàng hỗ trợ bạn! Liên hệ Hotline 0817737782 nếu cần hỗ trợ trực tiếp nhé.');
+      } catch (err) {
+        typingEl.remove();
+        appendRobotChatMessage(
+          'robot',
+          '📞 Bạn có thể liên hệ trực tiếp **Công ty của Duydudi** qua:\n• **Hotline:** **0817737782**\n• **Gmail:** **homanhduy2000@gmail.com**\n• **FB:** **Hồ Mạnh Duy** | **IG:** **Duybird**'
+        );
+      }
+    }
+
+    function initRoamingRobot() {
+      const container = document.getElementById('roamingRobotContainer');
+      const sprite = document.getElementById('robotSvgSprite');
+      const bubble = document.getElementById('robotSpeechBubble');
+      if (!container) return;
+
+      const marginLeft = 20;
+      const marginTop = 76; // Dưới thanh header
+      const robotW = 84;
+      const robotH = 96;
+
+      robotX = marginLeft;
+      robotY = window.innerHeight - robotH - 18;
+      container.style.bottom = 'auto';
+
+      // Đổi câu thoại tự động mỗi 5 giây
+      setInterval(() => {
+        if (!robotPaused && bubble) {
+          robotMsgIdx = (robotMsgIdx + 1) % ROBOT_MESSAGES.length;
+          bubble.textContent = getStepContextualRobotMessage();
+        }
+      }, 5000);
+
+      function stepFrame() {
+        if (!robotPaused) {
+          const maxX = Math.max(marginLeft + 60, window.innerWidth - robotW - 24);
+          const maxY = Math.max(marginTop + 60, window.innerHeight - robotH - 18);
+
+          if (robotSegment === 0) {
+            // Chạy dọc cạnh đáy từ Trái -> Phải
+            robotX += robotSpeed;
+            robotY = maxY;
+            if (sprite) sprite.style.transform = 'scaleX(1)';
+            if (robotX >= maxX) { robotX = maxX; robotSegment = 1; }
+          } else if (robotSegment === 1) {
+            // Chạy dọc cạnh phải từ Dưới -> Trên
+            robotY -= robotSpeed;
+            robotX = maxX;
+            if (sprite) sprite.style.transform = 'scaleX(-1)';
+            if (robotY <= marginTop) { robotY = marginTop; robotSegment = 2; }
+          } else if (robotSegment === 2) {
+            // Chạy dọc cạnh trên từ Phải -> Trái
+            robotX -= robotSpeed;
+            robotY = marginTop;
+            if (sprite) sprite.style.transform = 'scaleX(-1)';
+            if (robotX <= marginLeft) { robotX = marginLeft; robotSegment = 3; }
+          } else {
+            // Chạy dọc cạnh trái từ Trên -> Dưới
+            robotY += robotSpeed;
+            robotX = marginLeft;
+            if (sprite) sprite.style.transform = 'scaleX(1)';
+            if (robotY >= maxY) { robotY = maxY; robotSegment = 0; }
+          }
+
+          container.style.left = `${robotX}px`;
+          container.style.top = `${robotY}px`;
+
+          // Tự động đảo vị trí hộp thoại xuống dưới khi Robot lên sát mép trên
+          if (bubble) {
+            if (robotY < 150) bubble.classList.add('bubble-below');
+            else bubble.classList.remove('bubble-below');
+
+            // Giữ hộp thoại không bị tràn khỏi mép trái/phải màn hình
+            if (robotX < 130) {
+              bubble.style.left = '10px';
+              bubble.style.transform = 'translateX(0)';
+            } else if (robotX > window.innerWidth - 220) {
+              bubble.style.left = 'auto';
+              bubble.style.right = '10px';
+              bubble.style.transform = 'translateX(0)';
+            } else {
+              bubble.style.left = '50%';
+              bubble.style.right = 'auto';
+              bubble.style.transform = 'translateX(-50%)';
+            }
+          }
+
+          // Tạo hạt ánh sáng lấp lánh sau bước chân
+          robotTrailCounter++;
+          if (robotTrailCounter % 16 === 0) {
+            spawnRobotTrailDot(robotX, robotY);
+          }
+        }
+        requestAnimationFrame(stepFrame);
+      }
+
+      requestAnimationFrame(stepFrame);
+    }
+
+    // =========================================================================
+    // HỆ THỐNG ĐĂNG NHẬP & ĐĂNG KÝ TÀI KHOẢN (AUTH CONTROLLER)
+    // =========================================================================
+    let currentAuthUser = null;
+
+    function initAuthSession() {
+      try {
+        const raw = localStorage.getItem('duydudi_auth_user');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.full_name) {
+            applyLoggedInUserUI(parsed, false);
+          }
+        }
+      } catch (e) {}
+    }
+
+    function openAuthModal(tab = 'login') {
+      const m = document.getElementById('authModal');
+      if (!m) return;
+      switchAuthTab(tab);
+      hideAuthError();
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+    }
+
+    function closeAuthModal() {
+      const m = document.getElementById('authModal');
+      if (m) {
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+      }
+    }
+
+    function showAuthError(msg) {
+      const box = document.getElementById('authErrorAlert');
+      if (!box) return;
+      box.textContent = msg;
+      box.classList.remove('hidden');
+    }
+
+    function hideAuthError() {
+      document.getElementById('authErrorAlert')?.classList.add('hidden');
+    }
+
+    function switchAuthTab(tab) {
+      hideAuthError();
+      const fLogin = document.getElementById('authLoginForm');
+      const fReg = document.getElementById('authRegisterForm');
+      const bLogin = document.getElementById('authTabLoginBtn');
+      const bReg = document.getElementById('authTabRegisterBtn');
+      const heading = document.getElementById('authModalHeading');
+
+      if (tab === 'register') {
+        fLogin?.classList.add('hidden');
+        fReg?.classList.remove('hidden');
+        if (bReg) bReg.className = 'py-2 rounded-full text-xs sm:text-sm font-extrabold transition cursor-pointer bg-white text-[#894b77] shadow-sm';
+        if (bLogin) bLogin.className = 'py-2 rounded-full text-xs sm:text-sm font-extrabold transition cursor-pointer text-white/90 hover:text-white';
+        if (heading) heading.textContent = 'Đăng Ký Tài Khoản Mới';
+      } else {
+        fReg?.classList.add('hidden');
+        fLogin?.classList.remove('hidden');
+        if (bLogin) bLogin.className = 'py-2 rounded-full text-xs sm:text-sm font-extrabold transition cursor-pointer bg-white text-[#894b77] shadow-sm';
+        if (bReg) bReg.className = 'py-2 rounded-full text-xs sm:text-sm font-extrabold transition cursor-pointer text-white/90 hover:text-white';
+        if (heading) heading.textContent = 'Đăng Nhập Hệ Thống';
+      }
+    }
+
+    async function handleAuthLoginSubmit(e) {
+      e.preventDefault();
+      hideAuthError();
+      const account = document.getElementById('loginAccountInput')?.value?.trim();
+      const password = document.getElementById('loginPasswordInput')?.value?.trim();
+      const btn = document.getElementById('btnSubmitLogin');
+      if (btn) { btn.disabled = true; btn.textContent = 'Đang đăng nhập...'; }
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ account, password })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Đăng nhập thất bại.');
+        applyLoggedInUserUI(data.user, true);
+        closeAuthModal();
+      } catch (err) {
+        showAuthError(err.message);
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = 'Đăng nhập vào hệ thống &rarr;'; }
+      }
+    }
+
+    async function handleAuthRegisterSubmit(e) {
+      e.preventDefault();
+      hideAuthError();
+      const full_name = document.getElementById('regFullNameInput')?.value?.trim();
+      const account = document.getElementById('regAccountInput')?.value?.trim();
+      const role = document.getElementById('regRoleInput')?.value || 'Trưởng phòng Kinh doanh';
+      const password = document.getElementById('regPasswordInput')?.value?.trim();
+      const btn = document.getElementById('btnSubmitRegister');
+      if (btn) { btn.disabled = true; btn.textContent = 'Đang tạo tài khoản...'; }
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ full_name, account, role, password })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Đăng ký thất bại.');
+        applyLoggedInUserUI(data.user, true);
+        closeAuthModal();
+      } catch (err) {
+        showAuthError(err.message);
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = '✨ Hoàn tất Đăng ký Tài khoản'; }
+      }
+    }
+
+    async function quickDemoAdminLogin() {
+      document.getElementById('loginAccountInput').value = 'homanhduy2000@gmail.com';
+      document.getElementById('loginPasswordInput').value = '123456';
+      await handleAuthLoginSubmit(new Event('submit'));
+    }
+
+    function applyLoggedInUserUI(user, showWelcomeToast = true) {
+      if (!user) return;
+      currentAuthUser = user;
+      localStorage.setItem('duydudi_auth_user', JSON.stringify(user));
+
+      document.getElementById('headerAuthGuestBox')?.classList.add('hidden');
+      const userBox = document.getElementById('headerAuthUserBox');
+      if (userBox) {
+        userBox.classList.remove('hidden');
+        userBox.classList.add('flex');
+      }
+      const initEl = document.getElementById('headerUserInitials');
+      const nameEl = document.getElementById('headerUserName');
+      const roleEl = document.getElementById('headerUserRole');
+      if (initEl) initEl.textContent = user.initials || 'DD';
+      if (nameEl) nameEl.textContent = user.full_name || 'Thành viên';
+      if (roleEl) roleEl.textContent = user.role || 'Quản trị';
+
+      const greetEl = document.getElementById('coverTimeGreeting');
+      if (greetEl) {
+        greetEl.textContent = `Xin chào ${user.full_name} (${user.role}) · Công ty của Duydudi`;
+      }
+      const bubble = document.getElementById('robotSpeechBubble');
+      if (bubble) {
+        bubble.textContent = `🎉 Chào mừng ${user.full_name} đã đăng nhập!`;
+      }
+      if (showWelcomeToast) {
+        showToast(`Chào mừng ${user.full_name} đã đăng nhập thành công!`, 'success');
+      }
+    }
+
+    function logoutUserAccount() {
+      currentAuthUser = null;
+      localStorage.removeItem('duydudi_auth_user');
+      const userBox = document.getElementById('headerAuthUserBox');
+      if (userBox) {
+        userBox.classList.add('hidden');
+        userBox.classList.remove('flex');
+      }
+      document.getElementById('headerAuthGuestBox')?.classList.remove('hidden');
+      initCoverGreeting();
+      showToast('Đã đăng xuất tài khoản thành công.', 'info');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      initCoverGreeting();
+      initAuthSession();
+      initRoamingRobot();
+      document.getElementById('portalGsheetUrl')?.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); executeStartPipeline(); }
+      });
+    });
+  </script>
+</body>
+</html>

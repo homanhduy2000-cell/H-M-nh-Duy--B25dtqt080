@@ -1,0 +1,25 @@
+{
+  "homanhduy2000@gmail.com": {
+    "full_name": "Hồ Mạnh Duy",
+    "account": "homanhduy2000@gmail.com",
+    "phone": "0817737782",
+    "role": "Giám đốc Điều hành (Admin)",
+    "password_hash": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+    "initials": "MD"
+  },
+  "0817737782": {
+    "full_name": "Hồ Mạnh Duy",
+    "account": "0817737782",
+    "phone": "0817737782",
+    "role": "Giám đốc Điều hành (Admin)",
+    "password_hash": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+    "initials": "MD"
+  },
+  "test_56f5f4@gmail.com": {
+    "full_name": "Trần Minh Anh",
+    "account": "test_56f5f4@gmail.com",
+    "role": "Trưởng phòng Kinh doanh",
+    "password_hash": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+    "initials": "TA"
+  }
+}
