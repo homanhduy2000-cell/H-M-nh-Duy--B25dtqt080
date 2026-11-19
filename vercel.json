@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "api/index.py": {
+      "includeFiles": "{static/**,sample_data/**,docs/**,Duydudi_AI_Agent_15_Slides.pptx}"
+    }
+  },
   "rewrites": [
     {
       "source": "/(.*)",

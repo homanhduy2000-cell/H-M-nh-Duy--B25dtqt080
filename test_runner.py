@@ -2,13 +2,30 @@ import os
 from typing import Dict, Any, List
 import pandas as pd
 from agent_engine import SalesProgressAgent
-from data_generator import DEFAULT_REPORT_DATE
+from data_generator import DEFAULT_REPORT_DATE, generate_all_datasets
 
-SAMPLE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_data")
+BASE_SAMPLE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_data")
+
+
+def get_active_sample_dir() -> str:
+    """
+    Trả về thư mục sample_data hợp lệ cho cả Local và Vercel Serverless (chỉ cho ghi ở /tmp).
+    """
+    if os.path.exists(os.path.join(BASE_SAMPLE_DIR, "scenario_1_normal", "opportunities.csv")):
+        return BASE_SAMPLE_DIR
+    tmp_dir = "/tmp/sample_data" if os.name != "nt" else os.path.join(os.environ.get("TEMP", "."), "duydudi_sample_data")
+    if not os.path.exists(os.path.join(tmp_dir, "scenario_1_normal", "opportunities.csv")):
+        os.makedirs(tmp_dir, exist_ok=True)
+        generate_all_datasets(tmp_dir)
+    return tmp_dir
+
+
+SAMPLE_DIR = BASE_SAMPLE_DIR
 
 
 def load_scenario_dfs(scenario_folder: str):
-    folder = os.path.join(SAMPLE_DIR, scenario_folder)
+    active_dir = get_active_sample_dir()
+    folder = os.path.join(active_dir, scenario_folder)
     opps_df = pd.read_csv(os.path.join(folder, "opportunities.csv"))
     acts_df = pd.read_csv(os.path.join(folder, "activities.csv"))
     orders_df = pd.read_csv(os.path.join(folder, "orders.csv"))

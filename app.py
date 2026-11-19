@@ -23,7 +23,7 @@ from agent_engine import (
     AUDIT_LOG_FILE,
     DEFAULT_GEMINI_API_KEY
 )
-from test_runner import load_scenario_dfs, run_all_self_tests
+from test_runner import load_scenario_dfs, run_all_self_tests, get_active_sample_dir
 from data_generator import DEFAULT_REPORT_DATE, generate_all_datasets
 from export_service import (
     generate_excel_report,
@@ -36,11 +36,12 @@ STATIC_DIR = os.path.join(BASE_DIR, "static")
 SAMPLE_DIR = os.path.join(BASE_DIR, "sample_data")
 DOCS_DIR = os.path.join(BASE_DIR, "docs")
 
-try:
-    if not os.path.exists(os.path.join(SAMPLE_DIR, "scenario_1_normal")):
-        generate_all_datasets(SAMPLE_DIR)
-except Exception:
-    pass
+if not os.environ.get("VERCEL"):
+    try:
+        if not os.path.exists(os.path.join(SAMPLE_DIR, "scenario_1_normal")):
+            generate_all_datasets(SAMPLE_DIR)
+    except Exception:
+        pass
 
 app = FastAPI(
     title="Duydudi - AI Agent Phân Tích Tiến Độ Cơ Hội & Dự Kiến Doanh Số (AI301)",
@@ -687,7 +688,8 @@ async def mock_gsheet_export(scenario_id: str = "scenario_1_normal"):
         "scenario_3_boundary": ("scenario_3_boundary", "BinhMinh_Scenario3_Boundary.xlsx"),
     }
     folder, fname = file_map.get(scenario_id, file_map["scenario_1_normal"])
-    fpath = os.path.join(SAMPLE_DIR, folder, fname)
+    active_sample_dir = get_active_sample_dir()
+    fpath = os.path.join(active_sample_dir, folder, fname)
     if os.path.exists(fpath):
         return FileResponse(
             fpath,
@@ -695,6 +697,17 @@ async def mock_gsheet_export(scenario_id: str = "scenario_1_normal"):
             filename=fname
         )
     raise HTTPException(status_code=404, detail="File không tồn tại")
+
+
+@app.get("/api/health")
+async def api_health():
+    return JSONResponse(content={
+        "status": "ok",
+        "service": "Duydudi AI Sales Agent (AI301)",
+        "vercel": bool(os.environ.get("VERCEL")),
+        "static_exists": os.path.exists(os.path.join(STATIC_DIR, "index.html")),
+        "sample_dir": get_active_sample_dir()
+    })
 
 
 @app.get("/api/self-test")
@@ -723,17 +736,18 @@ async def download_sample(scenario_id: str, format: str = "xlsx"):
     if scenario_id not in file_map:
         scenario_id = "scenario_1_normal"
     folder, xlsx_name, zip_name = file_map[scenario_id]
-    
+    active_sample_dir = get_active_sample_dir()
+
     if format.lower() in ["zip", "csv"]:
-        zip_path = os.path.join(SAMPLE_DIR, folder, zip_name)
+        zip_path = os.path.join(active_sample_dir, folder, zip_name)
         if os.path.exists(zip_path):
             return FileResponse(
                 zip_path,
                 media_type="application/zip",
                 filename=zip_name
             )
-            
-    fpath = os.path.join(SAMPLE_DIR, folder, xlsx_name)
+
+    fpath = os.path.join(active_sample_dir, folder, xlsx_name)
     if not os.path.exists(fpath):
         raise HTTPException(status_code=404, detail="File mẫu không tồn tại")
     return FileResponse(
