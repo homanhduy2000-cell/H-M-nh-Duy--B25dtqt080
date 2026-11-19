@@ -18,6 +18,8 @@ from agent_engine import (
     validate_uploaded_dataframe,
     build_file_diagnostics,
     ai_auto_repair_dataset,
+    build_raw_file_preview,
+    build_dynamic_kpi_df_from_opps,
     AUDIT_LOG_FILE,
     DEFAULT_GEMINI_API_KEY
 )
@@ -45,7 +47,8 @@ app = FastAPI(
     version="1.0.0"
 )
 
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+if os.path.exists(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Lưu bộ dữ liệu gần nhất được tải lên trong phiên để Bước 4 (Human-in-the-loop) có thể duyệt lại ngay trên dữ liệu vừa upload
 LAST_SESSION_DATA: Dict[str, Any] = {
@@ -77,6 +80,7 @@ class GSheetAnalyzeRequest(BaseModel):
     human_overrides: Dict[str, Dict[str, Any]] = {}
     llm_provider: str = "gemini"
     api_key: str = DEFAULT_GEMINI_API_KEY
+    force_continue: bool = False
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -224,6 +228,7 @@ def _process_uploaded_content(
                     parse_warnings.append(f"EMPTY_FILE: Tệp Excel '{filename}' bị rỗng (không có dòng dữ liệu nào).")
                     tables_dict["opportunities"] = pd.DataFrame()
                 else:
+                    tables_dict["raw_opportunities"] = df_raw.dropna(how="all").copy()
                     df_norm, _ = smart_normalize_columns(df_raw)
                     tables_dict["opportunities"] = universal_adapt_dataframe(df_norm)
             else:
@@ -233,6 +238,8 @@ def _process_uploaded_content(
                             parse_warnings.append(f"EMPTY_FILE: Sheet dữ liệu trong '{filename}' bị rỗng (không có dòng dữ liệu nào).")
                             v = pd.DataFrame()
                         else:
+                            if "raw_opportunities" not in tables_dict:
+                                tables_dict["raw_opportunities"] = v.dropna(how="all").copy()
                             v_norm, _ = smart_normalize_columns(v)
                             v = universal_adapt_dataframe(v_norm)
                     if k not in tables_dict or tables_dict[k] is None:
@@ -249,7 +256,8 @@ def _process_uploaded_content(
             tables_dict["opportunities"] = pd.DataFrame()
             return
 
-        df_norm, _ = smart_normalize_columns(df)
+        df_clean_raw = df.dropna(how="all").copy()
+        df_norm, _ = smart_normalize_columns(df_clean_raw)
 
         # Nhận diện theo tên file
         if any(k in fname for k in ["act", "hoat_dong", "hoạt động", "liên hệ", "contact"]):
@@ -267,6 +275,7 @@ def _process_uploaded_content(
             elif any(k in cols_lower for k in ["kpi_target", "rep_target"]) and "deal_value" not in cols_lower:
                 tables_dict["kpi_targets"] = df_norm
             else:
+                tables_dict["raw_opportunities"] = df_clean_raw
                 tables_dict["opportunities"] = universal_adapt_dataframe(df_norm)
     except Exception as ex:
         parse_warnings.append(f"Tệp '{filename}' bị lỗi: {str(ex)}")
@@ -288,6 +297,7 @@ async def analyze_upload(
     human_overrides: str = Form("{}"),
     human_overrides_json: str = Form("{}"),
     ai_repair_mode: str = Form("none"),
+    force_continue: str = Form("false"),
     files: Optional[List[UploadFile]] = File(None),
     workbook_file: Optional[UploadFile] = File(None),
     opportunities_file: Optional[UploadFile] = File(None),
@@ -301,6 +311,8 @@ async def analyze_upload(
         overrides = json.loads(raw_override_str or "{}")
     except Exception:
         overrides = {}
+
+    should_force_continue = str(force_continue or "").strip().lower() in ("true", "1", "yes")
 
     agent = SalesProgressAgent(
         report_date=report_date,
@@ -347,8 +359,14 @@ async def analyze_upload(
                 clean_warnings.append(w)
         parse_warnings = clean_warnings
 
-        # 1. Nếu file rỗng hoặc không đọc được bảng opportunities -> BÁO LỖI LUÔN, KHÔNG CHẠY!
         opps_df = tables_dict.get("opportunities")
+        raw_df = tables_dict.get("raw_opportunities")
+        if raw_df is None and opps_df is not None and not opps_df.empty:
+            raw_df = opps_df.copy()
+
+        raw_file_preview = build_raw_file_preview(raw_df, ", ".join(uploaded_names))
+
+        # 1. Nếu file hoàn toàn rỗng (0 dòng) -> Không có dữ liệu để chạy
         if is_empty_file or opps_df is None or opps_df.empty:
             if not parse_warnings:
                 if opps_df is not None and opps_df.empty:
@@ -364,37 +382,15 @@ async def analyze_upload(
             )
             return JSONResponse(content={
                 "can_run": False,
+                "can_force_continue": False,
                 "ai_repaired": False,
                 "uploaded_files": uploaded_names,
-                "detected_tables": list(tables_dict.keys()),
-                "file_diagnostics": diag
+                "detected_tables": [k for k in tables_dict.keys() if k != "raw_opportunities"],
+                "file_diagnostics": diag,
+                "raw_file_preview": raw_file_preview
             })
 
-        # 2. Kiểm tra nghiêm ngặt toàn bộ cột và từng dòng dữ liệu trong tệp
-        is_df_empty, has_df_errors, df_err_msgs, row_sample_errors = validate_uploaded_dataframe(
-            opps_df, ", ".join(uploaded_names)
-        )
-        if df_err_msgs:
-            parse_warnings.extend(df_err_msgs)
-
-        if is_df_empty or has_df_errors or len(parse_warnings) > 0:
-            # Tệp có lỗi -> BÁO LỖI LUÔN, KHÔNG CHẠY PHÂN TÍCH!
-            diag = build_file_diagnostics(
-                None,
-                parse_warnings=parse_warnings,
-                is_corrupted=not is_df_empty and len(row_sample_errors) == 0,
-                is_empty_file=is_df_empty,
-                row_sample_errors=row_sample_errors
-            )
-            return JSONResponse(content={
-                "can_run": False,
-                "ai_repaired": False,
-                "uploaded_files": uploaded_names,
-                "detected_tables": list(tables_dict.keys()),
-                "file_diagnostics": diag
-            })
-
-        # 3. CHỈ KHI TỆP KHÔNG RỖNG VÀ KHÔNG LỖI MỚI CHẠY PHÂN TÍCH!
+        # Chuẩn bị bảng phụ trợ & KPI ĐỘNG theo đúng dữ liệu trong file vừa tải lên
         _, default_acts, default_orders, default_kpi = load_scenario_dfs("scenario_1_normal")
         opp_ids_set = set(str(x).strip() for x in opps_df.get("opp_id", []))
         default_order_opp_ids = set(str(x).strip() for x in default_orders.get("opp_id", []))
@@ -402,38 +398,89 @@ async def analyze_upload(
 
         acts_df = tables_dict.get("activities", default_acts if has_shared_ids else pd.DataFrame())
         orders_df = tables_dict.get("orders", default_orders if has_shared_ids else pd.DataFrame())
-        kpi_df = tables_dict.get("kpi_targets", default_kpi)
+        kpi_df = tables_dict.get("kpi_targets")
+        if kpi_df is None or kpi_df.empty:
+            kpi_df = build_dynamic_kpi_df_from_opps(opps_df, default_kpi)
 
         label = f"Dữ liệu tải lên ({', '.join(uploaded_names)})"
+
+        # Luôn lưu đúng dữ liệu gốc của tệp vừa tải vào phiên (để nếu người dùng chọn "Vẫn tiếp tục trên file này" sẽ chạy ĐÚNG file này)
         LAST_SESSION_DATA = {
             "source_type": "upload",
             "scenario_id": "custom_upload",
+            "raw_df": raw_df,
+            "raw_file_preview": raw_file_preview,
             "opps_df": opps_df,
             "acts_df": acts_df,
             "orders_df": orders_df,
             "kpi_df": kpi_df,
             "dataset_label": label,
-            "parse_warnings": [],
+            "parse_warnings": list(parse_warnings),
             "is_corrupted": False,
             "uploaded_files": uploaded_names
         }
 
-        result = agent.execute_pipeline(opps_df, acts_df, orders_df, kpi_df, dataset_label=label)
-        diag = build_file_diagnostics(result, [], False, False)
-        if diag["has_errors"]:
+        # 2. Rà soát toàn bộ dòng và cột thực tế của tệp tải lên
+        is_df_empty, has_df_errors, df_err_msgs, row_sample_errors = validate_uploaded_dataframe(
+            opps_df, ", ".join(uploaded_names)
+        )
+        if df_err_msgs:
+            parse_warnings.extend(df_err_msgs)
+
+        has_any_issue = is_df_empty or has_df_errors or len(parse_warnings) > 0 or raw_file_preview.get("error_cell_count", 0) > 0
+
+        # Nếu tệp có lỗi và người dùng CHƯA chọn "Vẫn tiếp tục trên file này":
+        # Trả về bảng trực tiếp của tệp kèm 2 lựa chọn (1: Tải lại file khác | 2: Vẫn tiếp tục trên file này)
+        if has_any_issue and not should_force_continue:
+            diag = build_file_diagnostics(
+                None,
+                parse_warnings=parse_warnings if parse_warnings else [
+                    f"Phát hiện {raw_file_preview.get('error_cell_count', 0)} ô dữ liệu trống/chưa chuẩn trong {raw_file_preview.get('error_row_count', 0)} dòng của tệp."
+                ],
+                is_corrupted=False,
+                is_empty_file=is_df_empty,
+                row_sample_errors=row_sample_errors
+            )
             return JSONResponse(content={
                 "can_run": False,
+                "can_force_continue": not is_df_empty,
                 "ai_repaired": False,
                 "uploaded_files": uploaded_names,
-                "detected_tables": list(tables_dict.keys()),
-                "file_diagnostics": diag
+                "detected_tables": [k for k in tables_dict.keys() if k != "raw_opportunities"],
+                "file_diagnostics": diag,
+                "raw_file_preview": raw_file_preview
             })
 
+        # 3. Nếu người dùng chọn "Vẫn tiếp tục trên file này" (force_continue=true) -> AI tự xử lý lỗi trên ĐÚNG file này rồi chạy tiếp
+        repairs_log: List[Dict[str, Any]] = []
+        run_opps, run_acts, run_orders, run_kpi = opps_df, acts_df, orders_df, kpi_df
+        if has_any_issue and should_force_continue:
+            run_opps, run_acts, run_orders, _, repairs_log = ai_auto_repair_dataset(
+                opps_df, acts_df, orders_df, kpi_df, report_date_str=report_date, logger=agent.logger
+            )
+            run_kpi = tables_dict.get("kpi_targets")
+            if run_kpi is None or run_kpi.empty:
+                run_kpi = build_dynamic_kpi_df_from_opps(run_opps, default_kpi)
+            label = f"Tiếp tục trên tệp ({', '.join(uploaded_names)})"
+            LAST_SESSION_DATA["opps_df"] = run_opps
+            LAST_SESSION_DATA["acts_df"] = run_acts
+            LAST_SESSION_DATA["orders_df"] = run_orders
+            LAST_SESSION_DATA["kpi_df"] = run_kpi
+            LAST_SESSION_DATA["dataset_label"] = label
+
+        result = agent.execute_pipeline(run_opps, run_acts, run_orders, run_kpi, dataset_label=label)
+        diag = build_file_diagnostics(result, [], False, False)
+
         result["can_run"] = True
-        result["ai_repaired"] = False
+        result["can_force_continue"] = True
+        result["ai_repaired"] = bool(should_force_continue and has_any_issue)
+        result["continued_with_errors"] = bool(should_force_continue and has_any_issue)
+        result["ai_repairs_log"] = repairs_log
+        result["ai_repairs_count"] = len(repairs_log)
         result["file_diagnostics"] = diag
+        result["raw_file_preview"] = raw_file_preview
         result["uploaded_files"] = uploaded_names
-        result["detected_tables"] = list(tables_dict.keys())
+        result["detected_tables"] = [k for k in tables_dict.keys() if k != "raw_opportunities"]
         LAST_ANALYSIS_RESULT = result
         return JSONResponse(content=result)
     except Exception as e:
@@ -443,22 +490,20 @@ async def analyze_upload(
 @app.post("/api/analyze/ai-repair")
 async def analyze_ai_repair(req: AIRepairRequest):
     """
-    Endpoint thực thi Kỹ năng AI Tự Động Sửa Lỗi (AI Auto-Repair Skill) trên bộ dữ liệu vừa tải lên
-    khi người dùng bấm chọn "CÓ, ĐỂ AI CHỈNH SỬA".
+    Endpoint cho Lựa chọn 2: "Vẫn tiếp tục trên file này" — chạy trực tiếp trên tệp vừa tải lên
+    trong LAST_SESSION_DATA (KHÔNG thay bằng tệp mẫu cố định), giữ nguyên cột/dòng gốc để xem lại.
     """
     global LAST_SESSION_DATA, LAST_ANALYSIS_RESULT
     try:
-        is_corrupted_upload = bool(LAST_SESSION_DATA.get("is_corrupted"))
-        if LAST_SESSION_DATA.get("opps_df") is not None and not is_corrupted_upload:
-            opps_df = LAST_SESSION_DATA["opps_df"]
-            acts_df = LAST_SESSION_DATA["acts_df"]
-            orders_df = LAST_SESSION_DATA["orders_df"]
-            kpi_df = LAST_SESSION_DATA["kpi_df"]
-            base_label = LAST_SESSION_DATA.get("dataset_label", "Dữ liệu tải lên")
-        else:
-            opps_df, acts_df, orders_df, kpi_df = load_scenario_dfs("scenario_2_missing")
-            up_files = LAST_SESSION_DATA.get("uploaded_files", [])
-            base_label = f"Khôi phục từ {', '.join(up_files)}" if up_files else "Tệp dữ liệu cần khôi phục"
+        if LAST_SESSION_DATA.get("opps_df") is None or LAST_SESSION_DATA["opps_df"].empty:
+            raise HTTPException(status_code=400, detail="Không tìm thấy tệp dữ liệu đã tải lên để tiếp tục. Vui lòng chọn lại tệp.")
+
+        opps_df = LAST_SESSION_DATA["opps_df"]
+        acts_df = LAST_SESSION_DATA.get("acts_df", pd.DataFrame())
+        orders_df = LAST_SESSION_DATA.get("orders_df", pd.DataFrame())
+        kpi_df = LAST_SESSION_DATA.get("kpi_df")
+        raw_file_preview = LAST_SESSION_DATA.get("raw_file_preview")
+        base_label = LAST_SESSION_DATA.get("dataset_label", "Dữ liệu tải lên")
 
         agent = SalesProgressAgent(
             report_date=req.report_date,
@@ -468,23 +513,15 @@ async def analyze_ai_repair(req: AIRepairRequest):
             api_key=req.api_key
         )
 
-        opps_rep, acts_rep, orders_rep, kpi_rep, repairs_log = ai_auto_repair_dataset(
+        opps_rep, acts_rep, orders_rep, _, repairs_log = ai_auto_repair_dataset(
             opps_df, acts_df, orders_df, kpi_df, report_date_str=req.report_date, logger=agent.logger
         )
 
-        # Nếu file ban đầu có cảnh báo cấu trúc (parse_warnings), thêm vào đầu nhật ký sửa lỗi của AI
-        for w in LAST_SESSION_DATA.get("parse_warnings", []):
-            repairs_log.insert(0, {
-                "opp_id": "FILE-STRUCTURE",
-                "customer_name": "Cấu trúc tệp tải lên",
-                "field_repaired": "Định dạng & Cột dữ liệu",
-                "before_value": w,
-                "after_value": "Đã chuẩn hóa & khôi phục cấu trúc bảng chuẩn",
-                "repair_reason": "AI tự động sửa lỗi định dạng tệp và ánh xạ về Schema chuẩn B2B"
-            })
+        _, _, _, default_kpi = load_scenario_dfs("scenario_1_normal")
+        kpi_rep = build_dynamic_kpi_df_from_opps(opps_rep, default_kpi)
 
         clean_label = base_label.replace("Dữ liệu tải lên", "").strip(" ()") or "Tệp dữ liệu"
-        repaired_label = f"✨ Đã được AI sửa sạch ({clean_label})"
+        repaired_label = f"Tiếp tục trên tệp ({clean_label})"
 
         LAST_SESSION_DATA["opps_df"] = opps_rep
         LAST_SESSION_DATA["acts_df"] = acts_rep
@@ -495,12 +532,17 @@ async def analyze_ai_repair(req: AIRepairRequest):
         LAST_SESSION_DATA["is_corrupted"] = False
 
         result = agent.execute_pipeline(opps_rep, acts_rep, orders_rep, kpi_rep, dataset_label=repaired_label)
+        result["can_run"] = True
         result["ai_repaired"] = True
+        result["continued_with_errors"] = True
         result["ai_repairs_log"] = repairs_log
         result["ai_repairs_count"] = len(repairs_log)
+        result["raw_file_preview"] = raw_file_preview
         result["file_diagnostics"] = build_file_diagnostics(result, [], False)
         LAST_ANALYSIS_RESULT = result
         return JSONResponse(content=result)
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -555,26 +597,10 @@ async def analyze_gsheet(req: GSheetAnalyzeRequest):
                 "file_diagnostics": diag
             })
 
-        norm_opps, _ = smart_normalize_columns(raw_opps)
+        raw_clean = raw_opps.dropna(how="all").copy()
+        raw_file_preview = build_raw_file_preview(raw_clean, "Google Sheets")
+        norm_opps, _ = smart_normalize_columns(raw_clean)
         opps_df = universal_adapt_dataframe(norm_opps, req.report_date)
-
-        is_df_empty, has_df_errors, df_err_msgs, row_sample_errors = validate_uploaded_dataframe(
-            opps_df, "Google Sheets"
-        )
-        if is_df_empty or has_df_errors:
-            diag = build_file_diagnostics(
-                None,
-                parse_warnings=df_err_msgs,
-                is_corrupted=not is_df_empty and len(row_sample_errors) == 0,
-                is_empty_file=is_df_empty,
-                row_sample_errors=row_sample_errors
-            )
-            return JSONResponse(content={
-                "can_run": False,
-                "gsheet_url": req.gsheet_url,
-                "detected_tables": list(tables.keys()),
-                "file_diagnostics": diag
-            })
 
         _, default_acts, default_orders, default_kpi = load_scenario_dfs("scenario_1_normal")
         opp_ids_set = set(str(x).strip() for x in opps_df.get("opp_id", []))
@@ -583,12 +609,16 @@ async def analyze_gsheet(req: GSheetAnalyzeRequest):
 
         acts_df = tables.get("activities", default_acts if has_shared_ids else pd.DataFrame())
         orders_df = tables.get("orders", default_orders if has_shared_ids else pd.DataFrame())
-        kpi_df = tables.get("kpi_targets", default_kpi)
+        kpi_df = tables.get("kpi_targets")
+        if kpi_df is None or kpi_df.empty:
+            kpi_df = build_dynamic_kpi_df_from_opps(opps_df, default_kpi)
 
         label = f"Google Sheets ({req.gsheet_url[:45]}...)"
         LAST_SESSION_DATA = {
             "source_type": "gsheet",
             "scenario_id": "custom_gsheet",
+            "raw_df": raw_clean,
+            "raw_file_preview": raw_file_preview,
             "opps_df": opps_df,
             "acts_df": acts_df,
             "orders_df": orders_df,
@@ -597,15 +627,42 @@ async def analyze_gsheet(req: GSheetAnalyzeRequest):
             "parse_warnings": [],
             "is_corrupted": False
         }
-        result = agent.execute_pipeline(opps_df, acts_df, orders_df, kpi_df, dataset_label=label)
-        diag = build_file_diagnostics(result, [], False, False)
-        if diag["has_errors"]:
+
+        is_df_empty, has_df_errors, df_err_msgs, row_sample_errors = validate_uploaded_dataframe(
+            opps_df, "Google Sheets"
+        )
+        has_any_issue = is_df_empty or has_df_errors or raw_file_preview.get("error_cell_count", 0) > 0
+
+        if has_any_issue and not req.force_continue:
+            diag = build_file_diagnostics(
+                None,
+                parse_warnings=df_err_msgs,
+                is_corrupted=False,
+                is_empty_file=is_df_empty,
+                row_sample_errors=row_sample_errors
+            )
             return JSONResponse(content={
                 "can_run": False,
+                "can_force_continue": not is_df_empty,
                 "gsheet_url": req.gsheet_url,
                 "detected_tables": list(tables.keys()),
-                "file_diagnostics": diag
+                "file_diagnostics": diag,
+                "raw_file_preview": raw_file_preview
             })
+
+        run_opps, run_acts, run_orders, run_kpi = opps_df, acts_df, orders_df, kpi_df
+        repairs_log: List[Dict[str, Any]] = []
+        if has_any_issue and req.force_continue:
+            run_opps, run_acts, run_orders, _, repairs_log = ai_auto_repair_dataset(
+                opps_df, acts_df, orders_df, kpi_df, report_date_str=req.report_date, logger=agent.logger
+            )
+            run_kpi = build_dynamic_kpi_df_from_opps(run_opps, default_kpi)
+
+        result = agent.execute_pipeline(run_opps, run_acts, run_orders, run_kpi, dataset_label=label)
+        diag = build_file_diagnostics(result, [], False, False)
+        result["raw_file_preview"] = raw_file_preview
+        result["ai_repairs_log"] = repairs_log
+        result["continued_with_errors"] = bool(req.force_continue and has_any_issue)
 
         result["can_run"] = True
         result["gsheet_url"] = req.gsheet_url
@@ -1184,20 +1241,28 @@ DEFAULT_USERS_STORE: Dict[str, Dict[str, Any]] = {
 }
 
 
+RUNTIME_USERS_CACHE: Dict[str, Dict[str, Any]] = dict(DEFAULT_USERS_STORE)
+
+
 def _load_users_db() -> Dict[str, Dict[str, Any]]:
+    global RUNTIME_USERS_CACHE
     store = dict(DEFAULT_USERS_STORE)
+    store.update(RUNTIME_USERS_CACHE)
     try:
         if os.path.exists(USERS_DB_FILE):
             with open(USERS_DB_FILE, "r", encoding="utf-8") as f:
                 saved = json.load(f)
                 if isinstance(saved, dict):
                     store.update(saved)
+                    RUNTIME_USERS_CACHE.update(saved)
     except Exception:
         pass
     return store
 
 
 def _save_users_db(store: Dict[str, Dict[str, Any]]) -> None:
+    global RUNTIME_USERS_CACHE
+    RUNTIME_USERS_CACHE.update(store)
     try:
         with open(USERS_DB_FILE, "w", encoding="utf-8") as f:
             json.dump(store, f, ensure_ascii=False, indent=2)

@@ -1429,24 +1429,47 @@
           </div>
         </div>
 
-        <!-- Hộp Báo Lỗi Nghiêm Ngặt (Chỉ hiện khi tệp rỗng hoặc bị lỗi) -->
-        <div id="inlineFileErrorBox" class="hidden p-6 rounded-2xl bg-red-50/95 dark:bg-red-950/50 border-2 border-red-500 space-y-4">
-          <div class="space-y-1.5">
-            <span class="inline-block px-3 py-1 rounded-full bg-red-600 text-white text-xs font-bold uppercase">
-              Không thể chạy — Tệp không hợp lệ
-            </span>
-            <h4 id="inlineFileErrorTitle" class="text-xl font-extrabold text-red-700 dark:text-red-400">
-              Tệp bị rỗng hoặc có lỗi dữ liệu
-            </h4>
-            <p id="inlineFileErrorDesc" class="text-sm sm:text-base text-slate-800 dark:text-slate-200"></p>
+        <!-- Hộp Rà Soát Trực Tiếp Tệp & 2 Lựa Chọn Khi Tệp Có Lỗi -->
+        <div id="inlineFileErrorBox" class="hidden p-5 sm:p-6 rounded-[24px] bg-white/95 dark:bg-slate-900/95 border-2 border-[#894b77] dark:border-[#1ed7b5] shadow-xl space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="space-y-1">
+              <span id="inlineFileStatusBadge" class="inline-block px-3 py-1 rounded-full bg-amber-500 text-white text-xs font-extrabold uppercase">
+                Rà soát tệp — Phát hiện lỗi dữ liệu
+              </span>
+              <h4 id="inlineFileErrorTitle" class="text-xl font-extrabold text-slate-900 dark:text-white">
+                Tệp có dữ liệu cần rà soát
+              </h4>
+              <p id="inlineFileErrorDesc" class="text-sm sm:text-base text-slate-700 dark:text-slate-300"></p>
+            </div>
+            <span id="inlineFileDimBadge" class="px-4 py-1.5 rounded-full bg-[#f0f9a7] text-[#2c3308] font-mono text-xs sm:text-sm font-extrabold shrink-0"></span>
           </div>
-          <div class="flex flex-wrap items-center gap-3">
-            <button type="button" onclick="openAiFileRepairModal(lastFileErrorData)" class="btn-dark px-6 py-2.5 text-sm">
-              Xem rõ vị trí lỗi
-            </button>
-            <button type="button" onclick="clearSelectedFiles(event)" class="btn-primary px-6 py-2.5 text-sm">
-              Chọn tệp khác
-            </button>
+
+          <!-- 2 LỰA CHỌN RÕ RÀNG: 1. TẢI LẠI FILE KHÁC | 2. VẪN TIẾP TỤC TRÊN FILE ĐÓ -->
+          <div class="p-4 rounded-2xl bg-gradient-to-r from-[#894b77]/10 via-[#f0f9a7]/30 to-[#1ed7b5]/15 border border-[#abbdff]/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <span class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">
+              Bạn muốn xử lý tệp này thế nào?
+            </span>
+            <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
+              <button type="button" onclick="chooseAnotherFileImmediately()" class="btn-soft px-5 py-3 text-sm font-extrabold flex items-center gap-2">
+                <span>📂</span> <span>1. Tải lại file khác</span>
+              </button>
+              <button id="btnInlineContinueFile" type="button" onclick="continueOnErroneousFile()" class="btn-mint px-6 py-3 text-sm font-extrabold flex items-center gap-2">
+                <span>⚡</span> <span>2. Vẫn tiếp tục trên file này &rarr;</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- HIỂN THỊ TRỰC TIẾP BẢNG DỮ LIỆU GỐC CỦA FILE (ĐỘNG THEO CỘT & DÒNG THỰC TẾ) -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <strong class="text-sm font-extrabold text-[#894b77] dark:text-[#1ed7b5]">
+                📄 Nội dung trực tiếp của tệp vừa tải lên (Các ô đỏ/vàng là vị trí lỗi):
+              </strong>
+              <button type="button" onclick="openAiFileRepairModal(lastFileErrorData)" class="text-xs font-extrabold text-[#495fc4] dark:text-[#abbdff] hover:underline cursor-pointer">
+                Phóng to toàn màn hình ⤢
+              </button>
+            </div>
+            <div id="inlineDirectFileTable" class="overflow-x-auto max-h-[340px] custom-scroll rounded-2xl bg-white dark:bg-slate-950 border border-[#abbdff]/60 dark:border-slate-800 shadow-inner"></div>
           </div>
         </div>
 
@@ -1549,13 +1572,14 @@
           </div>
         </div>
 
-        <!-- 2 Tab đơn giản -->
+        <!-- 3 Tab đơn giản (gồm cả Xem trực tiếp tệp gốc đúng dòng/cột) -->
         <div class="space-y-4">
           <div class="flex flex-wrap gap-2.5">
             <button id="s2TabOpenBtn" onclick="switchStep2SubTab('open')" class="btn-dark px-6 py-2.5 text-sm">Khách đang theo đuổi</button>
             <button id="s2TabWonBtn" onclick="switchStep2SubTab('won')" class="btn-soft px-6 py-2.5 text-sm">Đơn đã bán thành công</button>
+            <button id="s2TabRawBtn" onclick="switchStep2SubTab('raw')" class="btn-soft px-6 py-2.5 text-sm">📄 Xem trực tiếp tệp gốc</button>
           </div>
-          <div id="s2TableContainer" class="overflow-x-auto max-h-[380px] custom-scroll rounded-2xl bg-white/85 dark:bg-slate-950/75 border border-[#abbdff]/50 dark:border-slate-800"></div>
+          <div id="s2TableContainer" class="overflow-x-auto max-h-[420px] custom-scroll rounded-2xl bg-white/85 dark:bg-slate-950/75 border border-[#abbdff]/50 dark:border-slate-800"></div>
         </div>
 
         <!-- Nút điều hướng to, rõ ràng -->
@@ -1658,7 +1682,7 @@
         <!-- Biểu đồ 3: 10 Nhân viên -->
         <div class="bento-tile block-periwinkle rounded-2xl p-6 space-y-4">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">Kết Quả Của 10 Nhân Viên (Triệu VNĐ)</h3>
+            <h3 id="s5RepsChartHeading" class="text-lg font-extrabold text-slate-900 dark:text-white">Kết Quả Theo Nhân Sự / Nhóm Trong Tệp (Triệu VNĐ)</h3>
             <div class="flex flex-wrap items-center gap-4 text-sm font-bold text-slate-700 dark:text-slate-300">
               <span class="inline-flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm" style="background:#1ed7b5"></span>Đã bán</span>
               <span class="inline-flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm" style="background:#abbdff"></span>Dự kiến</span>
@@ -1943,23 +1967,29 @@
 
 
   <!-- ========================================================================= -->
-  <!-- MODAL BÁO LỖI NGHIÊM NGẶT (CHẶN TỆP RỖNG & TỆP LỖI)                       -->
+  <!-- MODAL RÀ SOÁT TRỰC TIẾP TỆP & 2 LỰA CHỌN KHI TỆP LỖI                      -->
   <!-- ========================================================================= -->
-  <div id="aiFileRepairModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-[24px] w-full max-w-3xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden border-2 border-red-500 fade-1">
-      <div class="px-6 py-5 bg-slate-950 text-white flex items-center justify-between shrink-0">
+  <div id="aiFileRepairModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-[26px] w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border-2 border-[#894b77] dark:border-[#1ed7b5] fade-1">
+      <div class="px-6 py-5 text-white flex items-center justify-between shrink-0"
+           style="background: linear-gradient(135deg, #894b77 0%, #5c2e50 55%, #0e8a73 100%);">
         <div>
-          <span class="px-3 py-1 rounded-full bg-red-600 text-white text-xs font-bold uppercase">Báo lỗi — Không thể chạy</span>
-          <h3 id="aiFileRepairModalTitle" class="text-xl font-extrabold text-white mt-2">Tệp bị rỗng hoặc có lỗi</h3>
+          <span id="aiFileRepairBadge" class="px-3 py-1 rounded-full bg-[#f0f9a7] text-[#282e07] text-xs font-extrabold uppercase">
+            Rà soát tệp trực tiếp — Chọn hướng xử lý
+          </span>
+          <h3 id="aiFileRepairModalTitle" class="text-xl font-extrabold text-white mt-2">Phát hiện lỗi trong tệp tải lên</h3>
         </div>
         <button onclick="closeAiFileRepairModal()" class="w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 text-white font-bold cursor-pointer">✕</button>
       </div>
       <div id="aiFileRepairModalBody" class="p-6 overflow-y-auto custom-scroll flex-1 space-y-4 text-sm sm:text-base text-slate-700 dark:text-slate-200"></div>
       <div class="px-6 py-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
-        <span class="text-sm font-bold text-red-700 dark:text-red-400">Chỉ tệp hợp lệ không lỗi mới chạy được.</span>
-        <div class="flex items-center gap-2.5">
-          <button type="button" onclick="closeAiFileRepairModal()" class="btn-soft px-5 py-2.5 text-sm">Đóng</button>
-          <button type="button" onclick="closeErrorAndResetFile()" class="btn-primary px-6 py-2.5 text-sm">Chọn tệp khác</button>
+        <span id="aiFileRepairFooterNote" class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300">
+          Bạn có 2 lựa chọn: Tải lại file khác hoặc vẫn tiếp tục phân tích trên chính file này.
+        </span>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <button type="button" onclick="closeAiFileRepairModal()" class="btn-soft px-4 py-2.5 text-sm">Đóng xem sau</button>
+          <button type="button" onclick="chooseAnotherFileImmediately()" class="btn-primary px-5 py-2.5 text-sm">📂 1. Tải lại file khác</button>
+          <button id="btnModalContinueFile" type="button" onclick="continueOnErroneousFile()" class="btn-mint px-6 py-2.5 text-sm font-extrabold">⚡ 2. Vẫn tiếp tục trên file này &rarr;</button>
         </div>
       </div>
     </div>
@@ -2561,7 +2591,7 @@
       await executeStartPipeline();
     }
 
-    async function executeStartPipeline() {
+    async function executeStartPipeline(forceContinue = false) {
       const gsheetUrl = document.getElementById('portalGsheetUrl')?.value?.trim();
       if (!selectedUploadFiles.length && !gsheetUrl) {
         showToast('Vui lòng chọn tệp từ máy hoặc dán link Google Sheets!', 'error');
@@ -2572,56 +2602,70 @@
       if (emptyFiles.length > 0) {
         currentAnalysisResult = null;
         goToStep(1);
-        showToast('Tệp bị rỗng (0 byte) nên không thể chạy!', 'error');
+        showToast('Tệp bị rỗng (0 byte) nên không có dữ liệu để phân tích!', 'error');
         openAiFileRepairModal({
           can_run: false,
+          can_force_continue: false,
           file_diagnostics: {
             can_run: false, has_errors: true, is_empty_file: true, total_error_count: emptyFiles.length,
-            summary_message: `Tệp "${emptyFiles.map(f => f.name).join(', ')}" bị rỗng (0 byte). Hệ thống chỉ chạy khi tệp có dữ liệu hợp lệ.`,
+            summary_message: `Tệp "${emptyFiles.map(f => f.name).join(', ')}" bị rỗng (0 byte). Vui lòng tải lại file khác có dữ liệu.`,
             sample_errors: emptyFiles.map(f => ({ opp_id: 'RỖNG', customer_name: f.name, error_title: 'Tệp không có dữ liệu', error_detail: 'Dung lượng 0 byte.' }))
-          }
+          },
+          raw_file_preview: { filename: emptyFiles.map(f => f.name).join(', '), columns: [], rows: [], total_rows: 0, total_cols: 0, error_cell_count: 0 }
         });
         return;
       }
 
       const btn = document.getElementById('btnStartPipeline');
       const oldTxt = btn ? btn.innerHTML : '';
-      if (btn) { btn.innerHTML = 'Đang kiểm tra tệp...'; btn.disabled = true; }
+      if (btn) { btn.innerHTML = forceContinue ? 'Đang chạy tiếp trên tệp...' : 'Đang rà soát tệp...'; btn.disabled = true; }
 
       try {
-        const data = await triggerRunAgent(false);
-        const blocked = !data || data.can_run === false || (data.file_diagnostics && data.file_diagnostics.has_errors);
+        const data = await triggerRunAgent(false, forceContinue);
+        const blocked = !data || data.can_run === false;
         if (blocked) {
           currentAnalysisResult = null;
           goToStep(1);
-          showToast(data?.file_diagnostics?.is_empty_file ? 'Tệp bị rỗng — Không thể chạy!' : 'Tệp bị lỗi — Không thể chạy!', 'error');
-          openAiFileRepairModal(data);
+          showToast(
+            data?.file_diagnostics?.is_empty_file
+              ? 'Tệp bị rỗng — Vui lòng tải lại file khác!'
+              : 'Phát hiện lỗi trong tệp! Hãy xem trực tiếp file và chọn 1 trong 2 hướng xử lý.',
+            'error'
+          );
+          renderInlineFileInspector(data);
         } else {
           currentAnalysisResult = data;
           renderAllStepViews(data);
           document.getElementById('inlineFileErrorBox')?.classList.add('hidden');
           closeAiFileRepairModal();
-          showToast('Tệp hợp lệ! Đã tính xong số liệu cho bạn.', 'success');
+          showToast(
+            data.continued_with_errors
+              ? `Đã tiếp tục phân tích trực tiếp trên tệp của bạn (AI đã tự xử lý ${data.ai_repairs_count || 0} mục)!`
+              : 'Tệp hợp lệ! Đã phân tích động theo đúng dữ liệu tệp của bạn.',
+            'success'
+          );
           goToStep(2);
         }
       } catch (err) {
         currentAnalysisResult = null;
         goToStep(1);
-        showToast('Tệp bị lỗi định dạng — Không thể chạy!', 'error');
-        openAiFileRepairModal({
+        showToast('Tệp bị lỗi định dạng — Hãy kiểm tra lại!', 'error');
+        renderInlineFileInspector({
           can_run: false,
+          can_force_continue: false,
           file_diagnostics: {
             can_run: false, has_errors: true, is_empty_file: false, total_error_count: 1,
             summary_message: `Không thể đọc tệp do lỗi: ${err.message}`,
             sample_errors: [{ opp_id: 'LỖI', customer_name: 'Tệp tải lên', error_title: 'Không đọc được tệp', error_detail: err.message }]
-          }
+          },
+          raw_file_preview: { filename: 'Tệp tải lên', columns: [], rows: [], total_rows: 0, total_cols: 0, error_cell_count: 0 }
         });
       } finally {
         if (btn) { btn.innerHTML = oldTxt; btn.disabled = false; }
       }
     }
 
-    async function triggerRunAgent(useLastUploaded = false) {
+    async function triggerRunAgent(useLastUploaded = false, forceContinue = false) {
       const reportDate = document.getElementById('portalReportDate')?.value || '2026-11-12';
       const apiKey = document.getElementById('portalApiKey')?.value?.trim() || 'AQ.Ab8RN6InYyqJ-KtuhaX0jncAZVHrO45id7dCaYqu6tWuAsRu9A';
       const gsheetUrl = document.getElementById('portalGsheetUrl')?.value?.trim();
@@ -2634,12 +2678,13 @@
         fd.append('inactivity_threshold_days', 14);
         fd.append('api_key', apiKey);
         fd.append('human_overrides', JSON.stringify(humanOverridesState));
+        fd.append('force_continue', forceContinue ? 'true' : 'false');
         res = await fetch('/api/analyze/upload', { method: 'POST', body: fd });
       } else if (gsheetUrl && !useLastUploaded) {
         res = await fetch('/api/analyze/gsheet', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ gsheet_url: gsheetUrl, report_date: reportDate, inactivity_threshold_days: 14, human_overrides: humanOverridesState, api_key: apiKey })
+          body: JSON.stringify({ gsheet_url: gsheetUrl, report_date: reportDate, inactivity_threshold_days: 14, human_overrides: humanOverridesState, api_key: apiKey, force_continue: forceContinue })
         });
       } else {
         res = await fetch('/api/analyze/preset', {
@@ -2863,7 +2908,16 @@
       const ctx3 = document.getElementById('chartRepsKpi');
       if (ctx3) {
         if (chartRepsKpiInst) chartRepsKpiInst.destroy();
-        const labels3 = reps.map(r => `${r.rep_id} ${(r.rep_name || '').split(' ').slice(-1)[0]}`);
+        const repsHeading = document.getElementById('s5RepsChartHeading');
+        if (repsHeading) {
+          repsHeading.textContent = `Kết Quả Của ${reps.length} Nhân Sự / Nhóm Trong Tệp (Triệu VNĐ)`;
+        }
+        const labels3 = reps.map(r => {
+          const rid = String(r.rep_id || '').trim();
+          const rname = String(r.rep_name || '').trim();
+          if (rid === rname || !rid) return rname.length > 14 ? rname.slice(0, 13) + '…' : rname;
+          return `${rid} ${rname.split(' ').slice(-1)[0]}`;
+        });
         chartRepsKpiInst = new Chart(ctx3, {
           type: 'bar',
           data: {
@@ -2883,7 +2937,7 @@
               tooltip: {
                 bodyFont: { size: 13 }, titleFont: { size: 14 },
                 callbacks: {
-                  title: (items) => { const r = reps[items[0].dataIndex]; return r ? `${r.rep_name} (${r.rep_id})` : ''; },
+                  title: (items) => { const r = reps[items[0].dataIndex]; return r ? `${r.rep_name}` : ''; },
                   afterBody: (items) => { const r = reps[items[0].dataIndex]; return r ? `\nĐã bán: ${r.actual_attainment_pct}% · Dự kiến: ${r.projected_attainment_pct}%` : ''; }
                 }
               }
@@ -2897,30 +2951,88 @@
       }
     }
 
+    function escapeHtmlCell(val) {
+      return String(val ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function renderRawSpreadsheetHtml(preview) {
+      if (!preview || !preview.columns || preview.columns.length === 0 || !preview.rows || preview.rows.length === 0) {
+        return '<div class="p-6 text-center text-sm font-bold text-slate-500">Tệp này không có dòng dữ liệu nào để hiển thị.</div>';
+      }
+      const cols = preview.columns;
+      const rows = preview.rows;
+      return `
+        <table class="w-full text-left border-collapse text-xs sm:text-sm">
+          <thead class="sticky top-0 z-10">
+            <tr class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border-b-2 border-[#abbdff] dark:border-slate-700">
+              <th class="px-3 py-2.5 font-mono text-[11px] font-black text-slate-500 border-r border-slate-200 dark:border-slate-800 whitespace-nowrap">#</th>
+              ${cols.map(c => `<th class="px-3.5 py-2.5 font-extrabold whitespace-nowrap border-r border-slate-200/80 dark:border-slate-800">${escapeHtmlCell(c)}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200/80 dark:divide-slate-800">
+            ${rows.map(r => `
+              <tr class="${r.row_has_error ? 'bg-amber-50/40 dark:bg-amber-950/15' : ''}">
+                <td class="px-3 py-2 font-mono text-[11px] font-bold text-slate-500 border-r border-slate-200 dark:border-slate-800 whitespace-nowrap">${r.row_num}</td>
+                ${(r.cells || []).map((cellVal, cIdx) => {
+                  const errMsg = r.cell_errors ? r.cell_errors[String(cIdx)] : null;
+                  if (errMsg) {
+                    return `
+                      <td class="px-3 py-2 border-r border-red-200 dark:border-red-900/60 bg-red-100/85 dark:bg-red-950/60 text-red-800 dark:text-red-300 align-top min-w-[120px]" title="${escapeHtmlCell(errMsg)}">
+                        <div class="font-bold whitespace-nowrap">${cellVal ? escapeHtmlCell(cellVal) : '<span class="italic opacity-75">(Trống)</span>'}</div>
+                        <div class="text-[10.5px] font-semibold text-red-700 dark:text-red-400 mt-0.5 leading-tight">⚠️ ${escapeHtmlCell(errMsg)}</div>
+                      </td>
+                    `;
+                  }
+                  return `<td class="px-3.5 py-2 border-r border-slate-200/60 dark:border-slate-800/80 text-slate-800 dark:text-slate-200 whitespace-nowrap max-w-[260px] truncate" title="${escapeHtmlCell(cellVal)}">${escapeHtmlCell(cellVal)}</td>`;
+                }).join('')}
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
     function switchStep2SubTab(tab) {
       currentStep2SubTab = tab;
       const bOpen = document.getElementById('s2TabOpenBtn');
       const bWon = document.getElementById('s2TabWonBtn');
-      bOpen.className = tab === 'open' ? 'btn-dark px-6 py-2.5 text-sm' : 'btn-soft px-6 py-2.5 text-sm';
-      bWon.className = tab === 'won' ? 'btn-dark px-6 py-2.5 text-sm' : 'btn-soft px-6 py-2.5 text-sm';
+      const bRaw = document.getElementById('s2TabRawBtn');
+      if (bOpen) bOpen.className = tab === 'open' ? 'btn-dark px-6 py-2.5 text-sm' : 'btn-soft px-6 py-2.5 text-sm';
+      if (bWon) bWon.className = tab === 'won' ? 'btn-dark px-6 py-2.5 text-sm' : 'btn-soft px-6 py-2.5 text-sm';
+      if (bRaw) bRaw.className = tab === 'raw' ? 'btn-dark px-6 py-2.5 text-sm' : 'btn-soft px-6 py-2.5 text-sm';
       if (currentAnalysisResult) renderStep2Table(currentAnalysisResult, tab);
     }
 
     function renderStep2Table(data, tab) {
       const box = document.getElementById('s2TableContainer');
+      const bRaw = document.getElementById('s2TabRawBtn');
+      if (bRaw && data.raw_file_preview && data.raw_file_preview.total_cols > 0) {
+        bRaw.textContent = `📄 Tệp gốc (${data.raw_file_preview.total_rows} dòng × ${data.raw_file_preview.total_cols} cột)`;
+      }
+
+      if (tab === 'raw') {
+        box.innerHTML = renderRawSpreadsheetHtml(data.raw_file_preview);
+        return;
+      }
+
       if (tab === 'open') {
         const rows = (data.opportunities_clean || []).filter(o => o.open_pipeline_value > 0);
         box.innerHTML = `
           <table class="w-full text-left border-collapse text-sm sm:text-base">
             <thead>
               <tr class="bg-[#abbdff]/25 dark:bg-slate-950 text-slate-700 dark:text-slate-400 uppercase text-xs border-b dark:border-slate-800">
-                <th class="p-4">Khách Hàng</th><th class="p-4">Tiến Độ</th><th class="p-4 text-right">Giá Trị</th><th class="p-4 text-right">Dự Kiến Thu</th>
+                <th class="p-4">Khách Hàng</th><th class="p-4">Phụ Trách</th><th class="p-4">Tiến Độ</th><th class="p-4 text-right">Giá Trị</th><th class="p-4 text-right">Dự Kiến Thu</th>
               </tr>
             </thead>
             <tbody class="divide-y dark:divide-slate-800">
               ${rows.map(o => `
                 <tr>
                   <td class="p-4 font-bold">${o.customer_name}<span class="block text-xs font-mono text-slate-400">${o.opp_id}</span></td>
+                  <td class="p-4 text-sm font-semibold">${o.rep_id || '-'}</td>
                   <td class="p-4"><span class="px-3 py-1 rounded-full bg-[#1ed7b5]/20 text-[#096b58] dark:text-[#1ed7b5] font-bold text-xs">${o.effective_stage} (${((o.rule_weight || o.stage_weight || 0)*100).toFixed(0)}%)</span></td>
                   <td class="p-4 text-right font-semibold">${fmtShortBill(o.open_pipeline_value)}</td>
                   <td class="p-4 text-right font-extrabold text-[#894b77] dark:text-[#abbdff]">${fmtShortBill(o.weighted_forecast_value)}</td>
@@ -2935,14 +3047,14 @@
           <table class="w-full text-left border-collapse text-sm sm:text-base">
             <thead>
               <tr class="bg-[#abbdff]/25 dark:bg-slate-950 text-slate-700 dark:text-slate-400 uppercase text-xs border-b dark:border-slate-800">
-                <th class="p-4">Khách Hàng</th><th class="p-4">Nhân Viên</th><th class="p-4 text-right">Doanh Số Đã Bán</th>
+                <th class="p-4">Khách Hàng</th><th class="p-4">Phụ Trách</th><th class="p-4 text-right">Doanh Số Đã Bán</th>
               </tr>
             </thead>
             <tbody class="divide-y dark:divide-slate-800">
               ${rows.map(o => `
                 <tr>
                   <td class="p-4 font-bold">${o.customer_name}<span class="block text-xs font-mono text-slate-400">${o.opp_id}</span></td>
-                  <td class="p-4 font-mono">${o.rep_id}</td>
+                  <td class="p-4 font-mono">${o.rep_id || '-'}</td>
                   <td class="p-4 text-right font-extrabold text-[#0c8f76] dark:text-[#1ed7b5]">${fmtShortBill(o.actual_recorded_revenue || o.deal_value)}</td>
                 </tr>
               `).join('')}
@@ -2979,46 +3091,96 @@
       showToast('Đã chốt báo cáo cuối cùng của Công ty của Duydudi và giao việc cho Sales!', 'success');
     }
 
+    function renderInlineFileInspector(data) {
+      lastFileErrorData = data;
+      const diag = data?.file_diagnostics || { is_empty_file: false, total_error_count: 1, summary_message: 'Tệp có lỗi dữ liệu cần rà soát.', sample_errors: [] };
+      const preview = data?.raw_file_preview || { columns: [], rows: [], total_rows: 0, total_cols: 0, error_cell_count: 0 };
+      const isEmpty = Boolean(diag.is_empty_file) || preview.total_rows === 0;
+      const canContinue = data?.can_force_continue !== false && !isEmpty;
+
+      const box = document.getElementById('inlineFileErrorBox');
+      if (box) box.classList.remove('hidden');
+
+      const badge = document.getElementById('inlineFileStatusBadge');
+      if (badge) {
+        badge.textContent = isEmpty ? 'Tệp rỗng — 0 dòng dữ liệu' : `Rà soát tệp — Phát hiện ${Math.max(diag.total_error_count || 0, preview.error_cell_count || 0)} vị trí lỗi`;
+      }
+      document.getElementById('inlineFileErrorTitle').textContent = isEmpty
+        ? 'Tệp bị rỗng — Vui lòng tải lại file khác'
+        : `Phát hiện lỗi trong "${preview.filename || 'tệp tải lên'}" — Chọn hướng xử lý bên dưới`;
+      document.getElementById('inlineFileErrorDesc').textContent = diag.summary_message || '';
+
+      const dimBadge = document.getElementById('inlineFileDimBadge');
+      if (dimBadge) {
+        dimBadge.textContent = `${preview.total_rows || 0} dòng × ${preview.total_cols || 0} cột`;
+      }
+
+      const btnInlineCont = document.getElementById('btnInlineContinueFile');
+      if (btnInlineCont) btnInlineCont.classList.toggle('hidden', !canContinue);
+
+      const tblBox = document.getElementById('inlineDirectFileTable');
+      if (tblBox) {
+        tblBox.innerHTML = renderRawSpreadsheetHtml(preview);
+      }
+
+      const sz = document.getElementById('dropzoneFileSize');
+      if (sz) {
+        sz.textContent = isEmpty
+          ? 'Tệp rỗng (0 dòng)'
+          : `${preview.total_rows} dòng × ${preview.total_cols} cột · Đang chờ bạn chọn 1 trong 2 hướng xử lý`;
+      }
+
+      box?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function chooseAnotherFileImmediately() {
+      closeAiFileRepairModal();
+      clearSelectedFiles();
+      const gs = document.getElementById('portalGsheetUrl');
+      if (gs) gs.value = '';
+      triggerFileInputClick();
+    }
+
+    async function continueOnErroneousFile() {
+      const btnInline = document.getElementById('btnInlineContinueFile');
+      const btnModal = document.getElementById('btnModalContinueFile');
+      if (btnInline) { btnInline.disabled = true; btnInline.textContent = '⏳ Đang xử lý tiếp trên file này...'; }
+      if (btnModal) { btnModal.disabled = true; btnModal.textContent = '⏳ Đang xử lý tiếp trên file này...'; }
+      try {
+        await executeStartPipeline(true);
+      } finally {
+        if (btnInline) { btnInline.disabled = false; btnInline.innerHTML = '<span>⚡</span> <span>2. Vẫn tiếp tục trên file này &rarr;</span>'; }
+        if (btnModal) { btnModal.disabled = false; btnModal.innerHTML = '⚡ 2. Vẫn tiếp tục trên file này &rarr;'; }
+      }
+    }
+
     function openAiFileRepairModal(data) {
       lastFileErrorData = data;
       const modal = document.getElementById('aiFileRepairModal');
       const body = document.getElementById('aiFileRepairModalBody');
       const diag = data?.file_diagnostics || { is_empty_file: false, total_error_count: 1, summary_message: 'Tệp bị lỗi.', sample_errors: [] };
-      const isEmpty = Boolean(diag.is_empty_file);
+      const preview = data?.raw_file_preview || { columns: [], rows: [], total_rows: 0, total_cols: 0, error_cell_count: 0 };
+      const isEmpty = Boolean(diag.is_empty_file) || preview.total_rows === 0;
+      const canContinue = data?.can_force_continue !== false && !isEmpty;
 
-      document.getElementById('aiFileRepairModalTitle').textContent = isEmpty ? 'Tệp bị rỗng — Không có dữ liệu!' : `Tệp có ${diag.total_error_count} lỗi — Không thể chạy!`;
+      document.getElementById('aiFileRepairModalTitle').textContent = isEmpty
+        ? 'Tệp bị rỗng — Không có dữ liệu!'
+        : `Rà soát trực tiếp tệp (${preview.total_rows} dòng × ${preview.total_cols} cột)`;
+
+      const btnModalCont = document.getElementById('btnModalContinueFile');
+      if (btnModalCont) btnModalCont.classList.toggle('hidden', !canContinue);
+
       body.innerHTML = `
-        <div class="p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900">
-          <p class="font-bold text-red-700 dark:text-red-400">${diag.summary_message}</p>
+        <div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 space-y-1">
+          <p class="font-bold text-amber-900 dark:text-amber-300">${diag.summary_message}</p>
+          <p class="text-xs text-slate-600 dark:text-slate-400">Hiển thị nguyên bản đúng các cột và dòng của tệp bạn tải lên. Các ô tô màu đỏ là vị trí bị trống hoặc sai định dạng.</p>
         </div>
-        ${(diag.sample_errors || []).length ? `
-          <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
-            <table class="w-full text-left border-collapse text-sm">
-              <thead>
-                <tr class="bg-slate-50 dark:bg-slate-950 text-slate-500 text-xs uppercase border-b dark:border-slate-800">
-                  <th class="p-3">Vị trí</th><th class="p-3">Khách Hàng</th><th class="p-3">Lỗi Phát Hiện</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y dark:divide-slate-800">
-                ${diag.sample_errors.map(s => `
-                  <tr>
-                    <td class="p-3 font-mono font-bold text-red-600 whitespace-nowrap">${s.opp_id}</td>
-                    <td class="p-3 font-bold">${s.customer_name}</td>
-                    <td class="p-3"><strong class="block">${s.error_title}</strong><span class="text-xs text-slate-500">${s.error_detail}</span></td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        ` : ''}
+        <div class="overflow-x-auto max-h-[46vh] custom-scroll rounded-2xl border border-[#abbdff]/60 dark:border-slate-700 bg-white dark:bg-slate-950">
+          ${renderRawSpreadsheetHtml(preview)}
+        </div>
       `;
 
-      document.getElementById('inlineFileErrorBox')?.classList.remove('hidden');
-      document.getElementById('inlineFileErrorTitle').textContent = isEmpty ? 'Tệp bị rỗng — Không thể chạy!' : `Tệp có ${diag.total_error_count} lỗi — Không thể chạy!`;
-      document.getElementById('inlineFileErrorDesc').textContent = diag.summary_message;
-      const sz = document.getElementById('dropzoneFileSize');
-      if (sz) sz.textContent = isEmpty ? 'Tệp rỗng · Không chạy được' : `Có ${diag.total_error_count} lỗi · Không chạy được`;
-
+      renderInlineFileInspector(data);
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }

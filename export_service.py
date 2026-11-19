@@ -15,18 +15,24 @@ import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
-import docx
-from docx.shared import Inches, Pt, RGBColor as DocxRGBColor
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
+try:
+    import docx
+    from docx.shared import Inches, Pt, RGBColor as DocxRGBColor
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.enum.table import WD_TABLE_ALIGNMENT
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+except Exception:
+    docx = None
 
-import pptx
-from pptx.util import Inches as PptxInches, Pt as PptxPt
-from pptx.dml.color import RGBColor as PptxRGBColor
-from pptx.enum.text import PP_ALIGN
-from pptx.enum.shapes import MSO_SHAPE
+try:
+    import pptx
+    from pptx.util import Inches as PptxInches, Pt as PptxPt
+    from pptx.dml.color import RGBColor as PptxRGBColor
+    from pptx.enum.text import PP_ALIGN
+    from pptx.enum.shapes import MSO_SHAPE
+except Exception:
+    pptx = None
 
 
 def _fmt_vnd(num: Any) -> str:

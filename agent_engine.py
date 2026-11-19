@@ -1214,14 +1214,14 @@ class SalesProgressAgent:
             try:
                 if self.llm_provider == "gemini":
                     gemini_success = False
-                    for model_name in GEMINI_MODELS:
+                    for model_name in GEMINI_MODELS[:2]:
                         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={self.api_key}"
                         payload = {
                             "contents": [{"parts": [{"text": sys_prompt + "\n\n" + user_msg}]}],
                             "generationConfig": {"temperature": 0.2}
                         }
                         try:
-                            r = requests.post(url, json=payload, timeout=12)
+                            r = requests.post(url, json=payload, timeout=4)
                             if r.status_code == 200:
                                 data = r.json()
                                 llm_text = data["candidates"][0]["content"]["parts"][0]["text"]
@@ -1233,8 +1233,10 @@ class SalesProgressAgent:
                                     details={"provider": "gemini", "model": model_name, "status": "SUCCESS"}
                                 )
                                 return {"provider_used": f"Google Gemini API ({model_name})", "content": llm_text}
+                            elif r.status_code in (400, 401, 403):
+                                break
                         except Exception:
-                            continue
+                            break
                 elif self.llm_provider == "openai":
                     url = "https://api.openai.com/v1/chat/completions"
                     headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
@@ -1412,9 +1414,9 @@ def universal_adapt_dataframe(df: pd.DataFrame, report_date_str: str = DEFAULT_R
         elif "customer_name" in out.columns:
             out["project_name"] = [f"Hạng mục kinh doanh #{i+1}" for i in range(len(out))]
 
-    # 2. Tự động tìm cột số cho deal_value nếu chưa có (nhưng giữ nguyên NaN / số âm để bộ kiểm tra bắt lỗi)
+    # 2. Tự động tìm cột số hoặc cột chuỗi tiền tệ cho deal_value nếu chưa có (giữ nguyên lỗi để bộ rà soát bắt lỗi)
     if "deal_value" not in out.columns:
-        num_cols = [c for c in out.columns if pd.api.types.is_numeric_dtype(out[c])]
+        num_cols = [c for c in out.columns if pd.api.types.is_numeric_dtype(out[c]) and not str(c).lower().strip() in ("stt", "no", "id", "index")]
         if num_cols:
             raw_series = out[num_cols[0]]
             valid_nums = raw_series.dropna()
@@ -1425,28 +1427,51 @@ def universal_adapt_dataframe(df: pd.DataFrame, report_date_str: str = DEFAULT_R
             elif 10000 <= max_v < 1_000_000:
                 scale = 1_000.0
             out["deal_value"] = raw_series * scale
+        else:
+            # Tìm cột văn bản có chứa số tiền (VD: '500 triệu', '1.2 tỷ', '300,000,000')
+            money_kw = ["giá", "tiền", "doanh", "value", "amount", "revenue", "price", "total", "thành tiền", "tổng"]
+            money_col = next((c for c in out.columns if any(k in str(c).lower() for k in money_kw)), None)
+            if money_col:
+                out["deal_value"] = out[money_col]
 
     if "opp_id" not in out.columns:
-        out["opp_id"] = [f"OPP-{i+1:03d}" for i in range(len(out))]
+        out["opp_id"] = [f"ROW-{i+1:03d}" for i in range(len(out))]
 
+    # 3. Tự động tìm cột phụ trách / nhân viên / khu vực / nhóm thực tế trong file (KHÔNG ép cứng NV01..NV10)
     if "rep_id" not in out.columns:
-        out["rep_id"] = [f"NV{(i % 10) + 1:02d}" for i in range(len(out))]
+        owner_kw = ["nhân viên", "sales", "phụ trách", "người bán", "owner", "rep", "staff", "chi nhánh", "khu vực", "nhóm", "phòng", "bộ phận"]
+        owner_col = next((c for c in out.columns if any(k in str(c).lower() for k in owner_kw) and c not in ("customer_name", "project_name", "deal_value")), None)
+        if owner_col:
+            out["rep_id"] = out[owner_col].fillna("Chưa phân công").astype(str).str.strip()
+        elif len(text_cols) >= 3:
+            out["rep_id"] = out[text_cols[2]].fillna("Phụ trách chung").astype(str).str.strip()
+        else:
+            out["rep_id"] = "Phụ trách chung"
 
-    # Nếu là bảng dữ liệu tự do hợp lệ (không phải bảng CRM đang để trống lỗi), điền các trường CRM mặc định
+    # Nếu là bảng dữ liệu tự do (không theo motip CRM cứng), tự thích ứng linh hoạt theo số dòng của tệp
     if not is_crm_table:
-        stages_cycle = ["Closing", "Negotiation", "Proposal", "Qualification", "Closed Won"]
+        status_kw = ["trạng thái", "tình trạng", "status", "giai đoạn", "tiến độ", "kết quả"]
+        status_col = next((c for c in out.columns if any(k in str(c).lower() for k in status_kw)), None)
         if "stage" not in out.columns:
-            out["stage"] = [stages_cycle[i % len(stages_cycle)] for i in range(len(out))]
+            if status_col:
+                out["stage"] = out[status_col].fillna("Proposal").astype(str).str.strip()
+            else:
+                out["stage"] = "Proposal"
         if "expected_close_date" not in out.columns:
-            out["expected_close_date"] = [format_date_iso(report_dt + timedelta(days=(i % 10) + 2)) for i in range(len(out))]
+            date_kw = ["ngày", "date", "hạn", "deadline", "thời gian"]
+            date_col = next((c for c in out.columns if any(k in str(c).lower() for k in date_kw)), None)
+            if date_col:
+                out["expected_close_date"] = out[date_col]
+            else:
+                out["expected_close_date"] = format_date_iso(report_dt + timedelta(days=7))
         if "updated_date" not in out.columns:
-            out["updated_date"] = format_date_iso(report_dt - timedelta(days=2))
+            out["updated_date"] = format_date_iso(report_dt - timedelta(days=1))
         if "decision_maker" not in out.columns:
-            out["decision_maker"] = "Ban Giám đốc"
+            out["decision_maker"] = "Người phụ trách"
         if "budget_confirmed" not in out.columns:
             out["budget_confirmed"] = "Đã xác nhận"
         if "next_step" not in out.columns:
-            out["next_step"] = "Hoàn tất thương thảo và ký kết"
+            out["next_step"] = "Theo dõi và hoàn tất giao dịch"
         if "sales_custom_prob" not in out.columns:
             out["sales_custom_prob"] = [STAGE_RULES.get(s, {}).get("weight", 0.5) for s in out["stage"]]
 
@@ -1890,19 +1915,21 @@ def ai_auto_repair_dataset(
         oid = r["opp_id"]
         cust = r["customer_name"]
 
-        # Sửa rep_id nếu trống
+        # Giữ nguyên tên/mã người phụ trách thực tế từ file; chỉ điền mặc định nếu bị bỏ trống hoàn toàn
         rep_id = normalize_text(r.get("rep_id"))
-        if not rep_id or not re.match(r"^NV\d+", rep_id.upper()):
-            new_rep = f"NV{(idx % 10) + 1:02d}"
+        if not rep_id or rep_id.lower() in ("nan", "none", "null"):
+            new_rep = "Phụ trách chung"
             repairs_log.append({
                 "opp_id": oid,
                 "customer_name": cust,
-                "field_repaired": "rep_id (Mã NVKD)",
-                "before_value": rep_id or "(Trống)",
+                "field_repaired": "rep_id (Người phụ trách)",
+                "before_value": "(Trống)",
                 "after_value": new_rep,
-                "repair_reason": "AI tự động phân bổ mã nhân viên kinh doanh phụ trách"
+                "repair_reason": "AI tự động điền người phụ trách cho dòng bị bỏ trống"
             })
             r["rep_id"] = new_rep
+        else:
+            r["rep_id"] = rep_id
 
         # Sửa giá trị hợp đồng (deal_value)
         raw_val = r.get("deal_value")
@@ -2062,5 +2089,153 @@ def ai_auto_repair_dataset(
         )
 
     return opps_repaired_df, acts_fixed, orders_fixed, kpi_df, repairs_log
+
+
+def build_raw_file_preview(
+    raw_df: Optional[pd.DataFrame],
+    filename: str = "Tệp dữ liệu",
+    max_rows: int = 120
+) -> Dict[str, Any]:
+    """
+    Trích xuất bảng xem trước trực tiếp (Direct Spreadsheet Preview) từ ĐÚNG các dòng và cột gốc
+    của tệp người dùng vừa tải lên — KHÔNG cố định theo một motip/schema cứng.
+    Tự động rà soát và đánh dấu trực tiếp từng ô bị trống / sai số / sai ngày ngay trên bảng.
+    """
+    if raw_df is None or raw_df.empty:
+        return {
+            "filename": filename,
+            "columns": [],
+            "total_rows": 0,
+            "total_cols": 0,
+            "error_cell_count": 0,
+            "error_row_count": 0,
+            "rows": []
+        }
+
+    df = raw_df.dropna(how="all").copy()
+    columns = [str(c) for c in df.columns]
+    total_rows = len(df)
+    total_cols = len(columns)
+
+    money_kws = ["value", "amount", "giá", "tiền", "doanh", "revenue", "price", "total", "tổng", "kpi", "target", "prob", "xác suất"]
+    date_kws = ["date", "ngày", "hạn", "deadline", "time", "thời gian"]
+
+    # Nhận diện linh hoạt cột nào mang tính chất tiền tệ/số hoặc ngày tháng dựa trên tên cột & giá trị thực tế
+    col_kinds: Dict[int, str] = {}
+    for c_idx, col_name in enumerate(columns):
+        cl = col_name.lower().strip()
+        series = df.iloc[:, c_idx]
+        if any(k in cl for k in date_kws):
+            col_kinds[c_idx] = "date"
+        elif any(k in cl for k in money_kws) or pd.api.types.is_numeric_dtype(series):
+            if cl not in ("stt", "no", "index", "id"):
+                col_kinds[c_idx] = "money"
+            else:
+                col_kinds[c_idx] = "text"
+        else:
+            col_kinds[c_idx] = "text"
+
+    preview_rows: List[Dict[str, Any]] = []
+    error_cell_count = 0
+    error_row_count = 0
+
+    for row_pos, (_, row) in enumerate(df.head(max_rows).iterrows()):
+        cells: List[str] = []
+        cell_errors: Dict[str, str] = {}
+
+        for c_idx in range(total_cols):
+            val = row.iloc[c_idx]
+            is_missing = pd.isna(val) or str(val).strip() == "" or str(val).strip().lower() in ("nan", "none", "null")
+            display_val = "" if is_missing else str(val).strip()
+            cells.append(display_val)
+
+            kind = col_kinds.get(c_idx, "text")
+            if is_missing:
+                cell_errors[str(c_idx)] = f"Ô trống ở cột '{columns[c_idx]}'"
+            elif kind == "money":
+                # Kiểm tra giá trị số hợp lệ (chấp nhận số dương hoặc chuỗi có số dương)
+                try:
+                    num = float(str(val).replace(",", "").replace(" ", "").replace("VNĐ", "").replace("đ", ""))
+                    if num <= 0:
+                        cell_errors[str(c_idx)] = f"Giá trị <= 0 ({display_val})"
+                except Exception:
+                    cleaned_num, was_err = parse_currency_smart(val, default_val=-1.0)
+                    if cleaned_num <= 0:
+                        cell_errors[str(c_idx)] = f"Sai định dạng số/tiền ({display_val})"
+                    elif was_err:
+                        cell_errors[str(c_idx)] = f"Định dạng tiền tệ chưa chuẩn ({display_val})"
+            elif kind == "date":
+                if parse_date_safe(val) is None:
+                    cell_errors[str(c_idx)] = f"Sai định dạng ngày ({display_val})"
+
+        if cell_errors:
+            error_row_count += 1
+            error_cell_count += len(cell_errors)
+
+        preview_rows.append({
+            "row_num": row_pos + 1,
+            "cells": cells,
+            "cell_errors": cell_errors,
+            "row_has_error": len(cell_errors) > 0
+        })
+
+    return {
+        "filename": filename,
+        "columns": columns,
+        "total_rows": total_rows,
+        "total_cols": total_cols,
+        "showing_rows": len(preview_rows),
+        "error_cell_count": error_cell_count,
+        "error_row_count": error_row_count,
+        "rows": preview_rows
+    }
+
+
+def build_dynamic_kpi_df_from_opps(
+    opps_df: pd.DataFrame,
+    default_kpi_df: Optional[pd.DataFrame] = None
+) -> pd.DataFrame:
+    """
+    Xây dựng bảng KPI động theo ĐÚNG danh sách nhân sự/nhóm thực tế có trong tệp tải lên
+    (không áp cứng 10 nhân viên mẫu NV01..NV10 trừ khi tệp tải lên thực sự dùng đúng mã NV01..NV10).
+    """
+    if opps_df is None or opps_df.empty:
+        return default_kpi_df if default_kpi_df is not None else pd.DataFrame()
+
+    rep_series = opps_df.get("rep_id", pd.Series(["Phụ trách chung"] * len(opps_df)))
+    unique_reps = []
+    seen = set()
+    for r in rep_series:
+        val = str(r).strip() if pd.notna(r) and str(r).strip() and str(r).strip().lower() not in ("nan", "none", "null") else "Phụ trách chung"
+        if val not in seen:
+            seen.add(val)
+            unique_reps.append(val)
+
+    # Nếu tệp thực sự là tệp mẫu chuẩn (chứa mã NV01..NV10 khớp với default_kpi_df), dùng default_kpi_df
+    if default_kpi_df is not None and not default_kpi_df.empty and "rep_id" in default_kpi_df.columns:
+        default_ids = set(default_kpi_df["rep_id"].astype(str).str.strip())
+        if len(set(unique_reps).intersection(default_ids)) >= 2:
+            return default_kpi_df
+
+    # Tạo bảng KPI hoàn toàn động dựa trên các nhóm/nhân sự và giá trị thực tế trong file của người dùng
+    rows = []
+    for rep in unique_reps:
+        sub = opps_df[rep_series.fillna("Phụ trách chung").astype(str).str.strip() == rep]
+        total_val = 0.0
+        for v in sub.get("deal_value", []):
+            num, _ = parse_currency_smart(v, default_val=0.0)
+            total_val += max(0.0, num)
+        # Đặt mục tiêu KPI hợp lý ~85% tổng giá trị pipeline thực tế của người/nhóm đó trong tệp
+        dynamic_target = max(100_000_000.0, round((total_val * 0.85) / 10_000_000.0) * 10_000_000.0) if total_val > 0 else 500_000_000.0
+        rows.append({
+            "rep_id": rep,
+            "rep_name": rep,
+            "team": "Theo tệp tải lên",
+            "period": "Kỳ hiện tại",
+            "kpi_target": dynamic_target
+        })
+
+    return pd.DataFrame(rows)
+
 
 
